@@ -130,31 +130,47 @@
     \end{itemize}
 \item let $\CC^n$ be the space of (column) vectors with complex entries:
 \footnotesize
-    $$\bv = \begin{bmatrix}
+    $$v = \begin{bmatrix}
     v_1 \\ \vdots \\ v_n
     \end{bmatrix}$$
 \normalsize
 \vspace{-2mm}
     \begin{itemize}
-    \item[$\circ$] the \emph{hermitian conjugate} of $\bv\in\CC^n$ is the row vector $\bv^* = [\overline{v_1},\dots,\overline{v_n}]$
+    \item[$\circ$] the \emph{hermitian conjugate} of $v\in\CC^n$ is the row vector $v^* = [\overline{v_1},\dots,\overline{v_n}]$
     \end{itemize}
 \item an \emph{inner product} on $\CC^n$ is a bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
     $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC$$
-with symmetry and positivity properties: \quad for all $\bu,\bv,\bw \in \CC^n$ and $\alpha\in \CC$,
+with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\alpha\in \CC$,
     \begin{itemize}
-    \item[$\circ$] $\ip{\bw}{\bu+\bv} = \ip{\bw}{\bu} + \ip{\bw}{\bv}$
-    \item[$\circ$] $\ip{\bu}{\alpha\bv} = \alpha \ip{\bu}{\bu}$
-    \item[$\circ$] $\ip{\bu}{\bv} = \overline{\ip{\bv}{\bu}}$
-    \item[$\circ$] $\ip{\bu}{\bu} \ge 0$ and $\ip{\bu}{\bu}=0$ if and only if $\bu=0$
+    \item[$\circ$] $\ip{w}{u+v} = \ip{w}{u} + \ip{w}{v}$
+    \item[$\circ$] $\ip{u}{\alpha v} = \alpha \ip{u}{u}$
+    \item[$\circ$] $\ip{u}{v} = \overline{\ip{v}{u}}$
+    \item[$\circ$] $\ip{u}{u} \ge 0$ and $\ip{u}{u}=0$ if and only if $u=0$
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{X}
+\begin{frame}{bases and invertibility}
 
 \begin{itemize}
-\item Y
+\item a (finite) set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is \emph{linearly-dependent} if there exist scalars $\alpha_i \in \CC$, not all zero, so that $\alpha_1 v_1 + \dots + \alpha_m v_m = 0$
+    \begin{itemize}
+    \item[$\circ$] a set of vectors is \emph{linearly-independent} if it is not linearly-dependent
+    \end{itemize}
+\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ \emph{span} $\CC^n$ if for any $w\in \CC^n$ there exist scalars $\alpha_i$ so that $w = \alpha_1 v_1 + \dots + \alpha_m v_m$
+\item \textbf{Lemma.}  If $\{v_i\}_{i=1}^m$ is linearly-independent then each $v_i$ is nonzero and $m \le n$.  If $\{v_i\}_{i=1}^m$ spans $\CC^n$ then $m \ge n$.
+\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if they are linearly-independent and span $\CC^n$
+    \begin{itemize}
+    \item[$\circ$] by the Lemma, $m=n$
+    \end{itemize}
+\item a function $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha Au + \beta Av$
+    \begin{itemize}
+    \item[$\circ$] we call such a function a \emph{linear operator}
+    \item[$\circ$] given a basis, one may represent a linear operator as a (square) \emph{matrix}
+    \end{itemize}
+\item a linear operator $A$ is \emph{invertible} if there exists a linear operator $B$ so that $AB=BA=I$.
+\item \textbf{Lemma.} A matrix is invertible if and only if its columns form a basis.
 \end{itemize}
 \end{frame}
 
