@@ -1,0 +1,131 @@
+% Copyright 2020  Ed Bueler
+
+\documentclass[10pt,hyperref]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Madrid}
+
+  \usecolortheme{beaver}
+
+  \setbeamercovered{transparent}
+  
+  \setbeamerfont{frametitle}{size=\large}
+}
+
+\setbeamercolor*{block title}{bg=red!10}
+\setbeamercolor*{block body}{bg=red!5}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{empheq}
+\usepackage{animate}
+\usepackage{xspace}
+\usepackage{verbatim,fancyvrb}
+\usepackage{hyperref}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+%\beamerdefaultoverlayspecification{<+->}
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bw}{\mathbf{w}}
+
+\newcommand{\grad}{\nabla}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+
+\newcommand{\ddt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
+\newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
+\renewcommand{\t}[1]{\texttt{#1}}
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\MO}{\Matlab}
+\newcommand{\eps}{\epsilon}
+
+\newcommand{\MS}{\alert{MAKE SURE}\xspace}
+
+\newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
+
+\newcommand{\mfile}[1]{
+\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
+}
+
+\newcommand{\mfiletiny}[1]{
+\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
+}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,hideallsubsections]
+  \end{frame}
+}
+
+\title{Finite-dimensional spectral theory}
+
+\subtitle{part I: from inner product spaces through the Schur decomposition}
+
+\author{Ed Bueler}
+
+\institute[MATH 617]{MATH 617 Functional Analysis}
+
+\date{Spring 2020}
+
+\begin{document}
+\beamertemplatenavigationsymbolsempty
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+
+\begin{frame}{finite-dimensional spectral theory}
+
+\begin{itemize}
+\item these slides are about linear algebra, i.e.~vector spaces of finite dimension, and linear operators on those spaces
+\item one definition of \emph{functional analysis} might be ``the rigorous extension of linear algebra to infinite-dimensional spaces''
+\item the \emph{spectrum} of a square matrix $A$ is its set of eigenvalues
+    \begin{itemize}
+    \item[$\circ$] official definition soon, with reminder about the definition of eigenvalues
+    \item[$\circ$] the spectrum $\sigma(A)$ is a subset of the complex plane $\CC$
+        \begin{itemize}
+        \item graphing $\sigma(A)$ gives a matrix a ``personality''
+        \end{itemize}
+    \end{itemize}
+\item see part II of these slides for the spectral theorem and variations
+\item good references for these slides:
+    \begin{itemize}
+    \item[$\circ$] L.~Trefethen \& D.~Bau, \emph{Numerical Linear Algebra}, SIAM Press 1997
+    \item[$\circ$] G.~Strang, \emph{Introduction to Linear Algebra}, 5th ed., Wellesley-Cambridge Press, 2016
+    \item[$\circ$] G.~Golub \& C.~van Loan, \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press 2013
+    \end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{X}
+
+\begin{itemize}
+\item Y
+\end{itemize}
+\end{frame}
+
+
+\end{document}
+
