@@ -1,0 +1,831 @@
+% Copyright 2010, 2014 Ed Bueler
+
+% based on example (directory) by Till Tantau:
+%   /usr/share/doc/latex-beamer/examples/a-lecture/
+
+\documentclass[10pt,hyperref]{beamer}
+
+\input{twopoint_style.tex}
+
+\newcommand{\ppt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
+\newcommand{\ppx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
+\newcommand{\ppy}[1]{\ensuremath{\frac{\partial #1}{\partial y}}}
+\newcommand{\pp}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\ddx}[1]{\ensuremath{\frac{d #1}{dx}}}
+\renewcommand{\t}[1]{\texttt{#1}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bq}{\mathbf{q}}
+\newcommand{\bU}{\mathbf{U}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bbf}{\mathbf{f}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\Div}{\nabla\cdot}
+\newcommand{\strainrate}{D}
+\newcommand{\devstress}{\tau}
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\pylab}{\textsc{pylab}\xspace}
+\newcommand{\MOP}{\textsc{MOP}\xspace}
+
+\newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
+
+\newcommand{\txtinput}[1]{
+\verbatiminput{#1}%a
+}
+
+\newcommand{\minput}[1]{
+\verbatiminput{#1.m}%a
+}
+
+\newcommand{\centerimage}[2]{\begin{center}
+\includegraphics[width=#1\textwidth]{#2}
+\end{center}}
+
+\newcommand{\minputtiny}[1]{\tiny
+\verbatiminput{#1.m}%a
+\normalsize}
+
+
+\lecture[1]{Two-point Boundary Value Problems: Numerical Approaches}{lecture-text}
+
+\date{February 2014}
+
+
+\begin{document}
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+
+\begin{frame}{abbreviations} 
+
+\begin{itemize}
+\item ODE = ordinary differential equation
+\item PDE = partial differential equation
+\item IVP = initial value problem
+\item BVP = boundary value problem
+\end{itemize}
+\end{frame}
+
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\section[classical IVPs and BVPs]{classical IVPs and BVPs with by-hand solutions}
+
+\begin{frame}{classical ODE problems: IVP vs BVP}
+
+\noindent\emph{Example 1: ODE IVP}.\qquad find $y(x)$ if
+  	$$y'' + 2 y' - 8 y = 0, \qquad y(0)=1, \quad y'(0)=0$$
+\bigskip
+
+\noindent\emph{Example 2: ODE BVP}.\qquad find $y(x)$ if
+  	$$y'' + 2 y' - 8 y = 0, \qquad y(0)=1, \quad y(1)=0$$
+
+\end{frame}
+
+
+\begin{frame}{classical ODE problems: IVP vs BVP}
+
+\small
+\noindent\emph{Example 1: ODE IVP}.\qquad find $y(x)$ if
+  	$$y'' + 2 y' - 8 y = 0, \qquad y(0)=1, \quad y'(0)=0$$
+
+\noindent\emph{Example 2: ODE BVP}.\qquad find $y(x)$ if
+  	$$y'' + 2 y' - 8 y = 0, \qquad y(0)=1, \quad y(1)=0$$
+\normalsize
+
+  \begin{itemize}
+  \item \alert{both problems can be solved by hand}
+  \item in fact, the ODE has constant coefficients so we can find \emph{characteristic polynomial} and \emph{general solution} \dots like this:\quad  if $y(x)=e^{rx}$ then $r^2 + 2 r - 8 = (r+4)(r-2) = 0$ so 
+  $$y(x) = c_1 e^{-4x} + c_2 e^{2x}$$
+  \item \emph{Example 1} gives system $c_1+c_2=1,-4c_1+2c_2=0$ for coefficients; get solution $y(x)=(1/3)e^{-4x}+(2/3)e^{2x}$  % c_2=2/3, c_1=1/3
+  \item \emph{Example 2} gives system $c_1+c_2=1,e^{-4} c_1+ e^2 c_2=0$ for coefficients; get solution $y(x)=(1-e^{-6})^{-1} e^{-4 x} + (1-e^6)^{-1} e^{2x}$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{viewing solns with \Matlab} 
+\small
+\begin{verbatim}
+x = 0:.001:1;
+y1 = exp(-4*x);  y2 = exp(2*x);
+yIVP = (1/3)*y1 + (2/3)*y2;
+yBVP = (1/(1-exp(-6)))*y1 + (1/(1-exp(6)))*y2;
+plot(x,yIVP,x,yBVP),  grid on
+legend('IVP soln','BVP soln')
+\end{verbatim}
+
+\centerimage{0.6}{ivpbvp-crop}
+\end{frame}
+
+
+\begin{frame}{obvious name: ``two-point BVP''} 
+
+
+\normalsize
+
+\begin{itemize}
+\item \emph{Example 2} above is called a ``two-point BVP''
+\item a two-point BVP includes an ODE and the value(s) of the solution at two different locations
+\item the ODE can be of any order, as long as it is at least \emph{two}, because first-order ODEs cannot satisfy two conditions (generally)
+\item \emph{but} there is no guarantee that a two-point BVP can be solved (see below)
+\item we will also consider boundary value problems for PDEs in this course (i.e.~problems including no initial values)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{a standard manipulation of a 2nd order ODE} 
+
+Consider the general linear 2nd-order ODE:
+\begin{equation}\label{genlinearsecond}
+y'' + p(x) y' + q(x) y = r(x)
+\end{equation}
+
+Also consider the general 2nd-order ODE:
+\begin{equation}\label{gensecond}
+y'' = f(x,y,y')
+\end{equation}
+
+\begin{itemize}
+\item \alert{these can be written as systems of coupled 1st-order ODEs}
+\item equation \eqref{genlinearsecond} is equivalent to
+	$$\begin{pmatrix}
+	y' \\ v'
+	\end{pmatrix} = \begin{pmatrix}
+	v \\ - p(x) v - q(x) y + r(x)
+	\end{pmatrix}$$
+\item equation \eqref{gensecond} is equivalent to
+	$$\begin{pmatrix}
+	y' \\ v'
+	\end{pmatrix} = \begin{pmatrix}
+	v \\ f(x,y,v)
+	\end{pmatrix}$$
+\item first order systems are the form in which to apply a numerical ODE solver
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{why IVP are \emph{better} problems than BVPs} 
+
+\begin{itemize}
+\item \alert{IVPs have unique solutions}
+\item we say they are ``well-posed''; specifically:
+
+\begin{theorem}
+ Consider the system of ODEs
+\begin{equation}\label{genode}
+\frac{d\by}{dt} = \bbf(t,\by),
+\end{equation}
+where $\by(t)=(y_1(t),\dots,y_d(t))$ and $\bbf=(f_1,\dots,f_d)$ are vector-valued functions.  If $\bbf$ is continuous for $t$ in an interval around $t_0$ and for $\by$ in some region around $\by_0$, and if $\partial f_i/\partial y_j$ is continuous for the same inputs and for all $i$ and $j$, then the IVP consisting of \eqref{genode} and $\by(t_0)=\by_0$ has a unique solution $\by(t)$ for at least some small interval $t_0-\eps < t < t_0+\eps$ for some $\eps>0$.
+\end{theorem}
+
+\item given comments on last slide, this theorem also covers IVPs for 2nd-order scalar ODEs
+\end{itemize}
+\end{frame}
+
+\begin{frame}{warning about apparently-easy BVPs} 
+
+\noindent\emph{Example 3: ODE BVP}.\qquad find $y(x)$ if
+  	$$y'' + \pi^2 y = 0, \qquad y(0)=1, \quad y(1)=0$$
+
+\begin{itemize}
+\item this turns out to be \alert{impossible} \dots there is no such $y(x)$
+\item in fact, the general solution to the ODE is
+	$$y(x) = c_1 \cos(\pi x) + c_2 \sin(\pi x)$$
+so the first boundary condition implies $c_1=1$
+\item \dots but then the second condition says
+	$$\text{``}\qquad 0 = y(1) = -1 + c_2 \sin(\pi) \qquad \text{''}$$
+and this has no solution because $\sin(\pi)=0$
+\item this is a constant-coefficient problem for which all the ``parts'' are ``well-behaved'' \dots but it is a BVP
+\end{itemize}
+\end{frame}
+
+
+\section[serious problem]{a serious problem: a BVP for equilibrium heat}
+
+
+\begin{frame}{an equilibrium heat example} 
+
+\begin{itemize}
+\item as noted in lecture and by Morton \& Mayers, a PDE like this is a general description of heat flow in a rod:
+\begin{equation}\label{pde}
+\rho c \ppt{u} = \ppx{}\left(k(x) \ppx{u}\right) + r(x) u + s(x)
+\end{equation}
+\item recall that, roughly speaking, $\rho$ is a density, $c$ a specific heat, $k(x)$ a conductivity, $r(x)$ a reaction coefficient, and $s(x)$ is an external source of heat
+\end{itemize}
+\end{frame}
+
+\begin{frame}{an equilibrium heat example, cont} 
+
+\begin{itemize}
+\item \emph{equilibrium} means no change in time; the equilibrium version of \eqref{pde} is this:
+\begin{equation*}
+0 = \ppx{}\left(k(x) \ppx{u}\right) + r(x) u + s(x)
+\end{equation*}
+\item we can use ordinary derivative notation; the equilibrium equation is an ODE:
+\begin{equation}\label{seriousode}
+\left(k(x) u'\right)' + r(x) u = - s(x)
+\end{equation}
+\item suppose the rod has length $L$
+\item example boundary values are \emph{(i)} insulation at the left end and \emph{(ii)} zero temperature at the right end:
+\begin{equation}\label{seriousbcs}
+u'(0)=0, \qquad u(L)=0
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{an equilibrium heat example, cont} 
+
+\begin{itemize}
+\item some concrete choices in my example include $L=3$ and:
+\begin{gather*}
+k(x) = \frac{1}{2} \arctan(20 (x-1)) + 1, \\
+r(x) = r_0 = \frac{1}{2}, \qquad s(x) = e^{-(x-2)^2}
+\end{gather*}
+\end{itemize}
+
+\centerimage{0.7}{nonconstant-crop90}
+\end{frame}
+
+
+\begin{frame}[fragile]{an equilibrium heat example, cont}
+
+\begin{itemize}
+\item code used to produce the previous picture
+\end{itemize}
+\small
+\begin{verbatim}
+L  = 3;
+k  = @(x) 0.5 * atan((x-1.0) * 20.0) + 1.0;
+r0 = 0.5;
+s  = @(x) exp(-(x-2.0).^2);
+
+J = 300;
+dx = L / J;
+x = 0:dx:L;
+plot(x,k(x),x,r0*ones(size(x)),x,s(x))
+grid on,  xlabel x
+legend('k(x)','r(x)=r_0','s(x)')
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}{an equilibrium heat example, cont} 
+
+\begin{itemize}
+\item we have set up a non-constant-coefficient boundary value problem to solve:
+\begin{equation}\label{serious}
+\left(k(x) u'\right)' + r_0 u = - s(x), \qquad u'(0)=0, \quad u(3) = 0
+\end{equation}
+\item $u(x)$ represents the equilibrium distribution of temperature in a rod with these properties:
+  \begin{itemize}
+  \item conductivity $k(x)$: the first third $[0,1]$ is a material with much lower conductivity than the last two-thirds $[2,3]$
+  \item reaction rate $r_0>0$: constant rate of linear-in-temperature heating
+  \item source term $s(x)$: an external heat source concentrated around $x=2$
+  \end{itemize}
+\item \emph{Question}: what is $u(0)$, the temperature at the left end?
+\item I will call this my ``serious problem'', and solve it numerically two different ways
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{plan from here} 
+
+\begin{enumerate}
+\item introduce finite difference approach on really-easy ``toy'' two-point BVP
+\item introduce shooting method on same toy problem
+\item demonstrate both approaches on ``serious problem''
+\end{enumerate}
+\end{frame}
+
+
+\section[finite difference]{finite difference solution of two-point BVPs}
+
+\begin{frame}{finite differences} 
+
+\begin{itemize}
+\item finite difference methods for two-point BVPs generalize to PDEs \dots as demonstrated in the rest of Math 615
+\item here we are just solving ODEs
+\bigskip\bigskip
+
+\item recall:
+	$$\frac{f(x-h) - 2 f(x) + f(x+h)}{h^2} = f''(x) + \frac{f^{(4)}(\nu)}{12} h^2$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example problem} 
+
+\begin{itemize}
+\item consider this easy BVP:
+    $$y'' = 12 x^2, \qquad y(0)=0, \quad y(1) = 0$$
+\item it has exact solution $y(x)=x^4-x$
+\item \alert{please check my last claim}
+\item \alert{make sure you could solve this yourself!}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example: approximated by finite differences} 
+
+\begin{itemize}
+\item cut up the interval $[0,1]$ into $J$ subintervals:
+	$$\Delta x = 1/J$$
+	$$x_j = 0 + (j-1) \Delta x \qquad\quad(j=1,\dots,J+1)$$
+\item note that my indices run from $j=1$ to $j=J+1$
+\item let $Y_j$ be the approximation to $y(x_j)$
+\item for each of $j=2,\dots,J$ we approximate
+    $$y'' = 12 x^2$$
+by
+	$$\frac{Y_{j-1} - 2 Y_j + Y_{j+1}}{\Delta x^2} = 12 x_j^2$$
+\item the boundary conditions are: $Y_1 = 0$, $Y_{J+1} = 0$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example: approximated by finite differences, cont} 
+
+\begin{itemize}
+\item so now we have a linear system of $J+1$ equations in $J+1$ unknowns:
+\begin{align*}
+Y_1 & = 0 \\
+Y_1 - 2 Y_2 + Y_3 &= 12 x_2^2 \Delta x^2 \\
+Y_2 - 2 Y_3 + Y_4 &= 12 x_3^2 \Delta x^2 \\
+\vdots &\qquad \vdots \\
+Y_{J-1} - 2 Y_J + Y_{J+1} &= 12 x_J^2 \Delta x^2 \\
+Y_{J+1} &= 0
+\end{align*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example: as matrix problem} 
+
+\begin{itemize}
+\item this is a matrix problem:
+   $$\begin{bmatrix}
+   1  &  0 &  0 & 0 & \dots & 0 \\
+   1  & -2 &  1 & 0 & \dots & 0 \\
+   0  &  1 & -2 & 1 &       & 0 \\
+   \vdots &&    & \ddots &   &  \\
+      &    &    &  1 &    -2 & 1 \\
+   0  & \dots & &  0 &     0 & 1
+   \end{bmatrix}
+   \begin{bmatrix}
+   Y_1 \\ Y_2 \\ Y_3 \\ \vdots \\ Y_J \\ Y_{J+1}
+   \end{bmatrix}
+   =
+   \begin{bmatrix}
+   0 \\ 12 x_2^2 \Delta x^2 \\ 12 x_3^2 \Delta x^2 \\ \vdots \\ 12 x_J^2 \Delta x^2 \\ 0
+   \end{bmatrix} $$
+\bigskip
+
+
+\item i.e.
+	$$A\,\bY = \bb$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example: as matrix problem in \Octave} 
+
+\begin{itemize}
+\item the matrix $A$ is \emph{tridiagonal}
+\item which is usually true of finite difference methods for two-point boundary value problems for second order ODEs
+\item $A$ has lots of zero entries
+\item use \Matlab's \texttt{sparse} to store it
+\item the \emph{locations} of nonzero entries, and the nonzero values, are stored; this saves space
+\item the backslash command in \Matlab is an ``expert system''
+  \begin{itemize}
+  \item[$\circ$] recognizes sparsity pattern
+  \item[$\circ$] exploits it to speed up matrix/vector operations
+  \end{itemize}
+\item use \texttt{spy} and \texttt{full} to see sparse matrices
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{toy example: as matrix problem in \Octave, cont} 
+
+\begin{itemize}
+\item setting up the matrix problem looks like:
+\small
+\begin{verbatim}
+J = 10;  dx = 1/J;  x = (0:dx:1)';
+b = zeros(J+1,1);
+b(2:J) = 12 * dx^2 * x(2:J).^2;
+A = sparse(J+1,J+1);
+A(1,1) = 1.0;  A(J+1,J+1) = 1.0;
+for j=2:J
+  A(j,[j-1, j, j+1]) = [1, -2, 1];
+end
+\end{verbatim}
+\normalsize
+\item solving the matrix problem looks like:
+\small
+\begin{verbatim}
+Y = A \ b;   % solve A Y = b
+\end{verbatim}
+\normalsize
+\item plot on next page from 
+\small
+\begin{verbatim}
+% also get exact soln on fine grid:
+xf = 0:1/1000:1;  yexact = xf.^4 - xf;
+plot(x,Y,'o','markersize',12,xf,yexact)
+grid on, xlabel x, legend('finite diff','exact')
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example: as matrix problem in \Octave, cont, cont} 
+
+\begin{itemize}
+\item gives result which is better than we have any reason to expect:
+\end{itemize}
+
+\centerimage{0.9}{toyfd-crop90}
+
+\end{frame}
+
+
+
+\begin{frame}{toy example with finite differences: brief analysis} 
+
+\emph{regarding the result on the previous slide}:
+\begin{itemize}
+\item recall the \emph{exact} solution is $y(x) = x^4 - x$
+\item and \small
+	$$\frac{f(x-h) - 2 f(x) + f(x+h)}{h^2} = f''(x) + \frac{f^{(4)}(\nu)}{12} h^2$$
+\normalsize
+\item applied to $f(x)=y(x)$, for which $y^{(4)}(x) = 24$, we see that the finite difference approximation to the second derivative in the ODE $y'' = 12 x^2$ has error at most 
+	$$\frac{y^{(4)}(\nu)}{12} \Delta x^2 = \frac{24}{12} (0.1)^2 = 0.02$$
+because $\Delta x = 0.1$
+\item this is a rare case where the truncation error is known!
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example with finite differences: brief analysis, cont} 
+
+\begin{itemize}
+\item let $e_j = Y_j - y(x_j)$, the \emph{error} we care about
+\item by subtraction,
+	$$\frac{e_{j-1} - 2 e_j + e_{j+1}}{\Delta x^2} = 0.02$$
+and $e_0 = e_{J+1} = 0$
+\item so (after bit of not-too-hard thought)
+	$$e_j = 0.01 x_j (x_j - 1)$$
+\item so
+	$$\max_j |Y_j - y(x_j)| = \max_j |e_j| = 0.0025$$
+\item which explains why the picture a few slides back was good \dots but showed slight errors close to screen resolution
+\end{itemize}
+\end{frame}
+
+
+\section[shooting]{shooting to solve two-point BVPs}
+
+\begin{frame}{toy example problem again: shooting} 
+
+\begin{itemize}
+\item recall this ``toy'' ODE BVP:
+    $$y'' = 12 x^2, \qquad y(0)=0, \quad y(1) = 0$$
+which has exact solution $y(x)=x^4-x$
+\item this time we think: \emph{if only it were an ODE IVP then we could apply a numerical ODE solver like} \Matlab's \texttt{ode45}
+\item indeed, this ODE IVP
+    $$w'' = 12 x^2, \qquad w(0)=0, \quad w'(0) = A$$
+\emph{can} be solved by a numerical ODE solver, for any $A$
+\item solving this ODE IVP involves \alert{``aiming''} by guessing an initial slope $w'(0)=A$
+\item \alert{``hitting the target''} is getting the desired boundary value $w(1)=0$
+\item ``aiming'' and ``hitting the target'' is \emph{shooting}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{toy example shooting, cont} 
+
+\begin{itemize}
+\item for illustrating the method on this easy problem, I'll skip using a numerical ODE solver because the ODE IVP
+    $$w'' = 12 x^2, \qquad w(0)=0, \quad w'(0)=A$$
+has a solution we can get by-hand:
+    $$w(x) = x^4 + A x$$
+\item plotting for $A=-2.5,-1.5,-0.5,0.5,1.5$ gives this figure:
+\end{itemize}
+
+\centerimage{0.65}{toyshoot-crop90}
+\end{frame}
+
+
+\begin{frame}{toy example shooting, cont, cont} 
+
+\begin{itemize}
+\item we have ``aimed'' (by choosing $A$) and ``shot'' five times
+\item a ``shot'' is a computation of the solution to an ODE IVP
+  \begin{itemize}
+  \item[$\circ$] generally this would be a numerical solution
+  \end{itemize}
+\item on previous slide we missed every time
+\item but we have bracketed the correct right-hand boundary condition $y(1)=0$ with the two values $A=-1.5$ and $A=-0.5$
+\item a numerical \emph{equation} solver can refine the search to converge to the correct $A$ value
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{shooting: solving the boundary condition equation} 
+
+\begin{itemize}
+\item recall our ODE BVP
+    $$y'' = 12 x^2, \qquad y(0)=0, \quad y(1)=0$$
+is replaced by this ODE IVP when ``shooting'':
+\begin{equation}\label{shootA}
+w'' = 12 x^2, \qquad w(0)=0, \quad w'(0)=A
+\end{equation}
+\item the $x=1$ endpoint value of $w(x)$ \alert{is a function of $A$}:
+	$$F(A) = \Big(w(1), \text{ where } w \text{ solves \eqref{shootA}}\Big)$$
+\item and so we solve this equation because we want $y(1)=0$:
+	$$F(A) = 0$$
+\item in this easy problem, $w(x)=x^4+Ax$
+\item so we solve $F(A) = 1 + A = 0$ and get $A=-1$ 
+\item generally we solve $F(A)=0$ numerically, e.g.~by the \emph{bisection} or \emph{secant} methods 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{shooting: general strategy for two-point ODE BVPs} 
+
+\begin{itemize}
+\item identify one end of the interval $x=b$ as the target
+\item at the other end $x=a$, identify some additional initial conditions which would give a well-posed ODE IVP
+\item for various guesses of those additional initial conditions, ``shoot'' by solving the corresponding ODE IVP from $x=a$ to $x=b$
+\item ask whether you ``hit the target'' by asking whether the boundary conditions at $x=b$ are satisfied
+\item automate the adjustment process by using an equation solver (e.g.~bisection or secant method) on the equation that says ``the discrepancy between the solution of the ODE IVP at $x=b$ and the desired boundary conditions at $x=b$, as a function of the additional initial condition $A$, should be zero: $F(A)=0$''
+\end{itemize}
+\end{frame}
+
+
+\section[serious example: solved]{a more serious example: solutions}
+
+\begin{frame}{recall the serious example}
+
+\begin{itemize}
+\item recall the ``serious'' non-constant-coefficient BVP:
+\begin{equation}\label{seriousagain}
+\left(k(x) u'\right)' + r_0 u = - s(x), \qquad u'(0)=0, \quad u(3) = 0,
+\end{equation}
+\item $u(x)$ is the equilibrium temperature in a rod
+\item the conductivity $k(x)$ has a big jump at $x=1$ and the heat source $s(x)$ is concentrated near $x=2$:
+\end{itemize}
+
+\centerimage{0.6}{nonconstant-crop90}
+
+\end{frame}
+
+
+\begin{frame}{finite differences: need staggered grid} 
+
+\begin{itemize}
+\item finite difference approach first
+\item as before: $J$ subintervals, $\Delta x = 1/J$, and
+	$$x_j = (j-1) \Delta x \qquad \text{ for } j=1,\dots,J+1$$
+\item let $U_j$ be our finite diff.~approx.~to $u(x_j)$
+\item let $k_j = k(x_j)$ and $s_j = s(x_j)$; we know these exactly
+\item note: if $q(x) = -k(x) u'(x)$, i.e.~Fourier's law for heat flow, then we are solving 
+	$$- q' + r_0 u = -s(x)$$
+\item the finite difference version looks like
+	$$- \frac{q_{j+1/2} - q_{j-1/2}}{\Delta x} + r_0 U_j = - s(x_j)$$
+\item or
+	$$\frac{k(x_{j+1/2}) \frac{U_{j+1} - U_j}{\Delta x} - k(x_{j-1/2}) \frac{U_{j} - U_{j-1}}{\Delta x}}{\Delta x} + r_0 U_j = - s(x_j)$$
+\end{itemize}
+\end{frame}
+
+
+\newcommand{\shalf}{\frac{1}{2}}
+
+\begin{frame}{finite differences: need staggered grid, cont} 
+
+\begin{itemize}
+\item or
+	$$\frac{k_{j+\shalf} (U_{j+1} - U_j) - k_{j-\shalf} (U_{j} - U_{j-1})}{\Delta x^2} + r_0 U_j = - s_j$$
+\item or (clear denominators)
+	$$k_{j+\shalf} (U_{j+1} - U_j) - k_{j-\shalf} (U_{j} - U_{j-1}) + r_0 \Delta x^2 U_j = - s_j \Delta x^2$$
+\item or
+	$$k_{j-\shalf} U_{j-1} - \left(k_{j-\shalf}+k_{j+\shalf} - r_0 \Delta x^2\right) U_j + k_{j+\shalf} U_{j+1} = - s_j \Delta x^2$$
+\item like the ``toy'' example earlier, this last form is a tridiagonal matrix equation $A\bU = \bb$
+\item note we evaluate the conductivity $k(x)$, and the flux $q$, on the staggered grid (i.e.~$x_{j+\shalf}$ and $x_{j-\shalf}$)
+\item the deeper reason \emph{why} we use the staggered grid will be revealed later in class \dots
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{finite differences: remember the boundary conditions} 
+
+\begin{itemize}
+\item recall we have boundary condition $u'(0)=0$
+\item approximate this by 
+	$$\frac{U_2 - U_1}{\Delta x} = 0$$
+\item or 
+	$$- U_1 + U_2 = 0$$
+\item we will see there is a more-accurate way later \dots
+\item also we have $u(L) = 0$ so
+	$$U_{J+1} = 0$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{finite differences for the ``serious problem''} 
+
+\begin{itemize}
+\item now for an actual code: see \texttt{varheatFD.m} online
+\item the ODE setup:
+\scriptsize
+\begin{verbatim}
+L  = 3;
+k  = @(x) 0.5 * atan((x-1.0) * 20.0) + 1.0;
+s  = @(x) exp(-(x-2.0).^2);
+r0 = 0.5;
+
+dx    = L / J;
+x     = (0:dx:L)';             % regular grid
+xstag = ((dx/2):dx:L-(dx/2))'; % staggered grid
+kstag = k(xstag);              % k(x) on staggered grid
+\end{verbatim}
+\normalsize
+\item the matrix problem setup:
+\scriptsize
+\begin{verbatim}
+% right side is J+1 length column vector
+b = [0; - dx^2 * s(x(2:J)); 0];
+
+% matrix is tridiagonal
+A = sparse(J+1,J+1);
+A(1,[1 2]) = [-1.0 1.0];
+for j=1:J-1
+  A(j+1,j)   = kstag(j);
+  A(j+1,j+1) = - kstag(j) - kstag(j+1) + r0 * dx^2; 
+  A(j+1,j+2) = kstag(j+1);
+end
+A(J+1,J+1) = 1.0;
+\end{verbatim}
+\normalsize
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{finite differences for the ``serious problem'', cont} 
+
+\begin{itemize}
+\item it is good to use ``\texttt{spy(A)}'' at this point to see the matrix structure; this is the $J=10$ case
+\end{itemize}
+
+\centerimage{0.55}{spyFD-crop}
+\end{frame}
+
+
+\begin{frame}[fragile]{finite differences for the ``serious problem'', cont, cont} 
+
+\begin{itemize}
+\item the matrix solve:
+\small
+\begin{verbatim}
+U = A \ b;       % soln is J+1 column vector
+\end{verbatim}
+\normalsize
+\bigskip
+
+\item the plot details:
+\small
+\begin{verbatim}
+figure(1)
+plot(x,k(x),'r',x,s(x),'b',...
+     x,U','g*','markersize',3)
+grid on,  xlabel x
+legend('k(x)','s(x)','solution U_j')
+\end{verbatim}
+\normalsize
+\end{itemize}
+\end{frame}
+
+\begin{frame}{finite difference solution to ``serious problem''} 
+
+\begin{itemize}
+\item the picture when $J=60$:
+\end{itemize}
+
+\centerimage{0.7}{resultFD-crop}
+\end{frame}
+
+\begin{frame}{finite difference solution to ``serious problem'', cont} 
+
+\begin{itemize}
+\item recall our concrete goal was to estimate $u(0)$ 
+\item clearly we should try different $J$ values to estimate:
+\medskip
+\begin{center}
+\begin{tabular}{l|r}
+J & estimate of $u(0)$ \\ \hline
+10 & -13.86507 \\
+20 & -7.20263 \\
+60 &  -5.66666 \\
+200 & -5.27443 \\
+1000 & -5.15199 \\
+4000 & -5.12965
+\end{tabular}
+\end{center}
+\bigskip
+
+\item this suggests that $u(0)\approx -5.13$
+\item \emph{How do we know how wrong we are?}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{shooting for the ``serious problem''} 
+
+\begin{itemize}
+\item shooting is implemented in this code online:
+  \begin{itemize}
+  \item \texttt{varheatSHOOT.m}
+  \end{itemize}
+\bigskip
+
+\item the setup:
+\scriptsize
+\begin{verbatim}
+L = 3;
+k = @(x) 0.5 * atan((x-1.0) * 20.0) + 1.0;
+s = @(x) exp(-(x-2.0).^2);
+r0 = 0.5;
+
+% ODE  Y' = G(x,Y)  is described by this right-hand side
+G = @(x,Y) [- Y(2) / k(x);       % Y(1) = u 
+            r0 * Y(1) + s(x)];   % Y(2) = q
+
+% bracket unknown u(0)
+a = -10.0;  % produces u(3) which is too high
+b =   0.0;  %      ... u(3) which is too low
+\end{verbatim}
+\normalsize
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{shooting for the ``serious problem'', cont} 
+
+\begin{itemize}
+\item the \emph{bisection} implementation, which starts from initial bracket $[a,b]=[-10.0,0.0]$:
+\medskip
+
+\small
+\begin{verbatim}
+N = 100;
+for n = 1:N
+  c = (a+b)/2;
+  [xout,Y] = ode45(G,[0.0 3.0],[c; 0.0]);
+  F = Y(end,1);
+  if abs(F) < 1e-12 
+    break  % we are done
+  elseif F >= 0.0 
+    a = c;
+  else
+    b = c;
+  end
+end
+\end{verbatim}
+\normalsize
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{shooting solution to ``serious problem''} 
+
+\begin{itemize}
+\item the picture:
+
+\centerimage{0.7}{resultSHOOT-crop}
+\item default use of \texttt{ode45} gives estimate $u(0)=-5.122257$
+\item  \emph{How do we know how wrong we are?}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{minimal conclusion} 
+
+\begin{itemize}
+\item finite difference and shooting methods give comparable solutions to this  ``serious problem''
+\item closer inspection of the programs above will help understand the methods
+\item better understanding will also follow from doing the exercises on \alert{Assignment \# 5}
+\end{itemize}
+\end{frame}
+
+
+\end{document}

@@ -1,0 +1,130 @@
+\documentclass[12pt]{amsart}
+%prepared in AMSLaTeX, under LaTeX2e
+\addtolength{\oddsidemargin}{-.65in} 
+\addtolength{\evensidemargin}{-.65in}
+\addtolength{\topmargin}{-.4in}
+\addtolength{\textwidth}{1.3in}
+\addtolength{\textheight}{.75in}
+
+\renewcommand{\baselinestretch}{1.05}
+
+\usepackage{verbatim,fancyvrb}
+
+\usepackage{palatino}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{defn}{Definition}
+\newtheorem*{example}{Example}
+\newtheorem*{problem}{Problem}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\mtt}{\texttt}
+\usepackage{alltt,xspace}
+\newcommand{\mfile}[1]
+{\medskip\begin{quote}\scriptsize \begin{alltt}\input{#1.m}\end{alltt} \normalsize\end{quote}\medskip}
+
+\usepackage[final]{graphicx}
+\newcommand{\mfigure}[1]{\includegraphics[height=2.5in,
+width=3.5in]{#1.eps}}
+\newcommand{\regfigure}[2]{\includegraphics[height=#2in,
+keepaspectratio=true]{#1.eps}}
+\newcommand{\widefigure}[3]{\includegraphics[height=#2in,
+width=#3in]{#1.eps}}
+
+\usepackage{amssymb}
+
+\usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
+
+% macros
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\lam}{\lambda}
+\newcommand{\lap}{\triangle}
+
+\newcommand{\ip}[2]{\ensuremath{\left<#1,#2\right>}}
+
+%\renewcommand{\det}{\operatorname{det}}
+\newcommand{\onull}{\operatorname{null}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\range}{\operatorname{range}}
+
+\newcommand{\prob}[1]{\bigskip\noindent\textbf{#1.}\quad }
+\newcommand{\exer}[2]{\prob{Exercise #2 in Lecture #1}}
+
+\newcommand{\pts}[1]{(\emph{#1 pts}) }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{(#1)}\quad }
+\newcommand{\ppart}[1]{\,\textbf{(#1)}\quad }
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+
+\DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,
+frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
+
+
+\begin{document}
+\scriptsize \noindent Math 614 Numerical Linear Algebra (Bueler) \hfill 5 October, 2015
+\normalsize
+
+\bigskip
+
+\Large\centerline{\textbf{Assignment \#5}}
+\large
+\medskip
+
+\centerline{\textbf{Due Wednesday 14 October, 2015 at the start of class}}
+\bigskip
+\normalsize
+
+\thispagestyle{empty}
+
+\bigskip
+There will be no class on Friday 9 October, 2015.  Please read slides at
+
+\medskip
+\centerline{\href{http://bueler.github.io/M614F15/iterative.pdf}{\texttt{bueler.github.io/M614F15/iterative.pdf}}}
+
+\medskip
+
+\prob{P10}  Use \Matlab to compute the $2$-norm condition numbers for systems LS1 and LS2 in the slides.  (\emph{Thereby confirm that these systems have unique solutions which can be well-approximated.})  Find the exact solutions of these systems.  (\emph{For example, use \Matlab any way you want, and then check that solution by-hand.})
+
+\prob{P11}  Write a \Matlab function for Richardson iteration, with first line
+
+\bigskip
+\centerline{\texttt{function z = richardson(A,b,x0,omega,N)}}
+
+\bigskip
+\noindent It should return the $N$th iterate $\bx_N$ as \texttt{z}.  Confirm that it works by showing you get the same $\bx_3$ as on page 4 of the slides.  What is a preferred value for $\omega$ in system LS1?  How many iterations are needed to get 8 digit accuracy for LS1 with $\bx_0=0$ and this preferred value of $\omega$?
+% 22 iterations using omega=0.4 with norm(z-zexact)  [2-norm]
+
+\prob{P12}  Find a small example matrix $A$ which has all zeros on the diagonal but which is invertible.  Find its inverse.
+
+\prob{P13}  Write \emph{two} \Matlab functions for Gauss-Seidel iteration with first lines
+
+\bigskip
+\centerline{\texttt{function z = gs1(A,b,x0,N)}}
+
+\centerline{\texttt{function z = gs2(A,b,x0,N)}}
+
+\bigskip
+\noindent For \texttt{gs1()}, implement formula (7) from the slides by carefully using \Matlab functions \texttt{triu()} and \texttt{tril()} to extract the parts of $A$, and then using backslash.  For \texttt{gs2()} implement (8) by using only scalar arithmetic operations, and \texttt{for} loops.  (I.e.~pretend it is old Fortran.)
+
+Demonstrate that the two versions work identically on LS1 by computing two iterations with each.  How many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?
+% 16 iterations with norm(z-zexact)
+After demonstrating that Gauss-Seidel iteration fails on LS2, compute a spectral radius that explains why it fails.
+%>> max(abs(eig(tril(A2)\triu(A2,1))))
+%ans =     6.85410196624969             ... is >> 1
+
+\prob{P14}  Show that Jacobi iteration converges if $A$ is strictly diagonally-dominant.  (\emph{Hints:  Jacobi iteration converges if and only if $\rho(M) < 1$ for $M = - D^{-1}(L+U)$.  So suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Show then that $M\bv=\lambda\bv$, and the assumption of strict diagonal dominance, shows $|\lambda v_i| < |v_i|$ which shows $|\lambda|<1$.})
+
+\end{document}

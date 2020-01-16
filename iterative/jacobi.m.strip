@@ -1,0 +1,13 @@
+function z = jacobi(A,b,x0,N)
+
+m = size(A,1);
+x = x0;
+xnew = zeros(size(x));
+for k = 1:N
+    for i = 1:m
+        noti = [1:i-1, i+1:m];
+        xnew(i) = (b(i) - A(i,noti) * x(noti)) / A(i,i);
+    end
+    x = xnew;
+end
+z = x;

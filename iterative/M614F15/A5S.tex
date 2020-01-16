@@ -1,0 +1,189 @@
+\documentclass[12pt]{amsart}
+%\pagestyle{empty} 
+\setlength{\topmargin}{0.0in} % usually -0.25in
+\addtolength{\textheight}{0.7in} % usually 1.25in
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{0.95in} %\setlength{\parindent}{0pt}
+
+% macros
+\usepackage{amssymb,xspace,verbatim}
+
+\usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=black, citecolor=red, urlcolor=red]{hyperref}
+
+\usepackage[final]{graphicx}
+\newcommand{\regfigure}[3]{\includegraphics[height=#2in,width=#3in]{#1.eps}}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{lem}{Lemma}
+
+\usepackage{alltt}
+\usepackage{fancyvrb}
+
+\newcommand{\CC}{{\mathbb{C}}}
+\newcommand{\RR}{{\mathbb{R}}}
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\lam}{\lambda}
+
+\newcommand{\ip}[2]{\mathrm{\left<#1,#2\right>}}
+\newcommand{\erf}{\operatorname{erf}}
+
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\range}{\operatorname{range}}
+\newcommand{\Null}{\operatorname{null}}
+
+\newcommand{\cond}{\operatorname{cond}}
+
+\renewcommand{\Re}{\operatorname{Re}}
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\pylab}{\textsc{pylab}\xspace}
+
+\newcommand{\mfile}[1]{
+\bigskip
+\bigskip
+\begin{quote}
+\bigskip
+\VerbatimInput[frame=single,framesep=3mm,label=\fbox{\normalsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\footnotesize]{#1}
+\medskip
+\end{quote}
+}
+
+\DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,
+frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
+
+\newcommand{\textbook}{\textsc{Trefethen \& Bau}}
+
+\newcommand{\prob}[1]{\bigskip\medskip\noindent\large\textbf{#1.} \normalsize}
+\newcommand{\bookprob}[1]{\bigskip\noindent\large\textbf{Exercise #1.} \normalsize}
+
+\newcommand{\ppart}[1]{\textbf{(#1)} }
+\newcommand{\epart}[1]{\medskip\noindent\ppart{#1}}
+
+
+\begin{document}
+\noindent \scriptsize Math 614 Numerical Linear Algebra (Bueler) \hfill 16 October 2015
+
+\bigskip
+\Large\textbf{\centerline{Solutions to Assignment \# 5}}
+
+\thispagestyle{empty}
+\medskip
+
+
+\prob{P10}  Let $A_1 \in \CC^{3\times 3}$ and $A_2 \in \CC^{4\times 4}$ be the matrices in linear systems LS1 and LS2.  The condition numbers are $\cond(A_1)=  2.1$ and $\cond(A_2) = 11.9$.  As is easy to check, the exact solutions of the systems are
+    $$\bx = \begin{bmatrix} 1 \\ 0 \\ 1 \end{bmatrix} \quad \text{ and } \quad \bx = \begin{bmatrix} 1 \\ 0 \\ 2 \\ -1 \end{bmatrix},$$
+respectively.
+
+\prob{P11}  I wrote two programs, one of which generates the matrix and right-hand-side of the system, and the other which implements the Richardson iteration:
+
+\mfile{generateLS.m}
+
+\mfile{richardson.m}
+
+\clearpage
+\newpage
+
+\noindent Running it on the matrix from LS1, and with the other data as on slide 4, gives
+\begin{mVerb}
+>> [A b] = generateLS(1);
+>> x0 = [0 0 0]';
+>> richardson(A,b,x0,1/5,3)
+ans =
+  0.72800
+  0.08800
+  1.09600
+\end{mVerb}
+which is the same as $\bx_3$ on slide 4.
+
+Based on the plot of spectral radii on slide 9, the preferred value of $\omega$ is about $\omega=0.4$.\footnote{One may optimize more, but this is close.}  Note the exact solution is known for LS1, so we can compute accuracy.  With $\omega=0.4$ and $\bx_0=0$, by experimentation (not shown) I find that the first $N$ for which the error $\|\bx_N-\bx\|_2$ is smaller than $10^{-8}$ is $N=22$:
+\begin{mVerb}
+>> x = [1 0 1]';
+>> x22 = richardson(A,b,x0,0.4,22);
+>> norm(x22 - x)
+ans =    7.4138e-09
+\end{mVerb}
+
+
+\prob{P12}  It is easy to generate a $2\times 2$ example:
+    $$A = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}.$$
+This matrix acts by permuting entries: $(A\bx)_1 = x_2$ and $(A\bx)_2=x_1$.  It is its own inverse ($A^{-1} = A$) because $A^2 = I$, but it has zeros on the diagonal.
+
+
+\prob{P13}  I wrote these two codes:
+
+\mfile{gs1.m}
+
+\mfile{gs2.m}
+
+\noindent Note that the second code is a fairly-literal implementation of the corrected version of equation (8) in the slides.  The loop notation ``\texttt{j = [i+1:m 1:i-1]}'' corresponds exactly to the loop indices ``$j>i$'' and ``$j<i$'' in the sums in equation (8).
+
+We check that the two codes generate identical results for the second iterate on the system LS1:
+\begin{mVerb}
+>> gs1(A,b,x0,2)
+ans =
+  0.75000
+  0.00000
+  1.08333
+>> gs2(A,b,x0,2)
+ans =
+  0.75000
+  0.00000
+  1.08333
+\end{mVerb}
+
+Now we use either version to get 8 digit accuracy.  By experimentation (not shown) I find that $N=16$ is the point at which the error is less than $10^{-8}$:
+\begin{mVerb}
+>> x16 = gs1(A,b,x0,16);
+>> norm(x16 - x)
+ans =    7.3544e-09
+\end{mVerb}
+Note this is fewer iterations than the optimized Richardson iteration above.
+
+Finally we fail by explosion, and explain the failure by a spectral radius, on LS2:
+\begin{mVerb}
+>> [A b] = generateLS(2);
+>> x0 = [0 0 0 0]';
+>> gs1(A,b,x0,20)          % N=20 is an example
+ans =
+  -3.4306e+16
+  1.3222e+17
+  -1.6653e+17
+  -3.4306e+16
+>> DL = tril(A);  U = triu(A,1);
+>> max(abs(eig(DL\U)))
+ans =  6.8541
+\end{mVerb}
+The last calculation gives $\rho((D+L)^{-1} U)$, and it is much bigger than 1; compare slide 12.
+
+
+\prob{P14}  Let $M = - D^{-1}(L+U)$ where $A=D+L+U$, $D$ is diagonal, $L$ is strictly lower-triangular, and $U$ is strictly upper-triangular.  Here the nonzero entries of $D,L,U$ are just the corresponding entries of $A$.  Note that if $\bx$ is any vector then
+    $$(M\bv)_i = - D^{-1} \left((L \bx)_i + (U \bx)_i\right) = - a_{ii}^{-1} \left(\sum_{j>i} a_{ij} x_j + \sum_{j<i} a_{ij} x_j\right).$$
+Furthermore, by the Lemma in the slides we know that the Jacobi iteration converges if and only if $\rho(M) < 1$.  We use these ideas to prove the following statement:
+
+\medskip
+If $A$ is strictly diagonally-dominant then the Jacobi iteration converges.
+
+\begin{proof} Suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  We will show $|\lambda|<1$ so that, because $\lambda$ is an arbitrary eigenvalue of $M$, $\rho(M)<1$.
+
+Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Note in particular that $|v_i| > 0$.  Because $A$ is strictly diagonally-dominant, for each $i$ we know that $|a_{ii}| > \sum_{j\ne i} |a_{ij}|$.  Then
+\begin{align*}
+|\lambda| |v_i| &= |(\lambda\bv)_i| = |(M\bv)_i| = \left|- a_{ii}^{-1} \left(\sum_{j>i} a_{ij} v_j + \sum_{j<i} a_{ij} v_j\right)\right| \\
+  &\le |a_{ii}|^{-1} \left(\sum_{j>i} |a_{ij}| |v_j| + \sum_{j<i} |a_{ij}| |v_j|\right) \le |a_{ii}|^{-1} \left(\sum_{j>i} |a_{ij}| |v_i| + \sum_{j<i} |a_{ij}| |v_i|\right) \\
+  &= |v_i| |a_{ii}|^{-1} \sum_{j\ne i} |a_{ij}| < |v_i| |a_{ii}|^{-1} |a_{ii}| = |v_i|.
+\end{align*}
+That is, $|\lambda| |v_i| < |v_i|$ so $|\lambda|<1$.
+\end{proof}
+
+\end{document}
+

@@ -1,0 +1,91 @@
+\documentclass[11pt]{amsart}
+%prepared in AMSLaTeX, under LaTeX2e
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\topmargin}{-.2in}
+\addtolength{\textwidth}{0.8in}
+\addtolength{\textheight}{0.8in}
+\newcommand{\normalspacing}{\renewcommand{\baselinestretch}{1.1}
+        \tiny\normalsize}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{defn}{Definition}
+\newtheorem*{example}{Example}
+\newtheorem*{problem}{Problem}
+\newtheorem*{remark}{Remark}
+
+\usepackage{amssymb,verbatim,alltt,xspace}
+\newcommand{\mtt}{\texttt}
+\newcommand{\mfile}[1]
+{\medskip\begin{quote}\scriptsize \begin{alltt}\input{#1.m}\end{alltt} \normalsize\end{quote}\medskip}
+
+\usepackage[final]{graphicx}
+\newcommand{\mfigure}[1]{\includegraphics[height=3in,
+keepaspectratio=true]{#1.eps}}
+
+\usepackage{hyperref}
+
+% macros
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\Div}{\nabla\cdot}
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\ip}[2]{\ensuremath{\left<#1,#2\right>}}
+\newcommand{\lam}{\lambda}
+\newcommand{\lap}{\triangle}
+\newcommand{\tb}{\textsc{Morton \& Mayers}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\pexer}[2]{\bigskip\noindent\textbf{#1.} Exercise #2 in \tb.}
+\newcommand{\prob}[1]{\medskip\noindent\textbf{#1.} }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{(#1)} }
+\newcommand{\note}[1]{[\scriptsize #1 \normalsize]}
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\pylab}{\textsc{pylab}\xspace}
+\newcommand{\MOP}{\textsc{MOP}\xspace}
+
+\begin{document}
+\scriptsize \noindent Math 615 Numerical Analysis of DEs \hfill  Bueler; \today
+\normalsize\bigskip
+
+\Large\centerline{\textbf{Assignment \#5}}
+\normalsize\bigskip
+
+\centerline{Due \emph{Monday, 10 March, 2014} at start of class.}
+\bigskip
+\thispagestyle{empty}
+\normalspacing
+
+\begin{center}
+\emph{See the online slides:} \quad \url{http://bueler.github.io/M615S14/twopoint.pdf}
+\end{center}
+\bigskip
+
+\prob{1}  Solve by-hand this ODE BVP to find $y(x)$:
+	$$y'' + 2 y' + 2 y = 0, \qquad y(0)=1, \quad y(1)=0.$$
+
+\prob{2}  Recall Example 3 in the slides, an impossible-to-solve ODE BVP.  Nonetheless there are some values of $A$ in the following problem which allow a solution:  find $y(x)$ if
+  	$$y'' + \pi^2 y = 0, \qquad y(0)=1, \quad y(1)=A.$$
+What values of $A$ are allowed?  For an allowed value of $A$, how many solutions are there?
+
+\prob{3} Apply the finite difference method to solve this ODE BVP:
+	$$y'' + \sin(5 x) y = x^3 - x, \qquad y(0)=0, \quad y(1) = 0.$$
+In particular, use $J=10$, $\Delta x = 1/J$, and $x_j = j \Delta x$ for $j=0,\dots,J$.  Construct the system
+	$$A\,\by = \bb$$
+where $A$ is a $(J+1)\times(J+1)$ matrix, $\by = \{Y_j\}$ approximates the unknowns $\{y(x_j)\}$, and $\bb$ contains the right-side function ``$x^3-x$'' in the ODE.  Arrange things so that the first equation in the system represents the boundary condition ``$y(0)=0$'' and the last equation the condition ``$y(1)=0$''.  The remaining equations in the system will each hold finite difference approximations of the ODE.  Solve the system to find $\by$, and plot it appropriately.  Write a couple of sentences addressing how to know qualitatively and quantitatively whether your answer is a good approximation.
+
+\prob{4} (\emph{The goal of this problem is to understand shooting.  You will not quite put all parts together, however.  With the knowledge from this problem you could make a program like} \texttt{varheatSHOOT.m}, \emph{which uses bisection to converge to an $A$ value so that $u(1)\approx -2$ to many-digit-accuracy.})
+
+Consider the nonlinear ODE BVP
+	$$u'' + u^3 = 0, \qquad u(0) = 1, \quad u(1) = -2.$$
+This problem is well-suited to the shooting method.  Specifically, write a \Matlab program that uses an ODE solver to solve the following ODE IVP
+	$$u'' + u^3 = 0, \qquad u(0) = 1, \quad u'(0) = A$$
+for each of the eleven values $A=-5,-4,\dots,4,5$.  Plot all eleven solutions, and identify on the plot\footnote{Use the \texttt{text} command in \Matlab.} the $A$ value for each curve.  Which two $A$ values make the computed value $u(1)$ bracket the desired boundary condition value ``$u(1)=-2$''?
+
+\end{document}
+

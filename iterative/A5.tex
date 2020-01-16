@@ -1,0 +1,150 @@
+\documentclass[12pt]{amsart}
+%prepared in AMSLaTeX, under LaTeX2e
+\addtolength{\oddsidemargin}{-.65in} 
+\addtolength{\evensidemargin}{-.65in}
+\addtolength{\topmargin}{-.4in}
+\addtolength{\textwidth}{1.3in}
+\addtolength{\textheight}{.75in}
+
+\renewcommand{\baselinestretch}{1.05}
+
+\usepackage{verbatim,fancyvrb}
+
+\usepackage{palatino}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{defn}{Definition}
+\newtheorem*{example}{Example}
+\newtheorem*{problem}{Problem}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\mtt}{\texttt}
+\usepackage{alltt,xspace}
+\newcommand{\mfile}[1]
+{\medskip\begin{quote}\scriptsize \begin{alltt}\input{#1.m}\end{alltt} \normalsize\end{quote}\medskip}
+
+\usepackage[final]{graphicx}
+\newcommand{\mfigure}[1]{\includegraphics[height=2.5in,
+width=3.5in]{#1.eps}}
+\newcommand{\regfigure}[2]{\includegraphics[height=#2in,
+keepaspectratio=true]{#1.eps}}
+\newcommand{\widefigure}[3]{\includegraphics[height=#2in,
+width=#3in]{#1.eps}}
+
+\usepackage{amssymb}
+
+\usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
+
+% macros
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\lam}{\lambda}
+\newcommand{\lap}{\triangle}
+
+\newcommand{\ip}[2]{\ensuremath{\left<#1,#2\right>}}
+
+%\renewcommand{\det}{\operatorname{det}}
+\newcommand{\onull}{\operatorname{null}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\range}{\operatorname{range}}
+
+\newcommand{\prob}[1]{\bigskip\noindent\textbf{#1.}\quad }
+\newcommand{\exer}[2]{\prob{Exercise #2 in Lecture #1}}
+
+\newcommand{\pts}[1]{(\emph{#1 pts}) }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{(#1)}\quad }
+\newcommand{\ppart}[1]{\,\textbf{(#1)}\quad }
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+
+\DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,
+frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
+
+
+\begin{document}
+\scriptsize \noindent Math 615 Numerical Analysis of Differential Equations (Bueler) \hfill 24 February, 2017
+\normalsize
+
+\bigskip
+
+\Large\centerline{\textbf{Assignment \#5}}
+\large
+\medskip
+
+\centerline{\textbf{Due Wednesday 8 March, 2017 at the start of class}}
+\bigskip
+\normalsize
+
+\thispagestyle{empty}
+
+\bigskip
+There will be no lectures on Monday 27 February through Friday 3 March, because I am traveling to a conference.  This Assignment is designed to be done based on the slides at:
+
+\medskip
+\centerline{\href{http://bueler.github.io/M615S17/iterative.pdf}{\texttt{bueler.github.io/M615S17/iterative.pdf}}}
+
+\medskip
+\noindent Please read sections 4.1, 4.2 in the textbook after you read the slides.
+
+\medskip
+
+\prob{P17}  \ppart{a}  Use \Matlab, etc.~to compute the $2$-norm condition numbers for systems LS1 and LS2 in the slides.  (\emph{Thereby confirm that these systems have unique solutions which can be well-approximated.})
+
+\epart{b}  Write a \Matlab function for Richardson iteration, with signature
+
+\bigskip
+\centerline{\texttt{function z = richardson(A,b,x0,N,omega)}}
+
+\bigskip
+\noindent It should return the $N$th iterate $\bx_N$ as \texttt{z}.  Confirm that it works by showing you get the same $\bx_3$ as on page 4 of the slides.
+
+\epart{c}  How many iterations are needed to get 8 digit accuracy for LS1 with $\bx_0=0$ and using the preferred value of $\omega$?  How many iterations for $\omega = 0.1$ and $\omega = 0.5$?
+
+
+\prob{P18}  \ppart{a}  Write \Matlab functions which do $N$ iterations of the Jacobi and Gauss-Seidel (GS) methods:
+
+\medskip
+\centerline{\texttt{function z = jacobi(A,b,x0,N)}}
+
+\centerline{\texttt{function z = gs(A,b,x0,N)}}
+
+\medskip
+\noindent For each one use the entries of $A$ directly.  That is, for \texttt{jacobi()}, implement formula (5) from the slides, and for \texttt{gs()} implement (7).  Your implementation of GS should use less memory than Jacobi; make sure this is clear.  (\emph{Do not split $A=D-L-U$ and store those parts; this is a waste of memory and misses the point.  You may, however, check your implementation by such splitting.})
+
+\epart{b}  For $N$ iterations on an $m\times m$ matrix $A$, how many operations (additions, subtractions, multiplications, divisions) does Jacobi require?  GS?  (\emph{Your answers will be in terms of $N$ and $m$.})
+
+\epart{c}  For each method, how many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?  (\emph{Clearly state what norm you are using, and how you interpret ``8 digit accuracy''.})  After demonstrating that GS fails on LS2, compute an explanatory spectral radius.
+
+
+\clearpage \newpage
+\prob{P19}  Show that Jacobi iteration converges if $A$ is strictly diagonally-dominant.  (\emph{Hints:  Jacobi iteration converges if and only if $\rho(M) < 1$ for $M = - D^{-1}(L+U)$.  So suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Show then that $M\bv=\lambda\bv$, and the assumption of strict diagonal dominance, shows $|\lambda v_i| < |v_i|$ which shows $|\lambda|<1$.})
+
+
+\prob{P20}  \ppart{a}  In the solution to \textbf{P16} (Assignment \#4) I wrote a code called \texttt{poisson.m}.  Using that code, or a similar starting point, write a code \texttt{fishy.m} which solves
+    $$u_{xx} + u_{yy} + p u_x + q u = f(x,y)$$
+on the unit square, with zero boundary values, with grid spacing $\Delta x=\Delta y = h = 1/(m+1)$, all as before.  Here $p,q$ are real numbers.  Decide on how you will check correctness of your code; explain your verification process in a few sentences and a figure.
+
+\epart{b}  \texttt{fishy.m} sets up and solves a linear system $AU=F$.\renewcommand{\labelenumi}{\emph{\roman{enumi}})}
+\begin{enumerate}
+\item If you fix $p=0$, for what $q$ values is $A$ strictly diagonally-dominant (SDD)?
+\item If you fix $q=0$, for what $p$ values is $A$ SDD?
+\item If you fix $q=-1$, for what $p$ and $h$ values is $A$ SDD?
+\end{enumerate}
+(\emph{This part can be answered based on the FD formulas you used in part} \textbf{(a)}.  \emph{You don't need to run} \texttt{fishy.m} \emph{to answer this part}.)
+
+\epart{c}  Apply Gauss-Seidel (GS) to the problem solved in part \textbf{(a)}.  For each of $m=5$ and $m=50$ find \emph{nonzero} values $p,q$ where Gauss-Seidel does converge and does not converge?  When convergence happens, list the number of iterations to get 8 digit accuracy.  (\emph{Perhaps design your code to either use backslash or} \texttt{gs.m} \emph{to solve $AU=F$, according to an optional argument.  Part} \textbf{(b)} \emph{will provide guidance on the rest of this part, but note that SDD is only a \emph{sufficient} condition for convergence.})
+
+\epart{d}  Gauss elimination on an $k\times k$ matrix requires $\frac{2}{3} k^3$ operations.  (\emph{This is close enough to the exact count for this problem.})  On the matrices produced by \texttt{fishy.m}, at what number of iterations would GS require just as much work as Gauss elimination?
+
+\end{document}

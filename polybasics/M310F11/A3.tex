@@ -1,0 +1,121 @@
+\documentclass[12pt]{amsart}
+%prepared in AMSLaTeX, under LaTeX2e
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\topmargin}{-.6in}
+\addtolength{\textwidth}{1.0in}
+\addtolength{\textheight}{0.9in}
+\newcommand{\normalspacing}{\renewcommand{\baselinestretch}{1.1}
+        \tiny\normalsize}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{defn}{Definition}
+\newtheorem*{example}{Example}
+\newtheorem*{problem}{Problem}
+\newtheorem*{remark}{Remark}
+
+\usepackage{amssymb,fancyvrb,alltt,xspace}
+
+\usepackage{hyperref}
+
+\usepackage{palatino}
+
+
+
+\usepackage[final]{graphicx}
+
+% macros
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\Div}{\nabla\cdot}
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\ip}[2]{\ensuremath{\left<#1,#2\right>}}
+\newcommand{\lam}{\lambda}
+\newcommand{\lap}{\triangle}
+\newcommand{\RR}{\mathbb{R}}
+
+\newcommand{\prob}[1]{\bigskip\noindent\large\textbf{#1}.\,\normalsize }
+\newcommand{\ppart}[1]{\textbf{(#1)}\,\, }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{(#1)}\,\, }
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\MO}{\Matlab/\Octave}
+
+
+\begin{document}
+\scriptsize \noindent Math 310 Numerical Analysis, Fall 2011 \hfill (Bueler; created \today)
+\normalsize\bigskip
+
+\Large\centerline{\textbf{Assignment \#3}}
+\normalsize\medskip
+
+\large
+\centerline{\textbf{Due Monday 3 October at start of class.}}
+\normalsize\bigskip
+\thispagestyle{empty}
+
+\renewcommand{\baselinestretch}{0.5}  \tiny\normalsize
+\begin{quote}\small
+These exercises are not based on the course textbook (Epperson).  Instead, you should read the online slides at
+  \begin{center}
+  \url{http://www.dms.uaf.edu/~bueler/polybasics.pdf}
+  \end{center}
+\normalsize
+\end{quote}
+\normalspacing
+
+\bigskip
+
+\prob{1}  Consider these three points:  $\{(1,1),\, (3.5,7), \,(4,5)\}$.  Find the polynomial $P(x)$ of degree 2 which passes through these points.  Do this three different ways, by using
+
+\epart{a} the Vandermonde matrix method,
+
+\epart{b} the Newton form and its triangular matrix method, and
+
+\epart{c} the Lagrange form.
+
+\medskip\noindent\emph{Comment}.  In the parts above you may use \MO to do the computations, including solving linear systems using the backslash operation.  Please make sure to show me the entries in the matrices in parts \textbf{(a)} and \textbf{(b)}, however.  Also show me the Lagrange polynomials in part \textbf{(c)} before you combine them to give $P(x)$.
+
+\epart{d}  Now show, by hand, that the polynomials in parts \textbf{(a)}, \textbf{(b)}, and \textbf{(c)} are all identical.  For instance, you can put the answers from parts \textbf{(b)} and \textbf{(c)} in standard (monomial) form, as you presumably already did for part \textbf{(a)}.
+
+\prob{2}  Write a short \MO program which generates 7 random points and then uses the \MO command \texttt{vander} to construct the polynomial $P(x)$ through these points.  Specifically, do this to generate the points:
+\begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
+  x = randn(1,7)
+  y = randn(1,7)
+\end{Verbatim}
+Your program should print out the coefficients in some clear manner.  Then, in a figure similar to the one on the ``did we solve the problem?'' slide, plot both the polynomial and the points it goes through.
+
+\emph{Practical comment}.  Once you have generated the figure you can either print from the \Matlab figure window or put it into a printable PDF by the command
+
+\small \texttt{>> print -dpdf myfigure.pdf}
+
+\prob{3}  \ppart{a} Solve this triangular system by hand:
+$$\begin{array}{lcl}
+3x & = & 9 \\
+-x - 6y    & = & -3 \\
+2x + 5y - 3 z & = & 0
+\end{array}$$
+
+\epart{b} Write down simplified formulas for each component $x_i,\, i=1,2,\dots,n,\,$ of the solution of the general triangular linear system:
+$$\begin{array}{lcl}
+a_{11} x_1      &=& b_1 \\
+a_{21} x_1 + a_{22} x_2     &=& b_2 \\
+a_{31} x_1 + a_{32} x_2 + a_{33} x_3  &=& b_3 \\
+\vdots  \qquad \qquad \vdots & & \vdots \\
+a_{n1} x_1 + a_{n2} x_2 + a_{n3} x_3 + \dots + a_{nn} x_n &=& b_n
+\end{array}$$
+Each successive formula can use the already computed $x_i$ values.  (\emph{That is, write down the solution in the right order, using what you have already computed.})
+
+\prob{4}  Consider the function $f(x) = 2^x$ on the interval $[0.5,3]$.
+
+\epart{a} Find the polynomial $P(x)$ of degree 5 which interpolates $f(x)$ at the 6 equally-spaced points $0.5,1,1.5,2,2.5,3$.  (\emph{You may use any of the three methods, Vandermonde, Newton, or Lagrange.  Your choice.})
+
+\epart{b} Find the polynomial $Q(x)$ of degree 5 which interpolates $f(x)$ at the 6 \emph{un}equally-spaced points $0.5,0.7,1.1,1.5,2,3$.  (\emph{Again, use the method of your choice.})
+
+\epart{c} Make a plot which shows $f(x)$, $P(x)$, and $Q(x)$ on the same axes.  By eyeball, and between $P(x)$ and $Q(x)$, which is more accurate as an approximation of $f(x)$?
+
+\medskip\noindent\emph{Comment}.  On all parts of this problem, use \MO as effectively as you wish.
+\end{document}
+
