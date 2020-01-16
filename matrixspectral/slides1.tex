@@ -55,6 +55,8 @@
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
+\newcommand{\ip}[2]{\left<#1,#2\right>}
+
 \newcommand{\MS}{\alert{MAKE SURE}\xspace}
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
@@ -118,14 +120,32 @@
 \end{frame}
 
 
-\begin{frame}{inner product}
+\begin{frame}{$\CC^n$ is an inner product space}
 
 \begin{itemize}
-\item we use complex numbers from now on, because eigenvalues can be complex even if matrices are real
-\item $\CC^n$ is the space of all column vectors with complex entries
-\item an \emph{inner product} on $\CC^n$ is a bilinear function with a positivity property:
+\item we use complex numbers $\CC$ from now on
     \begin{itemize}
-    \item[$\circ$] if $\bv,\bw \in \CC^n$ FIXME
+    \item[$\circ$] why? because eigenvalues can be complex even for a real matrix
+    \item[$\circ$] if $\alpha=x+iy \in \CC$ then $\overline{\alpha} = x-iy$ is the \emph{conjugate}
+    \end{itemize}
+\item let $\CC^n$ be the space of (column) vectors with complex entries:
+\footnotesize
+    $$\bv = \begin{bmatrix}
+    v_1 \\ \vdots \\ v_n
+    \end{bmatrix}$$
+\normalsize
+\vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] the \emph{hermitian conjugate} of $\bv\in\CC^n$ is the row vector $\bv^* = [\overline{v_1},\dots,\overline{v_n}]$
+    \end{itemize}
+\item an \emph{inner product} on $\CC^n$ is a bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
+    $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC$$
+with symmetry and positivity properties: \quad for all $\bu,\bv,\bw \in \CC^n$ and $\alpha\in \CC$,
+    \begin{itemize}
+    \item[$\circ$] $\ip{\bw}{\bu+\bv} = \ip{\bw}{\bu} + \ip{\bw}{\bv}$
+    \item[$\circ$] $\ip{\bu}{\alpha\bv} = \alpha \ip{\bu}{\bu}$
+    \item[$\circ$] $\ip{\bu}{\bv} = \overline{\ip{\bv}{\bu}}$
+    \item[$\circ$] $\ip{\bu}{\bu} \ge 0$ and $\ip{\bu}{\bu}=0$ if and only if $\bu=0$
     \end{itemize}
 \end{itemize}
 \end{frame}
