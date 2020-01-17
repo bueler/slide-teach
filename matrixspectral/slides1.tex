@@ -79,7 +79,7 @@
 
 \title{Finite-dimensional spectral theory}
 
-\subtitle{part I: from inner product spaces through the Schur decomposition}
+\subtitle{part I: $\CC^n$ as an inner-product space to the Schur decomposition}
 
 \author{Ed Bueler}
 
@@ -99,17 +99,17 @@
 
 \begin{itemize}
 \item these slides are about linear algebra, i.e.~vector spaces of finite dimension, and linear operators on those spaces
-\item one definition of \emph{functional analysis} might be ``the rigorous extension of linear algebra to infinite-dimensional spaces''
+\item one definition of \emph{functional analysis} might be: ``rigorous extension of linear algebra concepts to infinite-dimensional topological vector spaces''
 \item the \emph{spectrum} of a square matrix $A$ is its set of eigenvalues
     \begin{itemize}
-    \item[$\circ$] official definition soon, with reminder about the definition of eigenvalues
+    \item[$\circ$] there will be reminder below about the definition of eigenvalues
     \item[$\circ$] the spectrum $\sigma(A)$ is a subset of the complex plane $\CC$
         \begin{itemize}
-        \item graphing $\sigma(A)$ gives a matrix a ``personality''
+        \item graphing $\sigma(A)$ gives the matrix $A$ a ``personality''
         \end{itemize}
     \end{itemize}
 \item see part II of these slides for the spectral theorem and variations
-\item good references for these slides:
+\item good references for both parts of these slides:
     \begin{itemize}
     \item[$\circ$] L.~Trefethen \& D.~Bau, \emph{Numerical Linear Algebra}, SIAM Press 1997
     \item[$\circ$] G.~Strang, \emph{Introduction to Linear Algebra}, 5th ed., Wellesley-Cambridge Press, 2016
@@ -138,12 +138,12 @@
     \begin{itemize}
     \item[$\circ$] the \emph{hermitian conjugate} of $v\in\CC^n$ is the row vector $v^* = [\overline{v_1},\dots,\overline{v_n}]$
     \end{itemize}
-\item an \emph{inner product} on $\CC^n$ is a bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
+\item an \emph{inner product} on $\CC^n$ is an almost-bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
     $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC$$
 with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\alpha\in \CC$,
     \begin{itemize}
     \item[$\circ$] $\ip{w}{u+v} = \ip{w}{u} + \ip{w}{v}$
-    \item[$\circ$] $\ip{u}{\alpha v} = \alpha \ip{u}{u}$
+    \item[$\circ$] $\ip{u}{\alpha v} = \alpha \ip{u}{v}$
     \item[$\circ$] $\ip{u}{v} = \overline{\ip{v}{u}}$
     \item[$\circ$] $\ip{u}{u} \ge 0$ and $\ip{u}{u}=0$ if and only if $u=0$
     \end{itemize}
@@ -151,25 +151,45 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \end{frame}
 
 
-\begin{frame}{bases and invertibility}
+\begin{frame}{$\CC^n$ as an inner product space, cont.}
+
+\begin{itemize}
+\item note that the inner product is conjugate linear in the first position and linear in the second:
+    \begin{itemize}
+    \item[$\circ$] $\ip{u+v}{w} = \overline{\ip{w}{u+v}} = \overline{\ip{w}{u}} + \overline{\ip{w}{v}} = \ip{u}{w} + \ip{v}{w}$
+    \item[$\circ$] $\ip{\alpha u}{v} =\overline{\ip{v}{\alpha u}} = \overline{\alpha} \overline{\ip{v}{u}} =\overline{\alpha} \ip{u}{v}$
+    \end{itemize}
+\item but the inner product is not abstract; it is just a matrix product on $\CC^n$:
+    $$\ip{u}{v} = u^* v = \begin{bmatrix}
+    \overline{u_1} & \cdots & \overline{u_n}
+    \end{bmatrix} \begin{bmatrix}
+    v_1 \\ \vdots \\ v_n
+    \end{bmatrix}$$
+\item \dots the slides below are a reminder of how matrix products and the Hermitian conjugate ($u^*$) work
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{bases and matrices}
 
 \begin{itemize}
 \item a (finite) set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is \emph{linearly-dependent} if there exist scalars $\alpha_i \in \CC$, not all zero, so that $\alpha_1 v_1 + \dots + \alpha_m v_m = 0$
     \begin{itemize}
     \item[$\circ$] a set of vectors is \emph{linearly-independent} if it is not linearly-dependent
     \end{itemize}
-\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ \emph{span} $\CC^n$ if for any $w\in \CC^n$ there exist scalars $\alpha_i$ so that $w = \alpha_1 v_1 + \dots + \alpha_m v_m$
+\item a finite set of vectors $\{v_i\}_{i=1}^m$ \emph{span} $\CC^n$ if for any $w\in \CC^n$ there exist scalars $\alpha_i$ so that $w = \alpha_1 v_1 + \dots + \alpha_m v_m$
 \item \textbf{Lemma.}  If $\{v_i\}_{i=1}^m$ is linearly-independent then each $v_i$ is nonzero and $m \le n$.  If $\{v_i\}_{i=1}^m$ spans $\CC^n$ then $m \ge n$.
-\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if they are linearly-independent and span $\CC^n$
+\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if the set is linearly-independent and it spans $\CC^n$
     \begin{itemize}
     \item[$\circ$] by the Lemma, $m=n$
     \end{itemize}
-\item a function $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha Au + \beta Av$
+\item a function $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha A(u) + \beta A(v)$
     \begin{itemize}
-    \item[$\circ$] we call such a function a \emph{linear operator}
+    \item[$\circ$] we call such a function a \emph{linear operator} and we write $Au=A(u)$
     \item[$\circ$] given a basis, one may represent a linear operator as a (square) \emph{matrix}
+    \item[$\circ$] matrix multiplication is just function composition
     \end{itemize}
-\item a linear operator $A$ is \emph{invertible} if there exists a linear operator $B$ so that $AB=BA=I$.
+\item a matrix $A$ is \emph{invertible} if there exists a matrix $B$ so that $AB=BA=I$
 \item \textbf{Lemma.} A matrix is invertible if and only if its columns form a basis.
 \end{itemize}
 \end{frame}
