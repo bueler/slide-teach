@@ -126,7 +126,7 @@
 \item we use complex numbers $\CC$ from now on
     \begin{itemize}
     \item[$\circ$] why? because eigenvalues can be complex even for a real matrix
-    \item[$\circ$] if $\alpha=x+iy \in \CC$ then $\overline{\alpha} = x-iy$ is the \emph{conjugate}
+    \item[$\circ$] recall: if $\alpha=x+iy \in \CC$ then $\overline{\alpha} = x-iy$ is the \emph{conjugate}
     \end{itemize}
 \item let $\CC^n$ be the space of (column) vectors with complex entries:
 \footnotesize
@@ -135,9 +135,6 @@
     \end{bmatrix}$$
 \normalsize
 \vspace{-2mm}
-    \begin{itemize}
-    \item[$\circ$] the \emph{hermitian conjugate} of $v\in\CC^n$ is the row vector $v^* = [\overline{v_1},\dots,\overline{v_n}]$
-    \end{itemize}
 \item an \emph{inner product} on $\CC^n$ is an almost-bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
     $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC$$
 with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\alpha\in \CC$,
@@ -151,7 +148,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \end{frame}
 
 
-\begin{frame}{$\CC^n$ as an inner product space, cont.}
+\begin{frame}{$\CC^n$ is an inner product space, cont.}
 
 \begin{itemize}
 \item note that the inner product is conjugate linear in the first position and linear in the second:
@@ -159,13 +156,18 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] $\ip{u+v}{w} = \overline{\ip{w}{u+v}} = \overline{\ip{w}{u}} + \overline{\ip{w}{v}} = \ip{u}{w} + \ip{v}{w}$
     \item[$\circ$] $\ip{\alpha u}{v} =\overline{\ip{v}{\alpha u}} = \overline{\alpha} \overline{\ip{v}{u}} =\overline{\alpha} \ip{u}{v}$
     \end{itemize}
-\item but the inner product is not abstract; it is just a matrix product on $\CC^n$:
-    $$\ip{u}{v} = u^* v = \begin{bmatrix}
+\item an inner product $\ip{\cdot}{\cdot} : \CC^n \times \CC^n \to \CC$ induces a \emph{norm} $\|\cdot\|:\CC^n \to \RR$:
+    $$\|u\| = \sqrt{\ip{u}{u}}$$
+\item the \emph{hermitian transpose} of $v\in\CC^n$ is the row vector $v^* = [\overline{v_1},\dots,\overline{v_n}]$
+\item the inner product we usually use is just a matrix product on $\CC^n$:
+\begin{align*}
+\ip{u}{v} &= u^* v \\
+          &= \begin{bmatrix}
     \overline{u_1} & \cdots & \overline{u_n}
     \end{bmatrix} \begin{bmatrix}
     v_1 \\ \vdots \\ v_n
-    \end{bmatrix}$$
-\item \dots the slides below are a reminder of how matrix products and the Hermitian conjugate ($u^*$) work
+    \end{bmatrix}
+\end{align*}
 \end{itemize}
 \end{frame}
 
@@ -190,14 +192,39 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] matrix multiplication is just function composition
     \end{itemize}
 \item a matrix $A$ is \emph{invertible} if there exists a matrix $B$ so that $AB=BA=I$
-\item \textbf{Lemma.} A matrix is invertible if and only if its columns form a basis.
+\item \textbf{Lemma.} A matrix is invertible if and only if its columns form a basis
 \end{itemize}
 \end{frame}
 
-\begin{frame}{X}
+
+\begin{frame}{adjoints, orthonormal bases, and unitary matrices}
 
 \begin{itemize}
-\item Y
+\item the \emph{hermitian transpose} or \emph{adjoint} of a matrix $A\in \CC^{m\times n}$ is $A^* \in \CC^{n\times m}$:
+    $$A = \begin{bmatrix}
+    a_{11} & a_{12} & \dots & a_{1n} \\
+    a_{21} & a_{22} & \dots & a_{2n} \\
+    \vdots &        &       & \vdots \\
+    a_{m1} & a_{m2} & \dots & a_{mn} \end{bmatrix}
+    \quad \to \quad
+    A^* = \begin{bmatrix}
+    \overline{a_{11}} & \overline{a_{21}} & \dots & \overline{a_{m1}} \\
+    \overline{a_{12}} & \overline{a_{22}} &       & \overline{a_{m2}} \\
+    \vdots            &                   &       & \vdots \\
+    \overline{a_{1n}} & \overline{a_{2n}} & \dots & \overline{a_{mn}} \end{bmatrix}$$
+\item a basis $\{v_i\}_{i=1}^n$ of $\CC^n$ is \emph{orthonormal} (ON) if
+\small
+    $$\ip{v_i}{v_j} = \begin{cases} 1, & i=j \\ 0, & i\ne j \end{cases}$$
+\normalsize
+\vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] note $\|v_i\|=1$
+    \end{itemize}
+\item a matrix $U$ is \emph{unitary} if $U^* U = I$
+\item \textbf{Lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
+    \begin{itemize}
+    \item[\emph{Proof.}] the entries of the matrix product are inner products between the rows of the left factor and the columns of the right factor
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
