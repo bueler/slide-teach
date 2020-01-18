@@ -2,14 +2,10 @@
 
 \documentclass[10pt,hyperref]{beamer}
 
-\mode<presentation>
-{
+\mode<presentation>{
   \usetheme{Madrid}
-
   \usecolortheme{beaver}
-
-  \setbeamercovered{transparent}
-  
+  \setbeamercovered{transparent}  
   \setbeamerfont{frametitle}{size=\large}
 }
 
@@ -24,7 +20,7 @@
 % does not look nice, try deleting the line with the fontenc.
 
 \usepackage{empheq}
-\usepackage{animate}
+%\usepackage{animate}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
 \usepackage{hyperref}
@@ -57,7 +53,9 @@
 
 \newcommand{\ip}[2]{\left<#1,#2\right>}
 
+\newcommand{\trefmatrixtwo}[2]{\left[\begin{array}{c|c|c} & & \\ #1 & \dots & #2 \\ & & \end{array}\right]}
 \newcommand{\trefmatrixthree}[3]{\left[\begin{array}{c|c|c|c} & & & \\ #1 & #2 & \dots & #3 \\ & & & \end{array}\right]}
+\newcommand{\trefmatrixgroups}[4]{\left[\begin{array}{c|c|c|c|c|c} & & & & & \\ #1 & \dots & #2 & #3 & \dots & #4 \\ & & & & & \end{array}\right]}
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
@@ -136,7 +134,7 @@
     \end{bmatrix}$$
 \normalsize
 \vspace{-2mm}
-\item an \emph{inner product} on $\CC^n$ is an almost-bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
+\item \textbf{definition.} an \emph{inner product} on $\CC^n$ is an almost-bilinear (\emph{sesquilinear}\footnote{This word is kind of a joke.  It means ``$1\frac{1}{2}$ linear".}) function
     $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC$$
 with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\alpha\in \CC$,
     \begin{itemize}
@@ -181,10 +179,10 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] a set of vectors is \emph{linearly-independent} if it is not linearly-dependent
     \end{itemize}
 \item a finite set of vectors $\{v_i\}_{i=1}^m$ \emph{span} $\CC^n$ if for any $w\in \CC^n$ there exist scalars $\alpha_i$ so that $w = \alpha_1 v_1 + \dots + \alpha_m v_m$
-\item \textbf{Lemma.}  If $\{v_i\}_{i=1}^m$ is linearly-independent then each $v_i$ is nonzero and $m \le n$.  If $\{v_i\}_{i=1}^m$ spans $\CC^n$ then $m \ge n$.
-\item a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if the set is linearly-independent and it spans $\CC^n$
+\item \textbf{lemma.}  If $\{v_i\}_{i=1}^m$ is linearly-independent then each $v_i$ is nonzero and $m \le n$.  If $\{v_i\}_{i=1}^m$ spans $\CC^n$ then $m \ge n$.
+\item \textbf{definition.} a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if the set is linearly-independent and it spans $\CC^n$
     \begin{itemize}
-    \item[$\circ$] by the Lemma, $m=n$
+    \item[$\circ$] by the lemma, $m=n$
     \end{itemize}
 \item a function $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha A(u) + \beta A(v)$
     \begin{itemize}
@@ -193,7 +191,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] matrix multiplication is just function composition
     \end{itemize}
 \item a matrix $A$ is \emph{invertible} if there exists a matrix $B$ so that $AB=BA=I$
-\item \textbf{Lemma.} A matrix is invertible if and only if its columns form a basis
+\item \textbf{lemma.} A matrix is invertible if and only if its columns form a basis
 \end{itemize}
 \end{frame}
 
@@ -222,9 +220,9 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] ``ortho'' means $\ip{v_i}{v_j}=0$ if $i\ne j$ and ``normal'' means $\|v_i\|=1$
     \end{itemize}
 \item a matrix $U$ is \emph{unitary} if $U^* U = I$
-\item \textbf{Lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
+\item \textbf{lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
     \begin{itemize}
-    \item[\emph{Proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$.
+    \item[\emph{proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$.
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -318,7 +316,7 @@ ans =
 \end{frame}
 
 
-\begin{frame}{Gram-Schmit versus QR}
+\begin{frame}{Gram-Schmidt versus QR}
 
 \begin{itemize}
 \item the Gram-Schmidt formulas are of the form
@@ -348,23 +346,62 @@ where $\alpha_i=\|\tilde v\|$ is a normalization constant and $\beta_{ji}=\ip{v_
 
 \medskip
 \footnotesize
-\item note: numerical QR is by Householder method, not Gram-Schmidt, for stability reasons
+\item note: numerical QR uses Householder method, not Gram-Schmidt, for stability reasons
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{technique: extend given ON vectors to ON basis}
+\begin{frame}{technique: extend to an ON basis}
 
 \begin{itemize}
-\item a key technique in finite-dimensional linear algebra, for proofs related to eigenvalues and spectra, is to take $m$ ON vectors, where $m<n$, and extend them to an ON basis of $n$ vectors
-\item FIXME
+\item a key technique for proofs related to the spectral theorem is to extend $m<n$ ON vectors to an ON basis
+\item let $\{e_i\}_{i=1}^n$ be the standard basis of $\CC^n$, with $(e_i)_j = \delta_{ij}$
+\item \textbf{method.} given ON vectors $\{u_1,\dots,u_m\}$, for $1 \le m<n$, apply the Gram-Schmidt process to
+    $$w_1=u_1, \quad \dots \quad w_m=u_m, \quad w_{m+1}=e_1, \quad \dots \quad w_{m+n}=e_n$$
+
+\vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] note: this set of $m+n$ vectors does indeed span $\CC^n$!
+    \item[$\circ$] the first $m$ steps of G.-S. are trivial, but after that there will be discarded vectors because $\|\tilde v\|=0$
+    \item[$\circ$] result is ON set $\{v_i\}_{i=1}^n$ where first $m$ vectors were given
+    \end{itemize}
+\item as matrices, if $\hat Q$ has ON columns then we can build a unitary matrix:
+\small
+    $$\hat Q = \trefmatrixtwo{u_1}{u_m} \quad \to \quad Q = \trefmatrixgroups{u_1}{u_m}{v_{m+1}}{v_n}$$
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{X}
+\begin{frame}{eigenvalues and eigenvectors}
 
 \begin{itemize}
+\item \textbf{definition.}  given a square matrix $A \in \CC^{n\times n}$, with real or complex entries, a vector $v\in\CC^n$ is an \emph{eigenvector} if $v\ne 0$ and if there exists $\lambda\in \CC$, an \emph{eigenvalue}, so that
+    $$A v = \lambda v$$
+\item \textbf{definition.}  the \emph{spectrum} $\sigma(A)$ of a matrix $A \in \CC^{n\times n}$ is the set of its eigenvalues
+\item \textbf{lemma.} if $A \in \CC^{n\times n}$ then $\sigma(A)$ is nonempty, and furthermore $\lambda\in\sigma(M)$ if and only if $\det(\lambda I - A)=0$
+    \begin{itemize}
+    \item[proof.] 
+   $$\lambda\in\sigma(A) \, \iff \, \exists \text{ nonzero soln.~to } (\lambda I - A) v = 0 \, \iff \, \det(\lambda I - A)=0,$$
+and $p(\lambda) = \det(\lambda I - A)$ is a polynomial, which has a root $\lambda\in\CC$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{hermitian matrices and their eigenvalues}
+
+\begin{itemize}
+\item Y
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigendecompositions}
+
+\begin{itemize}
+\item note: that if $v_1,\dots,v_m$ are eigenvectors with eigenvalues $\lambda_1,\dots,\lambda_i$ then we can collect these facts as
+    $$A \trefmatrixtwo{v_1}{v_m} =  \trefmatrixtwo{v_1}{v_m} \begin{bmatrix} \lambda_1 & & \\ & \ddots & \\ & & \lambda_m \end{bmatrix}$$
+or \quad $A V = V \Lambda$ \quad where $\Lambda$ is an $m\times m$ diagonal matrix
 \item Y
 \end{itemize}
 \end{frame}
