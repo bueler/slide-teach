@@ -391,7 +391,22 @@ and $p(\lambda) = \det(\lambda I - A)$ is a polynomial, which has a root $\lambd
 \begin{frame}{hermitian matrices and their eigenvalues}
 
 \begin{itemize}
-\item Y
+\item \textbf{definition.} $A \in \CC^{n\times n}$ is \emph{hermitian} if $A^*=A$
+    \begin{itemize}
+    \item[$\circ$] also called \emph{self-adjoint}
+    \item[$\circ$] if $A$ is hermitian then $\ip{v}{Aw} = \ip{A^* v}{w} = \ip{A v}{w}$ for all $v,w\in\CC^n$
+    \item[$\circ$] if $A$ has real entries then the same condition is $A^\top=A$, and $A$ is \emph{symmetric}
+    \end{itemize}
+\item \textbf{lemma.} if $A$ is hermitian and $\lambda \in \sigma(A)$ then $\lambda$ is real
+    \begin{itemize}
+    \item[proof.] a classic exercise \dots for you to do
+    \end{itemize}
+\item \textbf{lemma.} if $A$ is hermitian and $v,w \in \CC^n$ are eigenvectors associated to distinct eigenvalues then $v,w$ are orthogonal
+    \begin{itemize}
+    \item[proof.] a classic exercise: if $Av=\lambda v$ and $Aw=\mu w$ then $\lambda,\mu$ are real so
+    $$(\lambda-\mu) \ip{v}{w} = \ip{\lambda v}{w} - \ip{v}{\mu w} = \ip{Av}{w} - \ip{v}{Aw} = \ip{v}{Aw} - \ip{v}{Aw} = 0,$$
+and we have assumed $\lambda-\mu \ne 0$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -399,10 +414,17 @@ and $p(\lambda) = \det(\lambda I - A)$ is a polynomial, which has a root $\lambd
 \begin{frame}{eigendecompositions}
 
 \begin{itemize}
-\item note: that if $v_1,\dots,v_m$ are eigenvectors with eigenvalues $\lambda_1,\dots,\lambda_i$ then we can collect these facts as
+\item note: for any $A\in\CC^{n\times n}$, if $v_1,\dots,v_m$ are eigenvectors with eigenvalues $\lambda_1,\dots,\lambda_m$ then we can collect the statements $A v_i=\lambda_i v_i$ as
+\small
     $$A \trefmatrixtwo{v_1}{v_m} =  \trefmatrixtwo{v_1}{v_m} \begin{bmatrix} \lambda_1 & & \\ & \ddots & \\ & & \lambda_m \end{bmatrix}$$
-or \quad $A V = V \Lambda$ \quad where $\Lambda$ is an $m\times m$ diagonal matrix
-\item Y
+\normalsize
+\item equivalently, if $V$ has columns $v_i$ and $\Lambda$ is an $m\times m$ diagonal matrix,
+    $$A V = V \Lambda$$
+\item \underline{if} $V$ is square and invertible then we have a decompostition of $A$:
+    $$A = V \Lambda V^{-1}$$
+\item why does this matter?  often $A$ is iterated, or a polynomial is applied:
+    $$A^k = (V \Lambda V^{-1})^k = V \Lambda V^{-1}V \Lambda V^{-1}\dots V \Lambda V^{-1} = V \Lambda^k V^{-1}$$
+    $$p(A) = V\, p(\Lambda) V^{-1}$$
 \end{itemize}
 \end{frame}
 
