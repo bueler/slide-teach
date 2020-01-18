@@ -57,7 +57,7 @@
 
 \newcommand{\ip}[2]{\left<#1,#2\right>}
 
-\newcommand{\MS}{\alert{MAKE SURE}\xspace}
+\newcommand{\trefmatrixthree}[3]{\left[\begin{array}{c|c|c|c} & & & \\ #1 & #2 & \dots & #3 \\ & & & \end{array}\right]}
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
@@ -79,7 +79,7 @@
 
 \title{Finite-dimensional spectral theory}
 
-\subtitle{part I: $\CC^n$ as an inner-product space to the Schur decomposition}
+\subtitle{part I: from $\CC^n$ to the Schur decomposition}
 
 \author{Ed Bueler}
 
@@ -107,6 +107,7 @@
         \begin{itemize}
         \item graphing $\sigma(A)$ gives the matrix $A$ a ``personality''
         \end{itemize}
+    \item[$\circ$] the plural of spectrum is \emph{spectra}
     \end{itemize}
 \item see part II of these slides for the spectral theorem and variations
 \item good references for both parts of these slides:
@@ -151,7 +152,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \begin{frame}{$\CC^n$ is an inner product space, cont.}
 
 \begin{itemize}
-\item note that the inner product is conjugate linear in the first position and linear in the second:
+\item note that the inner product is conjugate linear in the first position:
     \begin{itemize}
     \item[$\circ$] $\ip{u+v}{w} = \overline{\ip{w}{u+v}} = \overline{\ip{w}{u}} + \overline{\ip{w}{v}} = \ip{u}{w} + \ip{v}{w}$
     \item[$\circ$] $\ip{\alpha u}{v} =\overline{\ip{v}{\alpha u}} = \overline{\alpha} \overline{\ip{v}{u}} =\overline{\alpha} \ip{u}{v}$
@@ -234,7 +235,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \begin{itemize}
 \item given a set of nonzero vectors $\{w_i\}_{i=1}^m$ we can generate new orthonormal vectors which span the same subspace
     \begin{itemize}
-    \item[$\circ$] if the set spans $\CC^n$ then the result is an ON basis
+    \item[$\circ$] if the original set spans $\CC^n$ then the result is an ON basis
     \end{itemize}
 \item formulas:
 \begin{align*}
@@ -249,7 +250,8 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] exception: if $\tilde v=0$ at any stage then we ignore that $w_i$ and skip to $w_{i+1}$
     \item[$\circ$] if the set $\{w_i\}_{i=1}^m$ spans $\CC^n$ ($m\ge n$) then the result $\{v_i\}_{i=1}^n$ is an ON basis
     \end{itemize}
-\item exercises: 1) prove that $\{v_i\}$ are ON; 2) prove that a vector can be written as a linear combination of the $w_i$ if and only if you can do it for the $v_i$
+\item one may prove that the set  is ON
+\item one may prove that $\operatorname{span}\{v_i\} = \operatorname{span}\{w_i\}$
 \item notice the triangular structure
 \end{itemize}
 \end{frame}
@@ -282,7 +284,7 @@ R =
 \end{Verbatim}
     \begin{itemize}
     \item[$\circ$] \texttt{qr(A)} essentially computes the Gram-Schmidt process
-    \item[$\circ$] what is $R$? \dots more below
+    \item[$\circ$] more on $R$ below
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -292,7 +294,7 @@ R =
 \frametitle{Gram-Schmidt process: example 2}
 
 \begin{itemize}
-\item what is this \Matlab calculation doing?:
+\item what is this \Matlab calculation\footnote{example from Trefethen \& Bau} doing?:
 
 \medskip
 \begin{Verbatim}[fontsize=\scriptsize]
@@ -316,12 +318,57 @@ ans =
 \end{frame}
 
 
+\begin{frame}{Gram-Schmit versus QR}
+
+\begin{itemize}
+\item the Gram-Schmidt formulas are of the form
+\small
+    $$\alpha_i v_i = w_i - \sum_{j=1}^{i-1} \beta_{ji} v_j$$
+\normalsize
+where $\alpha_i=\|\tilde v\|$ is a normalization constant and $\beta_{ji}=\ip{v_j}{w_i}$
+\item moving the $v_i$ to the left, and writing vectors as columns gives
+\small
+    $$\trefmatrixthree{v_1}{v_2}{v_m}
+      \begin{bmatrix} \alpha_1 & \beta_{12} & \beta_{13} & \dots & \beta_{1m} \\
+                      0        & \alpha_2   & \beta_{23} &       & \beta_{2m} \\
+                      \vdots   &            &            & \ddots & \vdots \\
+                      0        & 0          & \dots      &       & \alpha_m \end{bmatrix}
+      = \trefmatrixthree{w_1}{w_2}{w_m}$$
+\normalsize
+\item this is a ``reduced'' QR decomposition
+    $$\hat Q \hat R = A$$
+
+\vspace{-1mm}
+    \begin{itemize}
+    \item[$\circ$] $A$ is $n\times m$ and contains the original vectors $w_i$,
+    \item[$\circ$] $\hat Q$ is the same size and contains the ON vectors $v_i$,
+    \item[$\circ$] and  $\hat R$ is (upper-) right-triangular and $m\times m$, thus small if $m\ll n$
+    \end{itemize}
+\item if $m=n$ and columns of $A$ span $\CC^n$ ($A$ has \emph{full rank}) then $Q$ is unitary
+
+\medskip
+\footnotesize
+\item note: numerical QR is by Householder method, not Gram-Schmidt, for stability reasons
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{technique: extend given ON vectors to ON basis}
+
+\begin{itemize}
+\item a key technique in finite-dimensional linear algebra, for proofs related to eigenvalues and spectra, is to take $m$ ON vectors, where $m<n$, and extend them to an ON basis of $n$ vectors
+\item FIXME
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{X}
 
 \begin{itemize}
 \item Y
 \end{itemize}
 \end{frame}
+
 
 \begin{frame}{X}
 
