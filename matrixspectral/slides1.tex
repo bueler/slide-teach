@@ -214,17 +214,112 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \overline{a_{1n}} & \overline{a_{2n}} & \dots & \overline{a_{mn}} \end{bmatrix}$$
 \item a basis $\{v_i\}_{i=1}^n$ of $\CC^n$ is \emph{orthonormal} (ON) if
 \small
-    $$\ip{v_i}{v_j} = \begin{cases} 1, & i=j \\ 0, & i\ne j \end{cases}$$
+    $$\ip{v_i}{v_j} =v_i^* v_j = \delta_{ij} = \begin{cases} 1, & i=j \\ 0, & i\ne j \end{cases}$$
 \normalsize
 \vspace{-2mm}
     \begin{itemize}
-    \item[$\circ$] note $\|v_i\|=1$
+    \item[$\circ$] ``ortho'' means $\ip{v_i}{v_j}=0$ if $i\ne j$ and ``normal'' means $\|v_i\|=1$
     \end{itemize}
 \item a matrix $U$ is \emph{unitary} if $U^* U = I$
 \item \textbf{Lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
     \begin{itemize}
-    \item[\emph{Proof.}] the entries of the matrix product are inner products between the rows of the left factor and the columns of the right factor
+    \item[\emph{Proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$.
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Gram-Schmidt process}
+
+\begin{itemize}
+\item given a set of nonzero vectors $\{w_i\}_{i=1}^m$ we can generate new orthonormal vectors which span the same subspace
+    \begin{itemize}
+    \item[$\circ$] if the set spans $\CC^n$ then the result is an ON basis
+    \end{itemize}
+\item formulas:
+\begin{align*}
+\tilde v &= w_1 \quad \to & v_1 &= \tilde v/\|\tilde v\| \\
+\tilde v &= w_2 - \ip{v_1}{w_2} v_1 \quad \to & v_2 &= \tilde v/\|\tilde v\| \\
+\tilde v &= w_3 - \ip{v_1}{w_3} v_1 - \ip{v_2}{w_3} v_2 \quad \to & v_3 &= \tilde v/\|\tilde v\| \\
+\tilde v &= w_4 - \ip{v_1}{w_4} v_1 - \ip{v_2}{w_4} v_2 - \ip{v_3}{w_4} v_3 \quad \to & v_4 &= \tilde v/\|\tilde v\| \\
+&\vdots & &\vdots
+\end{align*}
+\vspace{-4mm}
+    \begin{itemize}
+    \item[$\circ$] exception: if $\tilde v=0$ at any stage then we ignore that $w_i$ and skip to $w_{i+1}$
+    \item[$\circ$] if the set $\{w_i\}_{i=1}^m$ spans $\CC^n$ ($m\ge n$) then the result $\{v_i\}_{i=1}^n$ is an ON basis
+    \end{itemize}
+\item exercises: 1) prove that $\{v_i\}$ are ON; 2) prove that a vector can be written as a linear combination of the $w_i$ if and only if you can do it for the $v_i$
+\item notice the triangular structure
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Gram-Schmidt process: example 1}
+
+\begin{itemize}
+\item suppose we have $m=3$ vectors in $\CC^3$:
+\small
+    $$w_1 = \begin{bmatrix} 9 \\ 3 \\ 4 \end{bmatrix}, \quad w_2 = \begin{bmatrix} 1 \\ 6 \\ 9 \end{bmatrix}, \quad w_3 = \begin{bmatrix} 6 \\ 7 \\ 3 \end{bmatrix}$$
+\normalsize
+\item applying the formulas on the previous slide:
+\small
+    $$v_1 = \begin{bmatrix} 0.87416 \\ 0.29139 \\ 0.38851 \end{bmatrix}, \quad v_2 = \begin{bmatrix} -0.48456 \\ 0.46984 \\ 0.73787 \end{bmatrix}, \quad v_3 = \begin{bmatrix} -0.03247 \\ 0.83327 \\ -0.55191 \end{bmatrix}$$
+\normalsize
+\item compare this \Matlab calculation:
+\begin{Verbatim}[fontsize=\scriptsize]
+>> A = [9 1 6; 3 6 7; 4 9 3];
+>> [Q,R] = qr(A)
+Q =
+    -0.87416     0.48456    0.032465
+    -0.29139    -0.46984    -0.83327
+    -0.38851    -0.73787     0.55191
+R =
+     -10.296     -6.1191     -8.4502
+           0     -8.9753     -2.5952
+           0           0     -3.9824
+\end{Verbatim}
+    \begin{itemize}
+    \item[$\circ$] \texttt{qr(A)} essentially computes the Gram-Schmidt process
+    \item[$\circ$] what is $R$? \dots more below
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Gram-Schmidt process: example 2}
+
+\begin{itemize}
+\item what is this \Matlab calculation doing?:
+
+\medskip
+\begin{Verbatim}[fontsize=\scriptsize]
+>> x = (-1:.01:1)';
+>> A = [ones(201,1), x, x.^2, x.^3, x.^4];
+>> size(A)
+ans =
+         201           5
+>> [Q,R] = qr(A,0);
+>> size(Q)
+ans =
+         201           5
+>> plot(x,Q),  xlabel x
+\end{Verbatim}
+
+\vspace{-15mm}
+\hfill \includegraphics[width=0.5\textwidth]{figs/legendre} \quad 
+
+\item the plot shows Legendre polynomials up to degree 4
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{X}
+
+\begin{itemize}
+\item Y
 \end{itemize}
 \end{frame}
 
