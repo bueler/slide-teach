@@ -170,8 +170,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \end{itemize}
 \end{frame}
 
-
-\begin{frame}{bases and matrices}
+\begin{frame}{linear-dependence, space, basis}
 
 \begin{itemize}
 \item a (finite) set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is \emph{linearly-dependent} if there exist scalars $\alpha_i \in \CC$, not all zero, so that $\alpha_1 v_1 + \dots + \alpha_m v_m = 0$
@@ -184,14 +183,23 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \begin{itemize}
     \item[$\circ$] by the lemma, $m=n$
     \end{itemize}
-\item a function $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha A(u) + \beta A(v)$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{linear operators and matrices}
+
+\begin{itemize}
+\item \textbf{definition.}  $A:\CC^n \to \CC^n$ is \emph{linear} if $A(\alpha u+\beta v) = \alpha A(u) + \beta A(v)$
     \begin{itemize}
     \item[$\circ$] we call such a function a \emph{linear operator} and we write $Au=A(u)$
-    \item[$\circ$] given a basis, one may represent a linear operator as a (square) \emph{matrix}
+    \end{itemize}
+\item given a basis, one may represent a linear operator as a (square) \emph{matrix}
+    \begin{itemize}
     \item[$\circ$] matrix multiplication is just function composition
     \end{itemize}
-\item a matrix $A$ is \emph{invertible} if there exists a matrix $B$ so that $AB=BA=I$
-\item \textbf{lemma.} A matrix is invertible if and only if its columns form a basis
+\item \textbf{definition.} $A$ is \emph{invertible} if there exists $B$ so that $AB=BA=I$
+\item \textbf{lemma.} matrix $A$ is invertible if and only if its columns form a basis
 \end{itemize}
 \end{frame}
 
@@ -199,7 +207,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
 \begin{frame}{adjoints, orthonormal bases, and unitary matrices}
 
 \begin{itemize}
-\item the \emph{hermitian transpose} or \emph{adjoint} of a matrix $A\in \CC^{m\times n}$ is $A^* \in \CC^{n\times m}$:
+\item \textbf{definition.} the \emph{hermitian transpose} or \emph{adjoint} of $A\in \CC^{m\times n}$ is $A^* \in \CC^{n\times m}$:
     $$A = \begin{bmatrix}
     a_{11} & a_{12} & \dots & a_{1n} \\
     a_{21} & a_{22} & \dots & a_{2n} \\
@@ -211,7 +219,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \overline{a_{12}} & \overline{a_{22}} &       & \overline{a_{m2}} \\
     \vdots            &                   &       & \vdots \\
     \overline{a_{1n}} & \overline{a_{2n}} & \dots & \overline{a_{mn}} \end{bmatrix}$$
-\item a basis $\{v_i\}_{i=1}^n$ of $\CC^n$ is \emph{orthonormal} (ON) if
+\item \textbf{definition.} a basis $\{v_i\}_{i=1}^n$ of $\CC^n$ is \emph{orthonormal} (ON) if
 \small
     $$\ip{v_i}{v_j} =v_i^* v_j = \delta_{ij} = \begin{cases} 1, & i=j \\ 0, & i\ne j \end{cases}$$
 \normalsize
@@ -219,7 +227,7 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \begin{itemize}
     \item[$\circ$] ``ortho'' means $\ip{v_i}{v_j}=0$ if $i\ne j$ and ``normal'' means $\|v_i\|=1$
     \end{itemize}
-\item a matrix $U$ is \emph{unitary} if $U^* U = I$
+\item \textbf{definition.} a matrix $U$ is \emph{unitary} if $U^* U = I$
 \item \textbf{lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
     \begin{itemize}
     \item[\emph{proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$.
@@ -248,75 +256,13 @@ with symmetry and positivity properties: \quad for all $u,v,w \in \CC^n$ and $\a
     \item[$\circ$] exception: if $\tilde v=0$ at any stage then we ignore that $w_i$ and skip to $w_{i+1}$
     \item[$\circ$] if the set $\{w_i\}_{i=1}^m$ spans $\CC^n$ ($m\ge n$) then the result $\{v_i\}_{i=1}^n$ is an ON basis
     \end{itemize}
-\item one may prove that the set  is ON
-\item one may prove that $\operatorname{span}\{v_i\} = \operatorname{span}\{w_i\}$
+\item one may prove that the set $\{v_i\}$ is ON and that $\operatorname{span}\{v_i\} = \operatorname{span}\{w_i\}$
 \item notice the triangular structure
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}[fragile]
-\frametitle{Gram-Schmidt process: example 1}
-
-\begin{itemize}
-\item suppose we have $m=3$ vectors in $\CC^3$:
-\small
-    $$w_1 = \begin{bmatrix} 9 \\ 3 \\ 4 \end{bmatrix}, \quad w_2 = \begin{bmatrix} 1 \\ 6 \\ 9 \end{bmatrix}, \quad w_3 = \begin{bmatrix} 6 \\ 7 \\ 3 \end{bmatrix}$$
-\normalsize
-\item applying the formulas on the previous slide:
-\small
-    $$v_1 = \begin{bmatrix} 0.87416 \\ 0.29139 \\ 0.38851 \end{bmatrix}, \quad v_2 = \begin{bmatrix} -0.48456 \\ 0.46984 \\ 0.73787 \end{bmatrix}, \quad v_3 = \begin{bmatrix} -0.03247 \\ 0.83327 \\ -0.55191 \end{bmatrix}$$
-\normalsize
-\item compare this \Matlab calculation:
-\begin{Verbatim}[fontsize=\scriptsize]
->> A = [9 1 6; 3 6 7; 4 9 3];
->> [Q,R] = qr(A)
-Q =
-    -0.87416     0.48456    0.032465
-    -0.29139    -0.46984    -0.83327
-    -0.38851    -0.73787     0.55191
-R =
-     -10.296     -6.1191     -8.4502
-           0     -8.9753     -2.5952
-           0           0     -3.9824
-\end{Verbatim}
-    \begin{itemize}
-    \item[$\circ$] \texttt{qr(A)} essentially computes the Gram-Schmidt process
-    \item[$\circ$] more on $R$ below
-    \end{itemize}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Gram-Schmidt process: example 2}
-
-\begin{itemize}
-\item what is this \Matlab calculation\footnote{example from Trefethen \& Bau} doing?:
-
-\medskip
-\begin{Verbatim}[fontsize=\scriptsize]
->> x = (-1:.01:1)';
->> A = [ones(201,1), x, x.^2, x.^3, x.^4];
->> size(A)
-ans =
-         201           5
->> [Q,R] = qr(A,0);
->> size(Q)
-ans =
-         201           5
->> plot(x,Q),  xlabel x
-\end{Verbatim}
-
-\vspace{-15mm}
-\hfill \includegraphics[width=0.5\textwidth]{figs/legendre} \quad 
-
-\item the plot shows Legendre polynomials up to degree 4
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Gram-Schmidt versus QR}
+\begin{frame}{Gram-Schmidt \underline{is} QR}
 
 \begin{itemize}
 \item the Gram-Schmidt formulas are of the form
@@ -351,10 +297,67 @@ where $\alpha_i=\|\tilde v\|$ is a normalization constant and $\beta_{ji}=\ip{v_
 \end{frame}
 
 
+\begin{frame}[fragile]
+\frametitle{Gram-Schmidt process: example 1}
+
+\begin{itemize}
+\item suppose we have $m=3$ vectors in $\CC^3$:
+\small
+    $$w_1 = \begin{bmatrix} 9 \\ 3 \\ 4 \end{bmatrix}, \quad w_2 = \begin{bmatrix} 1 \\ 6 \\ 9 \end{bmatrix}, \quad w_3 = \begin{bmatrix} 6 \\ 7 \\ 3 \end{bmatrix}$$
+\normalsize
+\item applying the formulas on the previous slide:
+\small
+    $$v_1 = \begin{bmatrix} 0.87416 \\ 0.29139 \\ 0.38851 \end{bmatrix}, \quad v_2 = \begin{bmatrix} -0.48456 \\ 0.46984 \\ 0.73787 \end{bmatrix}, \quad v_3 = \begin{bmatrix} -0.03247 \\ 0.83327 \\ -0.55191 \end{bmatrix}$$
+\normalsize
+\item compare this \Matlab calculation:
+\begin{Verbatim}[fontsize=\scriptsize]
+>> A = [9 1 6; 3 6 7; 4 9 3];
+>> [Q,R] = qr(A)
+Q =
+    -0.87416     0.48456    0.032465
+    -0.29139    -0.46984    -0.83327
+    -0.38851    -0.73787     0.55191
+R =
+     -10.296     -6.1191     -8.4502
+           0     -8.9753     -2.5952
+           0           0     -3.9824
+\end{Verbatim}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Gram-Schmidt process: example 2}
+
+\begin{itemize}
+\item what is this \Matlab calculation doing?:
+
+\medskip
+\begin{Verbatim}[fontsize=\scriptsize]
+>> x = (-1:.01:1)';
+>> A = [ones(201,1), x, x.^2, x.^3, x.^4];
+>> size(A)
+ans =
+         201           5
+>> [Q,R] = qr(A,0);
+>> size(Q)
+ans =
+         201           5
+>> plot(x,Q),  xlabel x
+\end{Verbatim}
+
+\vspace{-15mm}
+\hfill \includegraphics[width=0.5\textwidth]{figs/legendre} \quad 
+
+\item the plot shows Legendre polynomials up to degree 4
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{technique: extend to an ON basis}
 
 \begin{itemize}
-\item a key technique for proofs related to the spectral theorem is to extend $m<n$ ON vectors to an ON basis
+\item a key technique for proofs related to the spectral theorem (part II) is to extend $m<n$ ON vectors to an ON basis
 \item let $\{e_i\}_{i=1}^n$ be the standard basis of $\CC^n$, with $(e_i)_j = \delta_{ij}$
 \item \textbf{method.} given ON vectors $\{u_1,\dots,u_m\}$, for $1 \le m<n$, apply the Gram-Schmidt process to
     $$w_1=u_1, \quad \dots \quad w_m=u_m, \quad w_{m+1}=e_1, \quad \dots \quad w_{m+n}=e_n$$
@@ -375,9 +378,13 @@ where $\alpha_i=\|\tilde v\|$ is a normalization constant and $\beta_{ji}=\ip{v_
 \begin{frame}{eigenvalues and eigenvectors}
 
 \begin{itemize}
-\item \textbf{definition.}  given a square matrix $A \in \CC^{n\times n}$, with real or complex entries, a vector $v\in\CC^n$ is an \emph{eigenvector} if $v\ne 0$ and if there exists $\lambda\in \CC$, an \emph{eigenvalue}, so that
+\item \textbf{definition.}  given a square matrix $A \in \CC^{n\times n}$, with real or complex entries, $v\in\CC^n$ is an \emph{eigenvector} if $v\ne 0$ and if there exists $\lambda\in \CC$, an \emph{eigenvalue}, so that
     $$A v = \lambda v$$
-\item \textbf{definition.}  the \emph{spectrum} $\sigma(A)$ of a matrix $A \in \CC^{n\times n}$ is the set of its eigenvalues
+
+    \begin{itemize}
+    \item[$\circ$] thus $A$ acts in a simple way on (multiples of) $v$, simply by scaling
+    \end{itemize}
+\item \textbf{definition.}  the \emph{spectrum} $\sigma(A)$ of $A \in \CC^{n\times n}$ is the set of its eigenvalues
 \item \textbf{lemma.} if $A \in \CC^{n\times n}$ then $\sigma(A)$ is nonempty, and furthermore $\lambda\in\sigma(M)$ if and only if $\det(\lambda I - A)=0$
     \begin{itemize}
     \item[proof.] 
@@ -394,8 +401,9 @@ and $p(\lambda) = \det(\lambda I - A)$ is a polynomial, which has a root $\lambd
 \item \textbf{definition.} $A \in \CC^{n\times n}$ is \emph{hermitian} if $A^*=A$
     \begin{itemize}
     \item[$\circ$] also called \emph{self-adjoint}
-    \item[$\circ$] if $A$ is hermitian then $\ip{v}{Aw} = \ip{A^* v}{w} = \ip{A v}{w}$ for all $v,w\in\CC^n$
-    \item[$\circ$] if $A$ has real entries then the same condition is $A^\top=A$, and $A$ is \emph{symmetric}
+    \item[$\circ$] note $(AB)^*=B^*A^*$
+    \item[$\circ$] if $A$ is hermitian then in usual inner product $\ip{v}{w}=v^*w$ we have $\ip{v}{Aw} = \ip{A^* v}{w} = \ip{A v}{w}$ because $v^* (Aw) = v^* A^* w = (Av)^* w$
+    \item[$\circ$] if $A$ has real entries then $A^*=A$ becomes $A^\top=A$, and $A$ is \emph{symmetric}
     \end{itemize}
 \item \textbf{lemma.} if $A$ is hermitian and $\lambda \in \sigma(A)$ then $\lambda$ is real
     \begin{itemize}
@@ -414,17 +422,78 @@ and we have assumed $\lambda-\mu \ne 0$
 \begin{frame}{eigendecompositions}
 
 \begin{itemize}
-\item note: for any $A\in\CC^{n\times n}$, if $v_1,\dots,v_m$ are eigenvectors with eigenvalues $\lambda_1,\dots,\lambda_m$ then we can collect the statements $A v_i=\lambda_i v_i$ as
+\item for any $A\in\CC^{n\times n}$, if $v_1,\dots,v_m$ are eigenvectors with eigenvalues $\lambda_1,\dots,\lambda_m$ then we can collect the statements $A v_i=\lambda_i v_i$ as
 \small
     $$A \trefmatrixtwo{v_1}{v_m} =  \trefmatrixtwo{v_1}{v_m} \begin{bmatrix} \lambda_1 & & \\ & \ddots & \\ & & \lambda_m \end{bmatrix}$$
 \normalsize
-\item equivalently, if $V$ has columns $v_i$ and $\Lambda$ is an $m\times m$ diagonal matrix,
+\item equivalently:
     $$A V = V \Lambda$$
-\item \underline{if} $V$ is square and invertible then we have a decompostition of $A$:
+\item if $V$ is square and invertible then we have a decomposition of $A$:
     $$A = V \Lambda V^{-1}$$
-\item why does this matter?  often $A$ is iterated, or a polynomial is applied:
+\item why does this matter?  often $A$ is iterated, or a polynomial is applied,
     $$A^k = (V \Lambda V^{-1})^k = V \Lambda V^{-1}V \Lambda V^{-1}\dots V \Lambda V^{-1} = V \Lambda^k V^{-1}$$
     $$p(A) = V\, p(\Lambda) V^{-1}$$
+and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{similarity and diagonalizability}
+
+\begin{itemize}
+\item \textbf{definition.} $A,B$ are \emph{similar} if there exists $V$ invertible so that
+    $$A = V B V^{-1}$$
+\item \textbf{lemma.} if $A,B$ are similar then $\sigma(A)=\sigma(B)$
+    \begin{itemize}
+    \item[proof.] noting $\det(TS)=\det(T)\det(S)$, we have
+\begin{align*}
+\det(\lambda I - A) &= \det(\lambda VV^{-1} - V B V^{-1}) = \det(V) \det(\lambda I - B) \det(V^{-1}) \\
+    &= \det(V) \det(\lambda I - B) \det(V)^{-1} = \det(\lambda I - B)
+\end{align*}
+    \end{itemize}
+\item \textbf{lemma.} if $A$ is triangular or diagonal then $\sigma(A)$ is the diagonal entries
+    \begin{itemize}
+    \item[proof.]
+
+    $$\det(\lambda I - A) = \prod_{i=1}^n \lambda-a_{ii}$$
+    \end{itemize}
+\item \textbf{definition.} $A$ is \emph{diagonalizable} if there exists $V$ invertible and $\Lambda$ diagonal so that
+    $$A = V \Lambda V^{-1}$$
+
+    \begin{itemize}
+    \item[$\circ$] equivalently, $A$ is diagonalizable if it is similar to a diagonal matrix
+    \item[$\circ$] not every square matrix is diagonalizable!
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigenvalue-revealing decompositions}
+
+\begin{itemize}  
+\item there are four famous ``eigenvalue-revealing'' decompositions of square matrices $A\in\CC^{n\times n}$:
+\begin{align*}
+A &= V \Lambda V^{-1} & &\text{if $A$ is diagonalizable} \\
+A &= V J V^{-1} & &\text{for any $A$, where $J$ is a special triangular \emph{Jordan form}} \\
+A &= Q \Lambda Q^* & &\text{if $A$ is hermitian, where $Q$ is unitary} \\
+A &= Q T Q^* & &\text{for any $A$, where $T$ is triangular and $Q$ is unitary}
+\end{align*}
+\item respectively, with \Matlab commands
+    \begin{itemize}
+    \item[$\circ$] $A = V \Lambda V^{-1}$ is an \emph{eigendecomposition} or a \emph{diagonalization} \hfill \texttt{eig(A)}
+    \item[$\circ$] $A = V J V^{-1}$ is the \emph{Jordan canonical form}
+    \item[$\circ$] $A = Q \Lambda Q^*$ is the \emph{spectral theorem} for hermitian $A$ \hfill \texttt{eig(A)}
+    \item[$\circ$] $A = Q T Q^*$ is the \emph{Schur decomposition} \hfill \texttt{schur(A)}
+    \end{itemize}
+\item the Jordan canonical form cannot be reliably computed in the presence of rounding error,\footnote{G.~Golub \& J.~Wilkinson 1976, \emph{Ill-conditioned eigensystems and the computation of the Jordan canonical form}, SIAM Review 18(4), 578--619} though it is a reasonable goal if you are working in a finite field $\mathbb{F}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{X}
+
+\begin{itemize}
+\item Y
 \end{itemize}
 \end{frame}
 
