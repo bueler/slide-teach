@@ -58,6 +58,10 @@
 \newcommand{\trefmatrixthree}[3]{\left[\begin{array}{c|c|c|c} & & & \\ #1 & #2 & \dots & #3 \\ & & & \end{array}\right]}
 \newcommand{\trefmatrixgroups}[4]{\left[\begin{array}{c|c|c|c|c|c} & & & & & \\ #1 & \dots & #2 & #3 & \dots & #4 \\ & & & & & \end{array}\right]}
 
+\newcommand{\blocktwo}[4]{\left[\begin{array}{c|c} #1 & #2 \\ \hline #3 & #4 \end{array}\right]}
+
+\newcommand{\bqed}{{\color{blue}\qed}}
+
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
 \newcommand{\mfile}[1]{
@@ -137,7 +141,7 @@
 \vspace{-2mm}
 \item \textbf{definition.} an \emph{inner product} on $\CC^n$ is a function
     $$\ip{\cdot}{\cdot}:\CC^n\times \CC^n \to \CC,$$
-almost-bilinear (\emph{sesquilinear}\footnote{kind of a joke; it means ``$1\frac{1}{2}$ linear''}), with symmetry and positivity properties
+almost-bilinear (\emph{sesquilinear}\footnote{\tiny kind of a joke, as it means ``$1\frac{1}{2}$ linear''}), with symmetry and positivity properties
 \item namely, for all $u,v,w \in \CC^n$ and $\alpha\in \CC$,
     \begin{itemize}
     \item[$\circ$] $\ip{w}{u+v} = \ip{w}{u} + \ip{w}{v}$
@@ -258,10 +262,10 @@ A u &= \trefmatrixthree{a_1}{a_2}{a_m} \begin{bmatrix} u_1 \\ u_2 \\ \vdots \\ u
     \begin{itemize}
     \item[$\circ$] ``ortho'' means $\ip{v_i}{v_j}=0$ if $i\ne j$ and ``normal'' means $\|v_i\|=1$
     \end{itemize}
-\item \textbf{definition.} a matrix $U$ is \emph{unitary} if $U^* U = I$
+\item \textbf{definition.} a matrix $U$ is \emph{unitary} if $U^* U = I$, thus $U^{-1}=U^*$
 \item \textbf{lemma.} a matrix $U$ is unitary if and only if its columns form an ON basis
     \begin{itemize}
-    \item[\emph{proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$.
+    \item[\emph{proof.}] The entries of a matrix product are inner products between the rows of the left factor and the columns of the right factor.  The entries of $I$ are $\delta_{ij}$. \bqed
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -426,9 +430,9 @@ ans =
 \item \textbf{definition.}  the \emph{spectrum} $\sigma(A)$ of $A \in \CC^{n\times n}$ is the set of its eigenvalues
 \item \textbf{lemma.} if $A \in \CC^{n\times n}$ then $\sigma(A)$ is nonempty, and furthermore $\lambda\in\sigma(A)$ if and only if $\det(\lambda I - A)=0$
     \begin{itemize}
-    \item[proof.] 
+    \item[\emph{proof.}] 
    $$\lambda\in\sigma(A) \, \iff \, \exists \text{ nonzero soln.~to } (\lambda I - A) v = 0 \, \iff \, \det(\lambda I - A)=0,$$
-and $p(\lambda) = \det(\lambda I - A)$ is a degree $n$ polynomial, which has a root $\lambda\in\CC$
+and $p(\lambda) = \det(\lambda I - A)$ is a degree $n$ polynomial, which has a root $\lambda\in\CC$ \bqed
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -451,13 +455,13 @@ and $p(\lambda) = \det(\lambda I - A)$ is a degree $n$ polynomial, which has a r
     \end{itemize}
 \item \textbf{lemma.} if $A$ is hermitian and $\lambda \in \sigma(A)$ then $\lambda$ is real
     \begin{itemize}
-    \item[proof.] a classic exercise \dots for you
+    \item[\emph{proof.}] a classic exercise \dots for you
     \end{itemize}
 \item \textbf{lemma.} if $A$ is hermitian and $v,w \in \CC^n$ are eigenvectors associated to distinct eigenvalues then $v,w$ are orthogonal
     \begin{itemize}
-    \item[proof.] a classic exercise: if $Av=\lambda v$ and $Aw=\mu w$ then $\lambda,\mu$ are real so
+    \item[\emph{proof.}] a classic exercise: if $Av=\lambda v$ and $Aw=\mu w$ then $\lambda,\mu$ are real so
     $$(\lambda-\mu) \ip{v}{w} = \ip{\lambda v}{w} - \ip{v}{\mu w} = \ip{Av}{w} - \ip{v}{Aw} = \ip{v}{Aw} - \ip{v}{Aw} = 0,$$
-and we have assumed $\lambda-\mu \ne 0$
+and we have assumed $\lambda-\mu \ne 0$ \bqed
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -489,17 +493,17 @@ and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
     $$A = V B V^{-1}$$
 \item \textbf{lemma.} if $A,B$ are similar then $\sigma(A)=\sigma(B)$
     \begin{itemize}
-    \item[proof.] noting $\det(TS)=\det(T)\det(S)$, we have
+    \item[\emph{proof.}] noting $\det(TS)=\det(T)\det(S)$, we have
 \begin{align*}
 \det(\lambda I - A) &= \det(\lambda VV^{-1} - V B V^{-1}) = \det(V) \det(\lambda I - B) \det(V^{-1}) \\
-    &= \det(V) \det(\lambda I - B) \det(V)^{-1} = \det(\lambda I - B)
+    &= \det(V) \det(\lambda I - B) \det(V)^{-1} = \det(\lambda I - B) \bqed
 \end{align*}
     \end{itemize}
 \item \textbf{lemma.} if $A$ is triangular or diagonal then $\sigma(A)=\{a_{ii}\}$  (diagonal entries)
     \begin{itemize}
-    \item[proof.]
+    \item[\emph{proof.}]
 
-    $$\det(\lambda I - A) = \prod_{i=1}^n \lambda-a_{ii}$$
+    $$\det(\lambda I - A) = \prod_{i=1}^n \lambda-a_{ii} \bqed$$
     \end{itemize}
 \item \textbf{definition.} $A$ is \emph{diagonalizable} if there exists $V$ invertible and $\Lambda$ diagonal so that
     $$A = V \Lambda V^{-1}$$
@@ -512,11 +516,10 @@ and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
 \end{frame}
 
 
-\begin{frame}[fragile]
-\frametitle{non-diagonalizable (``defective'') matrices}
+\begin{frame}{non-diagonalizable (``defective'') matrices}
 
 \begin{itemize}
-\item if you pick a matrix $A\in\CC^{n\times n}$ at random then it will be diagonalizable with probability one,\footnote{this assumes only that your probability measure has a continuous density with respect to Lebesgue measure} but non-diagonalizable matrices exist
+\item if you pick a matrix $A\in\CC^{n\times n}$ at random then it will be diagonalizable with probability one,\footnote{\tiny this assumes only that your probability measure has a continuous density with respect to Lebesgue measure} but non-diagonalizable matrices exist
 \item simplest example (\emph{check all this!}): \quad $A = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix}$
     \begin{itemize}
     \item[$\circ$] note $A$ is triangular, and $\sigma(A) = \{0\}$
@@ -544,28 +547,150 @@ A &= Q T Q^* & &\text{\underline{for any $A$}, where $T$ is triangular and $Q$ i
 \end{align*}
 \item respectively: \hfill \small \Matlab commands\normalsize
     \begin{itemize}
-    \item[$\circ$] $A = V \Lambda V^{-1}$ is \emph{eigendecomposition} or \emph{diagonalization} \hfill \texttt{eig(A)}
-    \item[$\circ$] $A = V J V^{-1}$ is \emph{Jordan canonical form}
-    \item[$\circ$] $A = Q \Lambda Q^*$ is \emph{spectral theorem} \hfill \texttt{eig(A)}
-    \item[$\circ$] $A = Q T Q^*$ is \emph{Schur decomposition} \hfill \texttt{schur(A,'complex')}
+    \item[] $A = V \Lambda V^{-1}$ is \emph{eigendecomposition} or \emph{diagonalization} \hfill \texttt{eig(A)}
+    \item[] $A = V J V^{-1}$ is \emph{Jordan canonical form}
+    \item[] $A = Q \Lambda Q^*$ is \emph{spectral theorem} \hfill \texttt{eig(A)}
+    \item[] $A = Q T Q^*$ is \emph{Schur decomposition} \hfill \texttt{schur(A,'complex')}
     \end{itemize}
-\item the Jordan canonical form cannot be computed if rounding errors exist\footnote{G.~Golub \& J.~Wilkinson 1976, \emph{Ill-conditioned eigensystems and the computation of the Jordan canonical form}, SIAM Review 18(4), 578--619}
+
+\medskip
+\item the Jordan canonical form cannot be computed if rounding errors exist\footnote{\tiny G.~Golub \& J.~Wilkinson 1976, \emph{Ill-conditioned eigensystems and the computation of the Jordan canonical form}, SIAM Review 18(4), 578--619}
+\item the Schur decomposition is the most important in practice, as it always exists and it can be stably computed in practice, in $O(n^3)$ time at most
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{X}
+\begin{frame}{Schur decomposition}
 
 \begin{itemize}
-\item Y
+\item \textbf{theorem.} if $A\in \CC^{n\times n}$ then there exist $T,Q\in \CC^{n\times n}$, with $T$ upper-triangular and $Q$ unitary, so that
+    $$A = Q T Q^*$$
+
+\vspace{-2mm}
+    \begin{itemize}
+    \footnotesize
+    \item[\emph{proof.}] Induct on $n$.  If $n=1$ then the result follows with $T=A=[a_{11}]$ and $Q=I=[1]$.
+
+\quad For $n>1$ let $v\ne 0$ be an eigenvector of $A$, with eigenvalue $\lambda$. Let $u_1=v/\|v\|$ and extend to a unitary matrix:
+    $$U = \trefmatrixthree{u_1}{u_2}{u_n}$$
+Apply $A$ and note that $Au_1=\lambda u_1$:
+    $$AU = \trefmatrixthree{\lambda_1 u_1}{A u_2}{A u_n}$$
+Apply $U^*=U^{-1}$, observe that $U^*Au_1 = \lambda_1 U^* u_1 = \lambda_1 e_1$, and write $w_j=U^*Au_j$:
+    $$U^*AU = \trefmatrixthree{\lambda_1 e_1}{w_2}{w_n}$$
+We don't care about the form of vectors $w_2,\dots,w_n \in \CC^n$.
+    \end{itemize}
+\normalsize
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{X}
+\begin{frame}{Schur decomposition, proof cont.}
 
 \begin{itemize}
-\item Y
+\item[]
+    \begin{itemize}
+    \footnotesize
+    \item[] \quad We have made progress toward upper-triangular form.  In fact, we may write
+    $$U^*AU = \blocktwo{\lambda_1}{z^*}{0}{M}$$
+for some $z\in \CC^{n-1}$ and $M\in \CC^{n-1 \times n-1}$.  By induction, $M$ has a Schur decomposition, $M=\hat Q \hat T \hat Q^*$, where $\hat T,\hat Q$ are the same size as $M$.  Note that
+    $$\blocktwo{1}{0}{0}{\hat Q}$$
+is unitary.  Now we can transform the whole matrix $U^*AU$ to triangular form:
+    $$\blocktwo{1}{0}{0}{\hat Q^*} U^*AU \blocktwo{1}{0}{0}{\hat Q} = \blocktwo{\lambda_1}{z^*\hat Q}{0}{\hat T}$$
+Specifically,
+    $$T = \blocktwo{\lambda_1}{z^*\hat Q}{0}{\hat T}, \quad Q = U \blocktwo{1}{0}{0}{\hat Q}$$
+and we have $A=Q^*T Q$. \bqed
+    \end{itemize}
+\normalsize
+
+\bigskip
+\item note key steps at start of proof: ``let $v\ne 0$ be an eigenvector of $A$'' and ``extend to a unitary matrix''
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Schur decomposition: computed examples}
+
+\begin{itemize}
+\item example 1: general case
+\begin{Verbatim}[fontsize=\scriptsize]
+>> A=randn(4,4);
+>> [Q,T] = schur(A)
+Q =
+  0.25290  0.78457  -0.32111  0.46624
+  0.12587  0.07899  -0.70892  -0.68945
+  -0.82852  0.47758  0.15009  -0.25088
+  -0.48348  -0.38746  -0.60974  0.49431
+T =
+  1.94208  -1.22908  -1.37600  -0.70166
+  0.00000  -1.81581  0.21700  -0.51769
+  0.00000  0.00000  0.69477  -1.15766
+  0.00000  0.00000  0.00000  -0.59708
+>> norm(A-Q*T*Q')
+ans =    2.0928e-15
+\end{Verbatim}
+    \begin{itemize}
+    \footnotesize
+    \item[$\circ$] we just got lucky; see \, \texttt{help schur}\, for real vs.~complex Schur decompositions
+    \end{itemize}
+\item example 2: hermitian case
+\begin{Verbatim}[fontsize=\scriptsize]
+>> B = randn(4,4);  A = B + B';
+>> [Q,T] = schur(A);  T
+T =
+  3.42692  -0.00000  -0.00000  -0.00000
+  0.00000  0.96497  0.00000  -0.00000
+  0.00000  0.00000  -2.92548  0.00000
+  0.00000  0.00000  0.00000  -4.61828
+\end{Verbatim}
+
+\medskip
+\item in both cases, compare \texttt{eig(A)}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{normal matrices and the spectral theorem}
+
+\begin{itemize}
+\item if $A$ is hermitian then the Schur decomposition is a unitary diagonalization: $A^* = Q T^* Q^* = Q T Q^* = A$ so $T^*=T$
+\item there is a larger class of matrices where this happens
+\item \textbf{definition.} $A\in \CC^{n\times n}$ is \emph{normal} if $AA^*=A^*A$
+    \begin{itemize}
+    \item[$\circ$] $A$ hermitian $\implies$ $A$ normal
+    \item[$\circ$] $U$ unitary $\implies$ $U$ normal
+    \item[$\circ$] $S$ skew-hermitian\footnote{\scriptsize $S^*=-S$} $\implies$ $S$ normal
+    \end{itemize}
+\item \textbf{corollary (spectral theorem).} if $A$ is normal then there exists $\Lambda$ diagonal and $Q$ unitary so that
+    $$A=Q \Lambda Q^*$$
+
+    \begin{itemize}
+    \item[\emph{proof.}] From the Schur decomposition, $A=QTQ^*$.  Since $A$ is normal, it follows that $TT^*=T^*T$.  But $T$ is upper-triangular, so
+    $$T = \blocktwo{t_{11}}{z^*}{0}{R}$$
+where $R$ is also upper triangular.  An easy calculation shows $(TT^*)_{11} = |t_{11}|^2 + \|z\|^2$ while $(T^*T)_{11} = |t_{11}|^2$.  Thus $z=0$.  Now induct to show $T$ is diagonal. \bqed
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{where we stand}
+
+\begin{itemize}
+\item in part II we will discuss the spectral theorem
+\item \dots and get to the singular value decomposition
+\item almost everything will have some kind of analog in $\infty$-dimensions
+\item \dots and appear somewhere in Muscat's \emph{Functional Analysis} book
+\item but much does not extend straightforwardly to $\infty$-dimensions!
+\item \textbf{questions.} in infinite dimensions,
+    \begin{itemize}
+    \item[$\circ$] what is the meaning of ``span''?
+    \item[$\circ$] are matrices meaningful?
+    \item[$\circ$] is a one-to-one linear operator invertible?
+    \item[$\circ$] does the Gram-Schmidt process work as before?
+    \item[$\circ$] does every linear operator have an eigenvector?
+    \item[$\circ$] is there a Schur decomposition?
+    \item[$\circ$] is there a spectral theorem?
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
