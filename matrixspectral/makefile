@@ -1,10 +1,10 @@
-all: slides.pdf
+all: slides1.pdf slides2.pdf
 
-slides.pdf: slides.aux slides.tex
-	pdflatex slides
+%.pdf: %.tex %.aux
+	pdflatex $<
 
-slides.aux: slides.tex
-	pdflatex slides
+%.aux: %.tex
+	pdflatex $<
 
 .PHONY: clean
 
