@@ -98,22 +98,16 @@
 \end{frame}
 
 
-\begin{frame}{finite-dimensional spectral theory}
+\begin{frame}{linear algebra versus functional analysis}
 
 \begin{itemize}
-\item these slides are about linear algebra, i.e.~vector spaces of finite dimension, and linear operators on those spaces
-\item one definition of \emph{functional analysis} might be: ``rigorous extension of linear algebra concepts to infinite-dimensional topological vector spaces''
-\item the \emph{spectrum} of a square matrix $A$ is its set of eigenvalues
+\item these slides are about linear algebra, i.e.~vector spaces of finite dimension, and linear operators on those spaces, i.e.~matrices
+\item one definition of \emph{functional analysis} might be: ``rigorous extension of linear algebra to $\infty$-dimensional topological vector spaces''
     \begin{itemize}
-    \item[$\circ$] there will be reminder below about the definition of eigenvalues
-    \item[$\circ$] the spectrum $\sigma(A)$ is a subset of the complex plane $\CC$
-        \begin{itemize}
-        \item graphing $\sigma(A)$ gives the matrix $A$ a ``personality''
-        \end{itemize}
-    \item[$\circ$] the plural of spectrum is \emph{spectra}, and the adjectival is \emph{spectral}
-    \item[$\circ$] see part II for the spectral theorem and variations
+    \item[$\circ$] it is important to understand the finite-dimensional case!
     \end{itemize}
-\item good references these slides:
+\item the goal of these part I slides is to prove the Schur decomposition and the spectral theorem for matrices
+\item good references for these slides:
     \begin{itemize}
     \item[$\circ$] L.~Trefethen \& D.~Bau, \emph{Numerical Linear Algebra}, SIAM Press 1997
     \item[$\circ$] G.~Strang, \emph{Introduction to Linear Algebra}, 5th ed., Wellesley-Cambridge Press, 2016
@@ -121,6 +115,41 @@
     \end{itemize}
 
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{the spectrum of a matrix}
+
+\begin{itemize}
+\item the \emph{spectrum} $\sigma(A)$ of a square matrix $A$ is its set of eigenvalues
+    \begin{itemize}
+    \item[$\circ$] reminder later about the definition of eigenvalues
+    \item[$\circ$] $\sigma(A)$ is a subset of the complex plane $\CC$
+    \item[$\circ$] the plural of spectrum is \emph{spectra}; the adjectival is \emph{spectral}
+    \end{itemize}
+\item graphing $\sigma(A)$ gives the matrix a personality
+    \begin{itemize}
+    \item[$\circ$] example below: random, nonsymmetric, real $20\times 20$ matrix
+    \end{itemize}
+\end{itemize}
+
+\bigskip
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{Verbatim}[fontsize=\scriptsize]
+>> A = randn(20,20);
+>> lam = eig(A);
+>> plot(real(lam),imag(lam),'o')
+>> grid on
+>> xlabel('Re(\lambda)')
+>> ylabel('Im(\lambda)')
+\end{Verbatim}
+\end{column}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=0.9\textwidth]{figs/randspectrum}
+\end{column}
+\end{columns}
 \end{frame}
 
 
@@ -167,8 +196,7 @@ almost-bilinear (\emph{sesquilinear}\footnote{\tiny kind of a joke, as it means 
     $$v^* = [\overline{v_1},\dots,\overline{v_n}]$$
 \item the usual inner product is just a matrix product on $\CC^n$:
 \begin{align*}
-\ip{u}{v} &= u^* v \\
-          &= \begin{bmatrix}
+\ip{u}{v} &= u^* v = \begin{bmatrix}
     \overline{u_1} & \cdots & \overline{u_n}
     \end{bmatrix} \begin{bmatrix}
     v_1 \\ \vdots \\ v_n
@@ -184,16 +212,18 @@ almost-bilinear (\emph{sesquilinear}\footnote{\tiny kind of a joke, as it means 
 \item \textbf{definition.}  a (finite) set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is \emph{linearly-dependent} if there exist scalars $\alpha_i \in \CC$, not all zero, so that $\alpha_1 v_1 + \dots + \alpha_m v_m = 0$
     \begin{itemize}
     \item[$\circ$] a set of vectors is \emph{linearly-independent} if it is not linearly-dependent
+    \item[$\circ$] vectors in a linearly-independent set are nonzero
     \end{itemize}
 \item \textbf{definition.}  a finite set of vectors $\{v_i\}_{i=1}^m$ \emph{span} $\CC^n$ if for any $w\in \CC^n$ there exist scalars $\alpha_i$ so that $w = \alpha_1 v_1 + \dots + \alpha_m v_m$
-\item \textbf{lemma.}  if the set $\{v_i\}_{i=1}^m$
+\item \textbf{lemma.}\footnote{\url{https://en.wikipedia.org/wiki/Steinitz_exchange_lemma}}
     \begin{itemize}
-    \item[$\circ$] is linearly-independent then $v_i\ne 0$ and $m \le n$
-    \item[$\circ$] spans $\CC^n$ then $m \ge n$
+    \item[$\circ$] if $\{v_i\}_{i=1}^m\subset \CC^n$ is linearly-independent then $m \le n$
+    \item[$\circ$] if $\{v_i\}_{i=1}^m\subset \CC^n$ spans $\CC^n$ then $m \ge n$
     \end{itemize}
 \item \textbf{definition.} a finite set of vectors $\{v_i\}_{i=1}^m \subset \CC^n$ is a \emph{basis} if the set is linearly-independent and it spans $\CC^n$
     \begin{itemize}
-    \item[$\circ$] by the lemma, $m=n$; thus the \emph{dimension} is $n$
+    \item[$\circ$] by the lemma, $m=n$
+    \item[$\circ$] the \emph{dimension} $n$ is well-defined as the number of elements in a basis
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -221,20 +251,26 @@ almost-bilinear (\emph{sesquilinear}\footnote{\tiny kind of a joke, as it means 
 \begin{itemize}
 \item the ``purpose'' of a matrix $A \in \CC^{n\times m}$ is to multiply vectors $u\in \CC^m$
     \begin{itemize}
-    \item[$\circ$] i.e.~a matrix is merely the representation of a linear operator
+    \item[$\circ$] a matrix is merely the representation of a linear operator
     \item[$\circ$] operations on entries, e.g.~$\det()$ or row operations, are less fundamental
     \end{itemize}
-\item when you see ``$Au$,'' remember that $u$ linearly-combines the columns:
+\item when you see ``$Au$'' remember two views:
 \small
 \begin{align*}
-A u &= \trefmatrixthree{a_1}{a_2}{a_m} \begin{bmatrix} u_1 \\ u_2 \\ \vdots \\ u_m \end{bmatrix} \\
-    &= u_1 \trefcolumn{a_1} + u_2 \trefcolumn{a_2} + \dots + u_m \trefcolumn{a_m}
+A u &= \left[\begin{array}{ccc}
+& r_1 & \\ \hline
+& r_2 & \\ \hline
+& \vdots & \\ \hline
+& r_n &
+\end{array}\right] u = \begin{bmatrix} r_1 u \\ r_2 u \\ \vdots \\ r_n u \end{bmatrix}  \\
+A u &= \trefmatrixthree{a_1}{a_2}{a_m} \begin{bmatrix} u_1 \\ u_2 \\ \vdots \\ u_m \end{bmatrix} = u_1 \trefcolumn{a_1} + u_2 \trefcolumn{a_2} + \dots + u_m \trefcolumn{a_m}
 \end{align*}
 \normalsize
     \begin{itemize}
-    \item[$\circ$] $u$ acts from the right on $A$
+    \item[$\circ$] $A$ acts on $u$ acts from the left; each entry is an inner product
+    \item[$\circ$] $u$ acts from the right on $A$; get a linear-combination of columns
     \end{itemize}
-\item it is also useful to know that if $A \in \CC^{n\times n}$ is invertible then $A^{-1}w$ computes the coefficients of $w$ in the basis of columns of $A$
+\item also: if $A \in \CC^{n\times n}$ is invertible then $A^{-1}w$ computes the coefficients of $w$ in the basis of columns of $A$
 \end{itemize}
 \end{frame}
 
@@ -419,7 +455,7 @@ ans =
 \begin{frame}{eigenvalues and eigenvectors}
 
 \begin{itemize}
-\item \textbf{definition.}  given a square matrix $A \in \CC^{n\times n}$, with real or complex entries, $v\in\CC^n$ is an \emph{eigenvector} if $v\ne 0$ and if there exists $\lambda\in \CC$ so that
+\item \textbf{definition.}  given a square matrix $A \in \CC^{n\times n}$, $v\in\CC^n$ is an \emph{eigenvector} if $v\ne 0$ and if there exists $\lambda\in \CC$ so that
     $$A v = \lambda v$$
 
 \vspace{-2mm}
@@ -428,11 +464,13 @@ ans =
     \item[$\circ$] idea: $A$ acts in a simple way on (multiples of) $v$, simply by scaling
     \end{itemize}
 \item \textbf{definition.}  the \emph{spectrum} $\sigma(A)$ of $A \in \CC^{n\times n}$ is the set of its eigenvalues
-\item \textbf{lemma.} if $A \in \CC^{n\times n}$ then $\sigma(A)$ is nonempty, and furthermore $\lambda\in\sigma(A)$ if and only if $\det(\lambda I - A)=0$
+\item \textbf{lemma.} $\lambda\in\sigma(A)$ if and only if $\det(\lambda I - A)=0$
     \begin{itemize}
-    \item[\emph{proof.}] 
-   $$\lambda\in\sigma(A) \, \iff \, \exists \text{ nonzero soln.~to } (\lambda I - A) v = 0 \, \iff \, \det(\lambda I - A)=0,$$
-and $p(\lambda) = \det(\lambda I - A)$ is a degree $n$ polynomial, which has a root $\lambda\in\CC$ \bqed
+    \item[\emph{proof.}] $\lambda\in\sigma(A) \, \iff \, \exists \text{ nonzero soln.~to } (\lambda I - A) v = 0 \, \iff \, \det(\lambda I - A)=0$ \bqed
+    \end{itemize}
+\item \textbf{corollary.} $\sigma(A)$ is nonempty 
+    \begin{itemize}
+    \item[\emph{proof.}] $p(\lambda) = \det(\lambda I - A)$ is a degree $n$ polynomial, which has a root $\lambda\in\CC$ \bqed
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -481,7 +519,10 @@ and we have assumed $\lambda-\mu \ne 0$ \bqed
 \item why does this matter?  often $A$ is iterated, or a polynomial is applied,
     $$A^k = (V \Lambda V^{-1})^k = V \Lambda V^{-1}V \Lambda V^{-1}\dots V \Lambda V^{-1} = V \Lambda^k V^{-1}$$
     $$p(A) = V\, p(\Lambda) V^{-1}$$
-and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
+
+    \begin{itemize}
+    \item[$\circ$] $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -501,9 +542,7 @@ and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
     \end{itemize}
 \item \textbf{lemma.} if $A$ is triangular or diagonal then $\sigma(A)=\{a_{ii}\}$  (diagonal entries)
     \begin{itemize}
-    \item[\emph{proof.}]
-
-    $$\det(\lambda I - A) = \prod_{i=1}^n \lambda-a_{ii} \bqed$$
+    \item[\emph{proof.}] $\det(\lambda I - A) = \prod_{i=1}^n \lambda-a_{ii}$ \bqed
     \end{itemize}
 \item \textbf{definition.} $A$ is \emph{diagonalizable} if there exists $V$ invertible and $\Lambda$ diagonal so that
     $$A = V \Lambda V^{-1}$$
@@ -526,7 +565,7 @@ and $\Lambda^k$, $p(\Lambda)$ are easy-to-understand diagonal matrices
     \item[$\circ$] if $A=V\Lambda V^{-1}$ for $V$ invertible then columns of $V$ would be linearly-independent eigenvectors: $Av_1=0v_1$ and $Av_2=0v_2$
     \item[$\circ$] but in fact $(\lambda I - A) v = 0$ has only a one-dimensional solution space
     \end{itemize}
-\item all non-diagonal examples $A$ are built by choosing $J$ to be a ``non-diagonal Jordan form,'' with at least on block of the form below on the diagonal,
+\item all non-diagonal examples $A$ are built by choosing $J$ to be a ``non-diagonal Jordan form,'' with at least one block of this form on the diagonal:
 \footnotesize
     $$\begin{bmatrix} \lambda & 1 \\ 0 & \lambda \end{bmatrix}, \quad \begin{bmatrix} \lambda & 1 & 0 \\ 0 & \lambda & 1 \\ 0 & 0 & \lambda \end{bmatrix}, \quad \begin{bmatrix} \lambda & 1 & 0 & 0 \\ 0 & \lambda & 1 & 0 \\ 0 & 0 & \lambda & 1 \\ 0 & 0 & 0 & \lambda \end{bmatrix}, \quad \dots,$$
 \normalsize
@@ -555,7 +594,7 @@ A &= Q T Q^* & &\text{\underline{for any $A$}, where $T$ is triangular and $Q$ i
 
 \medskip
 \item the Jordan canonical form cannot be computed if rounding errors exist\footnote{\tiny G.~Golub \& J.~Wilkinson 1976, \emph{Ill-conditioned eigensystems and the computation of the Jordan canonical form}, SIAM Review 18(4), 578--619}
-\item the Schur decomposition is the most important in practice, as it always exists and it can be stably computed in practice, in $O(n^3)$ time at most
+\item the Schur decomposition is the most important in practice, as it always exists and it can be stably computed over $\RR$ or $\CC$
 \end{itemize}
 \end{frame}
 
@@ -577,7 +616,7 @@ Apply $A$ and note that $Au_1=\lambda u_1$:
     $$AU = \trefmatrixthree{\lambda_1 u_1}{A u_2}{A u_n}$$
 Apply $U^*=U^{-1}$, observe that $U^*Au_1 = \lambda_1 U^* u_1 = \lambda_1 e_1$, and write $w_j=U^*Au_j$:
     $$U^*AU = \trefmatrixthree{\lambda_1 e_1}{w_2}{w_n}$$
-We don't care about the form of vectors $w_2,\dots,w_n \in \CC^n$.
+(We don't care about the form of the vectors $w_2,\dots,w_n \in \CC^n$.)
     \end{itemize}
 \normalsize
 \end{itemize}
@@ -596,9 +635,9 @@ for some $z\in \CC^{n-1}$ and $M\in \CC^{n-1 \times n-1}$.  By induction, $M$ ha
     $$\blocktwo{1}{0}{0}{\hat Q}$$
 is unitary.  Now we can transform the whole matrix $U^*AU$ to triangular form:
     $$\blocktwo{1}{0}{0}{\hat Q^*} U^*AU \blocktwo{1}{0}{0}{\hat Q} = \blocktwo{\lambda_1}{z^*\hat Q}{0}{\hat T}$$
-Specifically,
+Now let
     $$T = \blocktwo{\lambda_1}{z^*\hat Q}{0}{\hat T}, \quad Q = U \blocktwo{1}{0}{0}{\hat Q}$$
-and we have $A=Q^*T Q$. \bqed
+We have $A=Q^*T Q$. \bqed
     \end{itemize}
 \normalsize
 
@@ -612,6 +651,7 @@ and we have $A=Q^*T Q$. \bqed
 \frametitle{Schur decomposition: computed examples}
 
 \begin{itemize}
+\item note the diagonal entries of $T$ contain the eigenvalues (compare \texttt{eig(A)})
 \item example 1: general case
 \begin{Verbatim}[fontsize=\scriptsize]
 >> A=randn(4,4);
@@ -643,24 +683,32 @@ T =
   0.00000  0.00000  -2.92548  0.00000
   0.00000  0.00000  0.00000  -4.61828
 \end{Verbatim}
-
-\medskip
-\item in both cases, compare \texttt{eig(A)}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{normal matrices and the spectral theorem}
+\begin{frame}{normal matrices}
 
 \begin{itemize}
-\item if $A$ is hermitian then the Schur decomposition is a unitary diagonalization: $A^* = Q T^* Q^* = Q T Q^* = A$ so $T^*=T$
+\item \textbf{lemma.} if $A$ is hermitian then the Schur decomposition is a unitary diagonalization
+    \begin{itemize}
+    \item[\emph{proof.}] $A^* = A$ so $Q T^* Q^* = Q T Q^*$ so $T^*=T$ \bqed
+    \end{itemize}
 \item there is a larger class of matrices where this happens
 \item \textbf{definition.} $A\in \CC^{n\times n}$ is \emph{normal} if $AA^*=A^*A$
+\item examples:
     \begin{itemize}
     \item[$\circ$] $A$ hermitian $\implies$ $A$ normal
     \item[$\circ$] $U$ unitary $\implies$ $U$ normal
     \item[$\circ$] $S$ skew-hermitian\footnote{\scriptsize $S^*=-S$} $\implies$ $S$ normal
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the spectral theorem}
+
+\begin{itemize}
 \item \textbf{corollary (spectral theorem).} if $A$ is normal then there exists $\Lambda$ diagonal and $Q$ unitary so that
     $$A=Q \Lambda Q^*$$
 
@@ -676,20 +724,20 @@ where $R$ is also upper triangular.  An easy calculation shows $(TT^*)_{11} = |t
 \begin{frame}{where we stand}
 
 \begin{itemize}
-\item in part II we will discuss the spectral theorem
+\item in part II we will discuss consequences of the spectral theorem
 \item \dots and get to the singular value decomposition
-\item almost everything will have some kind of analog in $\infty$-dimensions
-\item \dots and appear somewhere in Muscat's \emph{Functional Analysis} book
-\item but much does not extend straightforwardly to $\infty$-dimensions!
-\item \textbf{questions.} in infinite dimensions,
+\item almost everything we do will have some kind of analog in $\infty$-dimensions
+\item \dots and appear somewhere in our textbook\footnote{Muscat, \emph{Functional Analysis}; see Chapter 10 for Hilbert spaces}
+\item \dots but most proof steps do not extend directly to $\infty$-dimensions
+\item \textbf{questions.} in an $\infty$-dimensional Hilbert space,
     \begin{itemize}
-    \item[$\circ$] what is the meaning of ``span''?
+    \item[$\circ$] what is the meaning of ``span'' and ``basis''?
     \item[$\circ$] are matrices meaningful?
     \item[$\circ$] is a one-to-one linear operator invertible?
     \item[$\circ$] does the Gram-Schmidt process work as before?
     \item[$\circ$] does every linear operator have an eigenvector?
-    \item[$\circ$] is there a Schur decomposition?
-    \item[$\circ$] is there a spectral theorem?
+    \item[$\circ$] is there a Schur decomposition of every linear operator?
+    \item[$\circ$] is there a spectral theorem of hermitian or normal operators?
     \end{itemize}
 \end{itemize}
 \end{frame}
