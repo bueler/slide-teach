@@ -20,7 +20,6 @@
 % does not look nice, try deleting the line with the fontenc.
 
 \usepackage{empheq}
-%\usepackage{animate}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
 \usepackage{hyperref}
@@ -45,7 +44,6 @@
 
 \newcommand{\ddt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
 \newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
-\renewcommand{\t}[1]{\texttt{#1}}
 \newcommand{\Matlab}{\textsc{Matlab}\xspace}
 \newcommand{\Octave}{\textsc{Octave}\xspace}
 \newcommand{\MO}{\Matlab}
@@ -64,13 +62,6 @@
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
-\newcommand{\mfile}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
-}
-
-\newcommand{\mfiletiny}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
-}
 
 \AtBeginSection[]
 {
@@ -80,7 +71,7 @@
   \end{frame}
 }
 
-\title{Finite-dimensional spectral theory}
+\title[Finite-dimensional spectral theory I]{Finite-dimensional spectral theory}
 
 \subtitle{part I: from $\CC^n$ to the Schur decomposition}
 
