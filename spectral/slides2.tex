@@ -2,14 +2,10 @@
 
 \documentclass[10pt,hyperref]{beamer}
 
-\mode<presentation>
-{
+\mode<presentation>{
   \usetheme{Madrid}
-
   \usecolortheme{beaver}
-
   \setbeamercovered{transparent}
-  
   \setbeamerfont{frametitle}{size=\large}
 }
 
@@ -24,7 +20,6 @@
 % does not look nice, try deleting the line with the fontenc.
 
 \usepackage{empheq}
-\usepackage{animate}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
 \usepackage{hyperref}
@@ -49,23 +44,24 @@
 
 \newcommand{\ddt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
 \newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
-\renewcommand{\t}[1]{\texttt{#1}}
 \newcommand{\Matlab}{\textsc{Matlab}\xspace}
 \newcommand{\Octave}{\textsc{Octave}\xspace}
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
-\newcommand{\MS}{\alert{MAKE SURE}\xspace}
+\newcommand{\ip}[2]{\left<#1,#2\right>}
+
+\newcommand{\trefcolumn}[1]{\begin{bmatrix} \phantom{x} \\ #1 \\ \phantom{x} \end{bmatrix}}
+\newcommand{\trefmatrixtwo}[2]{\left[\begin{array}{c|c|c} & & \\ #1 & \dots & #2 \\ & & \end{array}\right]}
+\newcommand{\trefmatrixthree}[3]{\left[\begin{array}{c|c|c|c} & & & \\ #1 & #2 & \dots & #3 \\ & & & \end{array}\right]}
+\newcommand{\trefmatrixgroups}[4]{\left[\begin{array}{c|c|c|c|c|c} & & & & & \\ #1 & \dots & #2 & #3 & \dots & #4 \\ & & & & & \end{array}\right]}
+
+\newcommand{\blocktwo}[4]{\left[\begin{array}{c|c} #1 & #2 \\ \hline #3 & #4 \end{array}\right]}
+
+\newcommand{\bqed}{{\color{blue}\qed}}
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
-\newcommand{\mfile}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
-}
-
-\newcommand{\mfiletiny}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
-}
 
 \AtBeginSection[]
 {
@@ -75,7 +71,7 @@
   \end{frame}
 }
 
-\title{Finite-dimensional spectral theory}
+\title[Finite-dimensional spectral theory II]{Finite-dimensional spectral theory}
 
 \subtitle{part II: the spectral theorems, and singular value decompositions}
 
@@ -92,10 +88,25 @@
   \maketitle
 \end{frame}
 
-\begin{frame}{X}
+\begin{frame}[fragile]
+\frametitle{X}
 
 \begin{itemize}
-\item Y
+\item FIXME  goal: a large normal matrix with spectrum mostly filling the unit circle
+
+\begin{Verbatim}[fontsize=\scriptsize]
+>> A0 = randn(100,100)/10;
+>> [Q,R] = qr(randn(100,100));
+>> norm(Q'*Q-eye(100))
+ans =    1.8426e-15
+>> [X,D] = eig(A0);
+>> A = Q*D*Q';
+>> norm(A'*A - A*A')
+ans =    1.1396e-15
+>> lam = eig(A);  plot(real(lam),imag(lam),'o')
+>> grid on, axis equal
+\end{Verbatim}
+
 \end{itemize}
 \end{frame}
 
