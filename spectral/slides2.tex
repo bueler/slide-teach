@@ -22,7 +22,7 @@
 \usepackage{empheq}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
-\usepackage{hyperref}
+%\usepackage[colorlinks=true]{hyperref}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -62,7 +62,7 @@
 
 \newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
 
-
+% I think I want this:
 \AtBeginSection[]
 {
   \begin{frame}<beamer>
@@ -73,7 +73,7 @@
 
 \title[Finite-dimensional spectral theory II]{Finite-dimensional spectral theory}
 
-\subtitle{part II: the spectral theorems, and singular value decompositions}
+\subtitle{part II: understanding the spectrum (and the singular values)}
 
 \author{Ed Bueler}
 
@@ -84,9 +84,47 @@
 \begin{document}
 \beamertemplatenavigationsymbolsempty
 
+
 \begin{frame}
   \maketitle
 \end{frame}
+
+
+\begin{frame}{what happened in part I}
+
+\begin{itemize}
+\item see part I first: \quad \href{http://bueler.github.io/M617S20/slides1.pdf}{\texttt{bueler.github.io/M617S20/slides1.pdf}}
+\item we proved the Schur decomposition, for all square matrices, and the spectral theorem for normal matrices:
+    \begin{itemize}
+    \item[] $A = Q T Q^*$ \quad \emph{Schur decomposition}
+    \item[] $A = Q \Lambda Q^*$ \quad \emph{spectral theorem} when $AA^*=A^*A$
+    \end{itemize}
+where $Q$ is unitary ($Q^*Q=I$), $T$ is upper-triangular, and $\Lambda$ is diagonal
+    \begin{itemize}
+    \item[$\circ$] this spectral theorem for matrices is sometimes called the \emph{principal axis decomposition} (for quadratic forms)
+    \end{itemize}
+\item \emph{lemma.} a linear map $U$ on the inner product space $\CC^n$, where $\ip{v}{w}=v^*w$, is a unitary matrix (in the standard basis) if and only if it is linear, bijective, and an isometry
+\item in infinite dimensions we will want to use unitary maps when possible, because such maps preserve both vector space and metric structure
+    \begin{itemize}
+    \item[$\circ$] with effort, we will be able to extend the spectral theorem
+    \item[$\circ$] \dots but not the Schur decomposition
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+%\begin{frame}{table of contents}
+%\tableofcontents
+%\end{frame}
+
+
+\section{functional calculus}
+
+\begin{frame}{x}
+y
+\end{frame}
+
+\section{spectral subsets ``are'' projections}
 
 \begin{frame}[fragile]
 \frametitle{X}
@@ -109,6 +147,14 @@ ans =    1.1396e-15
 
 \end{itemize}
 \end{frame}
+
+
+\section{singular value decomposition}
+
+\begin{frame}{x}
+y
+\end{frame}
+
 
 
 \end{document}
