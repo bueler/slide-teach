@@ -120,9 +120,117 @@ where $Q$ is unitary ($Q^*Q=I$), $T$ is upper-triangular, and $\Lambda$ is diago
 
 \section{functional calculus}
 
-\begin{frame}{x}
-y
+\begin{frame}{power series of matrices}
+
+\begin{itemize}
+\item suppose $A$ is diagonalizable: $A = S \Lambda S^{-1}$
+    \begin{itemize}
+    \item[$\circ$] where $S$ is invertible and $\Lambda$ is diagonal
+    \item[$\circ$] diagonal entries of $\Lambda$ are eigenvalues of $A$: $\Lambda_{ii} = \lambda_i$
+    \item[$\circ$] if $A$ is normal (e.g.~hermitian) then choose $S=Q$ unitary so $S^{-1}=Q^*$
+    \end{itemize}
+\item power of $A$:
+    $$A^k = S \Lambda S^{-1} S \Lambda S^{-1} S \Lambda S^{-1} \dots S \Lambda S^{-1} = S \Lambda^k S^{-1}$$
+\item if $f(z)$ is a power series then we can express $f(A)$ as a series:
+\small
+\begin{align*}
+f(z) &= \sum_{n=0}^\infty c_n z^n & &\implies & f(A) &= \sum_{n=0}^\infty c_n A^n = S \left(\sum_{n=0}^\infty c_n \Lambda^n\right) S^{-1} \\
+     &&&& &= S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}
+\end{align*}
+\normalsize
+\item for example: \qquad \small
+$\displaystyle e^{tA} = \sum_{n=0}^\infty \frac{t^n}{n!} A^n =  S \begin{bmatrix} e^{t\lambda_1} & & \\ & \ddots & \\ & & e^{t\lambda_n} \end{bmatrix} S^{-1}$
+\end{itemize}
 \end{frame}
+
+
+\begin{frame}{the functional calculus}
+
+\begin{itemize}
+\item likewise
+\small
+\begin{align*}
+f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty c_n (A-z_0 I)^n \\
+     &&&& &= S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}
+\end{align*}
+\normalsize
+\item given a square matrix $A$, the \emph{functional calculus} is the ability to rigorously calculate matrices $f(A)$ for functions $f(z)$ defined on $\CC$
+\item does the matrix power series $f(A) = \sum_{n=0}^\infty c_n (A-z_0 I)^n$ converge?
+\item does $f(z)$ have to be analytic? well-behaved at all?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{norms of powers}
+
+\begin{itemize}
+\item recall that $\|A^k\| \le \|A\|^k$ for any induced norm
+\item if $A$ is diagonalizable then in any induced norm
+    $$\|A^k\| = \|S\Lambda^k S^{-1}\| \le \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda|^k = \kappa(S) \rho(A)^k$$
+
+\vspace{-3mm}
+    \begin{itemize}
+    \item[$\circ$] $\kappa(S)=\|S\|\|S^{-1}\|$ is the \emph{condition number} of $S$
+    \item[$\circ$] $\rho(A)=\max_{\lambda\in\sigma(A)} |\lambda|$ is the \emph{spectral radius} of $A$
+    \item[$\circ$] $\rho(A)\le \|A\|$
+    \end{itemize}
+\item \emph{corollary.} if $A$ is diagonalizable and $\rho(A)<1$ then $A^k \to 0$ as $k\to\infty$
+    \begin{itemize}
+    \item[$\circ$] actually this holds for all square $A$ \dots use the Schur or Jordan-canonical-form decompositions
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{convergence when $f(z)$ is analytic}
+
+\begin{itemize}
+\item compare
+\small
+   $$f(A) \stackrel{(1)}{=} \sum_{n=0}^\infty c_n (A-z_0 I)^n \qquad \text{ and } \qquad f(A) \stackrel{(2)}{=} S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}$$
+\normalsize
+\begin{lemma}
+Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$.
+    \begin{enumerate}
+    \item If $\|A-z_0 I\|<R$ in some induced norm then formula (1) converges in norm (i.e.~absolutely).
+    \item If $|\lambda - z_0|<R$ for all $\lambda \in \sigma(A)$ then formula (2) is well-defined.
+    \end{enumerate}
+\end{lemma}
+    \begin{itemize}
+    \item[$\circ$] the two parts of the lemma are related if $A$ is normal:
+    $$A = Q \Lambda Q^* \implies \rho(A-z_0 I) = \|A - z_0 I\|_2$$
+    \item[$\circ$] \dots but in general $\rho(A-z_0 I) \le \|A-z_0 I\|$ can be strict inequality
+    \end{itemize}
+\item for formula (2), $f(z)$ only needs to be defined on $\sigma(A)$
+    \begin{itemize}
+    \item[$\circ$] formula (2) is a better definition of $f(A)$ when $A$ is diagonalizable
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item y
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{nonnormal matrices, a warning}
+
+\begin{itemize}
+\item we know $\|A^k\|\le \|A\|^k$ in any induced norm
+\item and if $A$ is normal then $\|A^k\|_2 = (\|A\|_2)^k = \rho(A)^k$
+\item and if $\rho(A)<1$ then $A^k \to 0$ as $k\to \infty$
+\item but if $A$ is not normal then
+
+SHOW MATLAB example where $\|A^k\|$ grows big before to zero
+% S = randn(10); cond(S)
+% A = S * diag(0.9:.01:0.99) / S;
+\end{itemize}
+\end{frame}
+
 
 
 \section{spectral subsets ``are'' projections}
