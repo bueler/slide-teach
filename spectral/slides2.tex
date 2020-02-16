@@ -171,7 +171,8 @@ f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty 
 \begin{frame}{norms of powers}
 
 \begin{itemize}
-\item recall that $\|A^k\| \le \|A\|^k$ for any induced norm
+\item for any induced norm:
+    $$\|A^k\| \le \|A\|^k$$
 \item if $A$ is diagonalizable then in any induced norm
     $$\|A^k\| = \|S\Lambda^k S^{-1}\| \le \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda|^k = \kappa(S) \rho(A)^k$$
 
@@ -184,6 +185,16 @@ f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty 
 \item \emph{corollary.} if $A$ is diagonalizable and $\rho(A)<1$ then $A^k \to 0$ as $k\to\infty$
     \begin{itemize}
     \item[$\circ$] actually this holds for all square $A$ \dots use the Schur or Jordan-canonical-form decompositions
+    \end{itemize}
+\item if $A$ is normal then, because unitaries preserve $2$-norm,
+\begin{align*}
+\|A^k\|_2 &= \|Q\Lambda^k Q^*\|_2 \le \max_{\lambda\in\sigma(A)} |\lambda|^k = \rho(A)^k \\
+\|A^k\|_2 &= \|A\|_2^k
+\end{align*}
+
+\vspace{-3mm}
+    \begin{itemize}
+    \item[$\circ$] note $\kappa_2(Q)=1$ for a unitary matrix
     \end{itemize}
 \end{itemize}
 \end{frame}
