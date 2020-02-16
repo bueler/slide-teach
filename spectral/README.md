@@ -10,13 +10,16 @@ theorem, first for compact operators and then for bounded operators, is clear.
 * Finite-dimensional spectral theory II
 
     * functional calculus: f(A) by Taylor series
-    * mapping between hermitian and unitary
+    * mapping between hermitian and unitary and solving ODEs
+    * resolvents
+    * commuting operators
+    * mention: holomorphic, continuous, and Borel functional calculi
     * constructing orthonormal projections from ON vectors
     * spectrum subsets <--> projections
     * singular value decomposition
     * SVD vs eigenvalues
-    * SVD answers questions (invertibility, rank, nullity, conditioning)
     * polar form
+    * SVD answers questions: invertibility, rank, nullity, conditioning
     * low rank approximations
     * extend to infinite-dim'ns: compact and bounded operators on Hilbert space
 
