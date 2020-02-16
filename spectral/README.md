@@ -16,6 +16,7 @@ theorem, first for compact operators and then for bounded operators, is clear.
     * singular value decomposition
     * SVD vs eigenvalues
     * SVD answers questions (invertibility, rank, nullity, conditioning)
+    * polar form
     * low rank approximations
     * extend to infinite-dim'ns: compact and bounded operators on Hilbert space
 
