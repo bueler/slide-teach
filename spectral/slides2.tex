@@ -22,7 +22,9 @@
 \usepackage{empheq}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
+
 %\usepackage[colorlinks=true]{hyperref}
+\hypersetup{colorlinks}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -94,25 +96,24 @@
 
 \begin{itemize}
 \item see part I first: \quad \href{http://bueler.github.io/M617S20/slides1.pdf}{\texttt{bueler.github.io/M617S20/slides1.pdf}}
+\item \emph{definition.} for a square matrix $A\in\CC^{n\times n}$, the \emph{spectrum} is the set
+    $$\sigma(A)=\left\{\lambda\in\CC\,\big|\,Av=\lambda v \text{ for some }v\ne 0\right\}$$
 \item we proved:
     \begin{itemize}
-    \item[] $A = Q T Q^*$ \quad \emph{Schur decomposition} \quad for any $A \in \CC^{n\times n}=B(\CC^n)$
+    \item[] $A = Q T Q^*$ \quad \emph{Schur decomposition} \quad for any $A \in \CC^{n\times n}$
     \item[] $A = Q \Lambda Q^*$ \quad \emph{spectral theorem} \quad for normal ($AA^*=A^*A$) matrices
     \end{itemize}
-where $Q$ is unitary ($Q^*Q=I$), $T$ is upper-triangular, and $\Lambda$ is diagonal
+where $Q$ is unitary, $T$ is upper-triangular, and $\Lambda$ is diagonal
     \begin{itemize}
+    \item[$\circ$] both decompositions ``reveal'' the spectrum, as the diagonal of $T$ and $\Lambda$, respectively
     \item[$\circ$] the spectral theorem for matrices is sometimes called the \emph{principal axis decomposition} for quadratic forms
     \end{itemize}
-\item with effort, we will be able to extend the spectral theorem to $\infty$-dimensions
+\item we will extend the spectral theorem to $\infty$-dimensions
     \begin{itemize}
     \item[$\circ$] \dots but not the Schur decomposition
+    \item[$\circ$] \dots and it requires effort
     \item[$\circ$] in $\infty$-dimensions we will want to use unitary maps when possible, because such maps preserve both vector space and metric structure
     \end{itemize}
-
-\bigskip
-\small
-\item \emph{lemma.} a linear map $U$ on the inner product space $\CC^n$, where $\ip{v}{w}=v^*w$, is a unitary matrix (in the standard basis) if and only if it is linear, bijective, and an isometry
-
 \end{itemize}
 \end{frame}
 
@@ -120,6 +121,49 @@ where $Q$ is unitary ($Q^*Q=I$), $T$ is upper-triangular, and $\Lambda$ is diago
 %\begin{frame}{table of contents}
 %\tableofcontents
 %\end{frame}
+
+
+\begin{frame}{important class: unitary matrices}
+
+\begin{itemize}
+\item before we get started \dots
+\end{itemize}
+
+\begin{definition}
+$U \in \CC^{n\times n}$ is \emph{unitary} if $U^*U=I$
+\end{definition}
+
+\begin{lemma}
+Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $U$ is linear map on $\CC^n$.  The following are equivalent:
+
+\begin{itemize}
+\item $U$ is unitary
+\item expressed in the standard basis, the columns of $U$ are ON basis of $\CC^n$
+\item $\ip{Uv}{Uw}=\ip{v}{w}$ for all $v\in\CC^n$
+\item $\|Uv\|_2=\|v\|_2$ for all $v\in\CC^n$
+\item $U$ is a metric-space isometry
+\end{itemize}
+\end{lemma}
+\end{frame}
+
+
+\begin{frame}{important class: normal matrices}
+
+\begin{definition}
+$A \in \CC^{n\times n}$ is \emph{normal} if $A^*A=AA^*$
+\end{definition}
+
+\begin{lemma}
+Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $A$ is linear map on $\CC^n$.  The following are equivalent:
+
+\begin{itemize}
+\item $A$ is normal
+\item there exists an ON basis of eigenvectors of $A$
+\item there exists $Q$ unitary and $\Lambda$ diagonal so that $A=Q\Lambda Q^*$
+\item FIXME: look up more
+\end{itemize}
+\end{lemma}
+\end{frame}
 
 
 \section{functional calculus}
@@ -130,12 +174,12 @@ where $Q$ is unitary ($Q^*Q=I$), $T$ is upper-triangular, and $\Lambda$ is diago
 \item suppose $A$ is diagonalizable: $A = S \Lambda S^{-1}$
     \begin{itemize}
     \item[$\circ$] where $S$ is invertible and $\Lambda$ is diagonal
-    \item[$\circ$] diagonal entries of $\Lambda$ are eigenvalues of $A$: $\Lambda_{ii} = \lambda_i$
+    \item[$\circ$] diagonal entries of $\Lambda$ are eigenvalues of $A$: $A v_i = \Lambda_{ii} v_i$ if $v_i$ is $i$th column of $S$
     \item[$\circ$] if $A$ is normal (e.g.~hermitian) then choose $S=Q$ unitary so $S^{-1}=Q^*$
     \end{itemize}
 \item powers of $A$:
-    $$A^k = S \Lambda S^{-1} S \Lambda S^{-1} S \Lambda S^{-1} \dots S \Lambda S^{-1} = S \Lambda^k S^{-1}$$
-\item if $f(z)$ is a power series then we can express $f(A)$ as a series:
+    $$A^k = S \Lambda S^{-1} S \Lambda S^{-1} S \Lambda S^{-1} \cdots S \Lambda S^{-1} = S \Lambda^k S^{-1}$$
+\item if $f(z)$ is a power series then we can create $f(A)$:
 \small
 \begin{align*}
 f(z) &= \sum_{n=0}^\infty c_n z^n & &\implies & f(A) &= \sum_{n=0}^\infty c_n A^n = S \left(\sum_{n=0}^\infty c_n \Lambda^n\right) S^{-1} \\
@@ -150,19 +194,21 @@ $\displaystyle e^{tA} = \sum_{n=0}^\infty \frac{t^n}{n!} A^n =  S \begin{bmatrix
 
 \begin{frame}{what does ``functional calculus'' mean?}
 
+\begin{itemize}
+\item we have an example of a functional calculus:
 \small
 \begin{align*}
 f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty c_n (A-z_0 I)^n \\
      &&&& &= S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}
 \end{align*}
 \normalsize
-
-\begin{itemize}
-\item given a square matrix $A$, the \emph{functional calculus} is the ability to rigorously calculate matrices $f(A)$ for functions $f(z)$ defined on $\CC$
+\item given a square matrix $A$, the (finite-dimensional) \emph{functional calculus} is the rigorous ability to calculate a matrix $f(A)$ for functions $f(z)$ defined on $\CC$
 \item but \dots
     \begin{itemize}
-    \item[$\circ$] does $f(z)$ have to be analytic?
-    \item[$\circ$] does the matrix power series $f(A) = \sum_{n=0}^\infty c_n (A-z_0 I)^n$ converge?
+    \item[$\circ$] does the matrix power series $f(A) = \sum_{n=0}^\infty c_n (A-z_0 I)^n$ converge? \textbf{reasonable question}
+    \item[$\circ$] does $f(z)$ have to be analytic anyway?
+    
+     \textbf{no}
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -227,7 +273,7 @@ Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$
 \begin{frame}{the functional calculus for normal matrices}
 
 \begin{theorem}
-If $A\in \CC^{n\times n}$ is normal, if $\sigma(A) \subset \Omega \subset \CC$, and if $f:\Omega \to \CC$, then there is a matrix $f(A)\in\CC^n$ so that:
+If $A\in \CC^{n\times n}$ is normal, if $\sigma(A) \subseteq \Omega \subseteq \CC$, and if $f:\Omega \to \CC$, then there is a unique matrix $f(A)\in\CC^n$ so that:
 \begin{enumerate}
 \item $f(A)$ is normal
 \item $f(A)$ commutes with $A$
@@ -238,31 +284,30 @@ If $A\in \CC^{n\times n}$ is normal, if $\sigma(A) \subset \Omega \subset \CC$, 
 
 \emph{proof.}  By the spectral theorem there is a unitary matrix $Q$ and a diagonal matrix $\Lambda$ so that $A=Q\Lambda A^*$, with columns of $Q$ which are eigenvectors of $A$ and all eigenvalues of $A$ listed on the diagonal of $\Lambda$.  Define
     $$f(A) = Q \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} Q^*.$$
-It has the stated properties.
+It has the stated properties.  It is a unique linear map because its action on a basis (of eigenvectors of $A$) is determined by property 3.
 \end{frame}
 
 
-\begin{frame}{meaning of the functional calculus}
+\begin{frame}{the meaning of the functional calculus}
 
 \begin{itemize}
 \item if $A$ is normal then you can apply any function $f(z)$ to it, giving $f(A)$, as though $A$ is ``just like a complex number''
     \begin{itemize}
-    \item[$\circ$] actually, $f$ has to be defined on all of $\sigma(A)$ to do this
-    \item[$\circ$] but $f$ does not have to be analytic or even continuous
-    \item[$\circ$] and the matrix $2$-norm behaves well: $\|f(A)\|_2 = \max_{\lambda\in\sigma(A)} |f(\lambda)|$
-    \item[$\circ$] the eigendecomposition is powerful if $A$ is normal!
+    \item[$\circ$] $f$ merely has to be defined\footnote{In $\infty$-dimensions $f$ needs some regularity, and thus there are separate wikipedia pages on \href{https://en.wikipedia.org/wiki/Holomorphic_functional_calculus}{\emph{holomorphic functional calculus}}, \href{https://en.wikipedia.org/wiki/Continuous_functional_calculus}{\emph{continuous functional calculus}}, and \href{https://en.wikipedia.org/wiki/Borel_functional_calculus}{\emph{borel functional calculus}}, so we have the \emph{functional calculi}.  (No one says that.)} on the finite set $\sigma(A)$
+    \item[$\circ$] the matrix $2$-norm behaves well: $\|f(A)\|_2 = \max_{\lambda\in\sigma(A)} |f(\lambda)|$
+    \item[$\circ$] eigendecomposition is therefore powerful if $A$ is normal!
     \end{itemize}
-\item if $A$ is diagonalizable then $f(A)$ can also be \emph{defined} almost the same,
+\item if $A$ is diagonalizable then $f(A)$ can be \emph{defined} the same:
 \small
-   $$f(A) = S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1},$$
+   $$f(A) = S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}$$
 \normalsize
-but it can behave in surprising ways because $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f(\lambda)|$ when $\kappa(S)\gg 1$
-\item if $A$ is defective then one may have to revert to using power series just to define $f(A)$, and norm behavior can be very unpredictable
+but surprising behavior is possible: $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f(\lambda)|$ \,?
+\item if $A$ is defective then revert to using power series just to define $f(A)$?  \emph{answer}: see ``resolvents'' below
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{functional calculus applications 1 and 2}
+\begin{frame}{functional calculus applications}
 
 \begin{enumerate}
 \item suppose $A$ is hermitian and we want to build a unitary matrix from it
@@ -271,11 +316,13 @@ but it can behave in surprising ways because $\|f(A)\| \gg \max_{\lambda\in\sigm
     \end{itemize}
 
 \medskip
-\emph{solution.} $f(z) = e^{iz}$ maps $\RR$ to the unit circle so
-    $$U = e^{iA}$$
-is unitary
+\emph{solution 1.} $f(z) = e^{iz}$ maps $\RR$ to the unit circle so
+    $$U = e^{iA} \quad \text{is unitary}$$
 
-\bigskip
+\emph{solution 2.} $\displaystyle f(z) = \frac{z+i}{z-i}$ maps $\RR$ to the unit circle so
+    $$U = (A+iI)(A-iI)^{-1} \quad \text{is unitary}$$
+
+\medskip
 \item suppose $U$ is unitary and we want to build a hermitian matrix from it
     \begin{itemize}
     \item[$\circ$] so $U$ is normal and $\sigma(U) \subset S^1 = \{z\in \CC\,:\, |z|=1\}$
@@ -284,13 +331,12 @@ is unitary
 
 \medskip
 \emph{solution.} $f(z) = \Log(z)$ maps the unit circle $S^1$ to the real line, so
-    $$A = \frac{1}{i} \Log(U) = -i \Log(U)$$
-is hermitian
+    $$A = \frac{1}{i} \Log(U) = -i \Log(U) \quad \text{is hermitian}$$
 \end{enumerate}
 \end{frame}
 
 
-\begin{frame}{functional calculus application 3: linear ODEs}
+\begin{frame}{functional calculus applications: linear ODEs}
 
 \begin{enumerate}
 \setcounter{enumi}{2}
@@ -302,25 +348,46 @@ for $y(t) \in \CC^n$ on $t\in [t_0,t_f]$
 \emph{solution.} $y(t) = e^{tz}$ solves $dy/dt=zy$ so, using the functional calculus with $f(z) = e^{(t-t_0)z}$,
 \begin{align*}
     y(t) &= e^{(t-t_0)A} y_0 \\
-         &= \text{\texttt{expm((t-t0)*A)*y0}}
+         &= \text{\texttt{expm((t-t0)*A)*y0}}, \\
+  \|y(t)\|_2 &= e^{(t-t_0)\omega(A)}\|y_0\|_2
 \end{align*}
-and
-    $$\|y(t)\|_2=e^{(t-t_0)\omega(A)}\|y_0\|_2$$
 where $\omega(A) = \max_{\lambda\in\sigma(A)} \operatorname{Re} \lambda$
-\end{enumerate}
-
-\bigskip
 \begin{itemize}
 \item if $A$ is diagonalizable then the same applies \dots except the norm of the solution is determined by $\kappa(S)$ where $A=S \Lambda S^{-1}$
-\item if $A$ is defective then the solution of the ODE system is not purely exponential
+\item if $A$ is defective then the general solution of the ODE system is \emph{not} exponential
+\item $\infty$-dimensional version: Schr\"odinger's equation in quantum mechanics
 \end{itemize}
+\end{enumerate}
 \end{frame}
 
 
 \begin{frame}{resolvents}
 
+\begin{definition}
+given $A\in\CC^{n\times n}$ and $z \notin \sigma(A)$,
+    $$R_z(A) = \left(A-z I\right)^{-1}$$
+is the \emph{resolvent} matrix
+\end{definition}
+
 \begin{itemize}
-\item x
+\item if $z \in \sigma(A)$ then $A-z I$ is not invertible
+\item $R_z(A)$ is defined for all $z$ in the open \emph{resolvent set} $\CC\setminus \sigma(A)$
+\item $R_0(A)=A^{-1}$ if $0\notin\sigma(A)$
+\item $R_z(A)$ ``resolves'' the equation $Av-z v=b$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{resolvent norms}
+
+\begin{itemize}
+\item if $A=S\Lambda S^{-1}$ is diagonalizable and $z\in \CC\setminus \sigma(A)$ then
+    $$R_z(A) = \left(S\Lambda S^{-1}-z I\right)^{-1} = S \left(\Lambda - z I\right)^{-1} S^{-1}$$
+so in any induced norm
+    $$\|R_z(A)\| = \|S\|\|S^{-1}\|\|\Lambda - z I\| = \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
+\item if $A$ is normal then we can choose $S=Q$ unitary (spectral theorem!) so
+    $$\|R_z(A)\|_2 = \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
+\item FIXME: 1990s discovery: surface (contours) $z\mapsto\|R_z(A)\|_2$ is the right ``personality test'' for nonnormal $A$; aka \emph{pseudospectrum}
 \end{itemize}
 \end{frame}
 
