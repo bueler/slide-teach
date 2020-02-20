@@ -51,6 +51,8 @@
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
+\newcommand{\ds}{\displaystyle}
+
 \newcommand{\ip}[2]{\left<#1,#2\right>}
 
 \newcommand{\trefcolumn}[1]{\begin{bmatrix} \phantom{x} \\ #1 \\ \phantom{x} \end{bmatrix}}
@@ -75,7 +77,7 @@
 
 \title[Finite-dimensional spectral theory II]{Finite-dimensional spectral theory}
 
-\subtitle{part II: understanding the spectrum (and the singular values)}
+\subtitle{part II: understanding the spectrum, and singular values}
 
 \author{Ed Bueler}
 
@@ -111,7 +113,6 @@ where $Q$ is unitary, $T$ is upper-triangular, and $\Lambda$ is diagonal
 \item we will extend the spectral theorem to $\infty$-dimensions
     \begin{itemize}
     \item[$\circ$] \dots but not the Schur decomposition
-    \item[$\circ$] \dots and it requires effort
     \item[$\circ$] in $\infty$-dimensions we will want to use unitary maps when possible, because such maps preserve both vector space and metric structure
     \end{itemize}
 \end{itemize}
@@ -158,9 +159,9 @@ Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm
 
 \begin{itemize}
 \item $A$ is normal
-\item there exists an ON basis of eigenvectors of $A$
-\item there exists $Q$ unitary and $\Lambda$ diagonal so that $A=Q\Lambda Q^*$
-\item FIXME: look up more
+\item $\|Ax\|_2 = \|A^*x\|_2$ for all $x$
+\item exists an ON basis of eigenvectors of $A$
+\item exists $Q$ unitary and $\Lambda$ diagonal so that $A=Q\Lambda Q^*$ (\emph{spectral theorem})
 \end{itemize}
 \end{lemma}
 \end{frame}
@@ -248,23 +249,28 @@ f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty 
 
 \begin{frame}{convergence when $f(z)$ is analytic}
 
+   $$f(A) \stackrel{?}{=} \sum_{n=0}^\infty c_n (A-z_0 I)^n$$
+
+\begin{lemma}
+Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$. If $\|A-z_0 I\|<R$ in some induced norm then above sum converges in norm.
+\end{lemma}
+
+    \begin{itemize}
+    \item[$\circ$] if $A$ is normal then $A = Q \Lambda Q^*$ so
+    $$\|A - z_0 I\|_2 = \max_{\lambda\in\sigma(A)} |\lambda-z_0| = \rho(A-z_0 I)$$
+    \item[$\circ$] in general $\rho(A-z_0 I) \le \|A-z_0 I\|$ can be strict inequality
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{defining $f(z)$}
+
 \begin{itemize}
 \item compare two ways of defining $f(A)$:
 \small
    $$f(A) \stackrel{(1)}{=} \sum_{n=0}^\infty c_n (A-z_0 I)^n \qquad \text{ and } \qquad f(A) \stackrel{(2)}{=} S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}$$
 \normalsize
-\begin{lemma}
-Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$.
-    \begin{enumerate}
-    \item If $\|A-z_0 I\|<R$ in some induced norm then formula (1) converges in norm.
-    \item If $A$ is diagonalizable and if $|\lambda - z_0|<R$ for all $\lambda \in \sigma(A)$ then formula (2) is well-defined.
-    \end{enumerate}
-\end{lemma}
-    \begin{itemize}
-    \item[$\circ$] the two parts of the lemma are related if $A$ is normal:
-    $$A = Q \Lambda Q^* \implies \rho(A-z_0 I) = \|A - z_0 I\|_2$$
-    \item[$\circ$] \dots but in general $\rho(A-z_0 I) \le \|A-z_0 I\|$ can be strict inequality
-    \end{itemize}
+\item for (1) $f$ needs to be analytic and have sufficiently-large radius of convergence relative to norm $\|A-z_0I\|$
 \item for formula (2), $A$ needs to be diagonalizable, but $f(z)$ does not need to be analytic \dots it only needs to be defined on $\sigma(A)$
 \end{itemize}
 \end{frame}
@@ -295,14 +301,14 @@ It has the stated properties.  It is a unique linear map because its action on a
     \begin{itemize}
     \item[$\circ$] $f$ merely has to be defined\footnote{In $\infty$-dimensions $f$ needs some regularity, and thus there are separate wikipedia pages on \href{https://en.wikipedia.org/wiki/Holomorphic_functional_calculus}{\emph{holomorphic functional calculus}}, \href{https://en.wikipedia.org/wiki/Continuous_functional_calculus}{\emph{continuous functional calculus}}, and \href{https://en.wikipedia.org/wiki/Borel_functional_calculus}{\emph{borel functional calculus}}, so we have the \emph{functional calculi}.  (No one says that.)} on the finite set $\sigma(A)$
     \item[$\circ$] the matrix $2$-norm behaves well: $\|f(A)\|_2 = \max_{\lambda\in\sigma(A)} |f(\lambda)|$
-    \item[$\circ$] eigendecomposition is therefore powerful if $A$ is normal!
+    \item[$\circ$] eigendecomposition is therefore powerful when $A$ is normal!
     \end{itemize}
 \item if $A$ is diagonalizable then $f(A)$ can be \emph{defined} the same:
 \small
    $$f(A) = S \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} S^{-1}$$
 \normalsize
-but surprising behavior is possible: $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f(\lambda)|$ \,?
-\item if $A$ is defective then revert to using power series just to define $f(A)$?  \emph{answer}: see ``resolvents'' below
+but surprising behavior is possible: $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f(\lambda)|$
+\item if $A$ is defective then what?  revert to using power series just to define $f(A)$?
 \end{itemize}
 \end{frame}
 
@@ -361,17 +367,20 @@ where $\omega(A) = \max_{\lambda\in\sigma(A)} \operatorname{Re} \lambda$
 \end{frame}
 
 
+\section{resolvents}
+
 \begin{frame}{resolvents}
 
 \begin{definition}
-given $A\in\CC^{n\times n}$ and $z \notin \sigma(A)$,
+given $A\in\CC^{n\times n}$ then $\CC\setminus \sigma(A)$ is the \emph{resolvent set}, and if $z \notin \sigma(A)$ then
     $$R_z(A) = \left(A-z I\right)^{-1}$$
-is the \emph{resolvent} matrix
+is the \emph{resolvent matrix}
 \end{definition}
 
 \begin{itemize}
 \item if $z \in \sigma(A)$ then $A-z I$ is not invertible
-\item $R_z(A)$ is defined for all $z$ in the open \emph{resolvent set} $\CC\setminus \sigma(A)$
+\item the resolvent set $\CC\setminus \sigma(A)$ is open
+\item $R_z(A)$ is defined for $z \in \CC\setminus \sigma(A)$
 \item $R_0(A)=A^{-1}$ if $0\notin\sigma(A)$
 \item $R_z(A)$ ``resolves'' the equation $Av-z v=b$
 \end{itemize}
@@ -387,31 +396,68 @@ so in any induced norm
     $$\|R_z(A)\| = \|S\|\|S^{-1}\|\|\Lambda - z I\| = \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
 \item if $A$ is normal then we can choose $S=Q$ unitary (spectral theorem!) so
     $$\|R_z(A)\|_2 = \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
-\item FIXME: 1990s discovery: surface (contours) $z\mapsto\|R_z(A)\|_2$ is the right ``personality test'' for nonnormal $A$; aka \emph{pseudospectrum}
+\item once can plot $g(z)=\|R_z(A)\|_2$
+
+\vspace{-5mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/resolvesurf}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{nonnormal matrices, a warning}
+\begin{frame}[fragile]
+\frametitle{resolvent norms illustrated}
+
+\begin{Verbatim}[fontsize=\footnotesize]
+   >> [A,B] = gennormal(5);  % A,B have same eigs; A normal but B not
+   >> resolveshow(A)         % normal case
+   >> resolveshow(B)         % nonnormal case
+\end{Verbatim}
+
+\bigskip
+\begin{center}
+\includegraphics[width=0.31\textwidth]{figs/resolvenormal} \hspace{20mm} \includegraphics[width=0.3\textwidth]{figs/resolvenonnormal}
+\end{center}
+
+\small
+\begin{itemize}
+\item last slide already proved contours would be round for normal $A$
+\item contours of $z\mapsto\|R_z(A)\|_2= \|(A-z I)^{-1}\|_2$ may be best spectral picture (personality test?) for nonnormal matrices $A$
+    \begin{itemize}
+    \item[$\circ$] $\sigma_\eps(A) = \left\{z\in\CC\,:\, \|(A-z I)^{-1}\|_2 \ge \eps^{-1}\right\}$ is the $\eps$-\emph{pseudospectrum} of $A$
+    \item[$\circ$] discovery of the 1990s, esp.~Trefethen
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{nonnormal matrices, a warning}
 
 \begin{itemize}
 \item we know $\|A^k\|\le \|A\|^k$ in any induced norm
 \item and if $A$ is normal then $\|A^k\|_2 = (\|A\|_2)^k = \rho(A)^k$
-\item and if $\rho(A)<1$ then $A^k \to 0$ as $k\to \infty$
-\item but if $A$ is not normal then
-
-SHOW MATLAB example where $\|A^k\|$ grows big before to zero
-% S = randn(10); cond(S)
-% A = S * diag(0.9:.01:0.99) / S;
-
-pseudospectrum of $A$ is filled contour map of norm of resolvent, i.e.
-    $$\sigma_\eps(A) = \left\{z\in\CC\,:\,\|(A-z I)^{-1}\|_2 \ge \eps^{-1}\right\}$$
+\item and if $\rho(A)<1$ then $A^k \to 0$ as $k\to \infty$ \hfill \emph{proof?}
+\item \dots but if $A$ is not normal then $\|A^k\|$ can be big before going to zero
+    \begin{itemize}
+    \item[$\circ$] e.g.~random $100\times 100$ matrices $A$,$B$ with $\rho(A)=\rho(B)<1$
+    \item[$\circ$] recall $\rho(A) = \max_{\lambda\in\sigma(A)} |\lambda|$
+    \end{itemize}
 \end{itemize}
+
+\bigskip
+\begin{Verbatim}[fontsize=\footnotesize]
+   >> max(abs(eig(A)))
+   ans =  0.90909
+   >> max(abs(eig(B)))
+   ans =  0.90909
+\end{Verbatim}
+
+\vspace{-15mm}
+\hfill \includegraphics[width=0.5\textwidth]{figs/normpowers} \quad \phantom{foo}
 \end{frame}
 
 
-
-\section{spectral subsets ``are'' projections}
+\section{spectral subsets of normal matrices $\sim$ orthogonal projections}
 
 \begin{frame}[fragile]
 \frametitle{X}
@@ -436,6 +482,19 @@ ans =    1.1396e-15
 \end{frame}
 
 
+\begin{frame}{resolution of the identity}
+
+if $A$ normal then
+
+$$Av = \sum_{i=1}^n \lambda_i q_i (q_i^*v)$$
+
+$$A = \sum_{i=1}^n \lambda_i q_i q_i^*$$
+
+\footnotesize
+\href{https://en.wikipedia.org/wiki/Spectral_theory\#Resolution_of_the_identity}{\texttt{en.wikipedia.org/wiki/Spectral\_theory\#Resolution\_of\_the\_identity}}
+\end{frame}
+
+
 \section{singular value decomposition}
 
 \begin{frame}{x}
@@ -443,6 +502,4 @@ y
 \end{frame}
 
 
-
 \end{document}
-
