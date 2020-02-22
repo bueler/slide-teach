@@ -50,6 +50,7 @@
 \newcommand{\Octave}{\textsc{Octave}\xspace}
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
+\newcommand{\image}{\operatorname{im}}
 
 \newcommand{\ds}{\displaystyle}
 
@@ -77,7 +78,7 @@
 
 \title[Finite-dimensional spectral theory II]{Finite-dimensional spectral theory}
 
-\subtitle{part II: understanding the spectrum, and singular values}
+\subtitle{part II: understanding the spectrum (and singular values)}
 
 \author{Ed Bueler}
 
@@ -107,13 +108,13 @@
     \end{itemize}
 where $Q$ is unitary, $T$ is upper-triangular, and $\Lambda$ is diagonal
     \begin{itemize}
-    \item[$\circ$] both decompositions ``reveal'' the spectrum, as the diagonal of $T$ and $\Lambda$, respectively
+    \item[$\circ$] both decompositions ``reveal'' the spectrum (on the diagonal of $T$ and $\Lambda$)
     \item[$\circ$] the spectral theorem for matrices is sometimes called the \emph{principal axis decomposition} for quadratic forms
     \end{itemize}
 \item we will extend the spectral theorem to $\infty$-dimensions
     \begin{itemize}
     \item[$\circ$] \dots but not the Schur decomposition
-    \item[$\circ$] in $\infty$-dimensions we will want to use unitary maps when possible, because such maps preserve both vector space and metric structure
+    \item[$\circ$] in $\infty$-dimensions we want to use unitary maps because such maps preserve both vector space and metric structure
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -290,7 +291,7 @@ If $A\in \CC^{n\times n}$ is normal, if $\sigma(A) \subseteq \Omega \subseteq \C
 
 \emph{proof.}  By the spectral theorem there is a unitary matrix $Q$ and a diagonal matrix $\Lambda$ so that $A=Q\Lambda A^*$, with columns of $Q$ which are eigenvectors of $A$ and all eigenvalues of $A$ listed on the diagonal of $\Lambda$.  Define
     $$f(A) = Q \begin{bmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{bmatrix} Q^*.$$
-It has the stated properties.  It is a unique linear map because its action on a basis (of eigenvectors of $A$) is determined by property 3.
+It has the stated properties.  It is a unique because its action on a basis (eigenvectors of $A$) is determined by property 3.
 \end{frame}
 
 
@@ -299,7 +300,7 @@ It has the stated properties.  It is a unique linear map because its action on a
 \begin{itemize}
 \item if $A$ is normal then you can apply any function $f(z)$ to it, giving $f(A)$, as though $A$ is ``just like a complex number''
     \begin{itemize}
-    \item[$\circ$] $f$ merely has to be defined\footnote{In $\infty$-dimensions $f$ needs some regularity, and thus there are separate wikipedia pages on \href{https://en.wikipedia.org/wiki/Holomorphic_functional_calculus}{\emph{holomorphic functional calculus}}, \href{https://en.wikipedia.org/wiki/Continuous_functional_calculus}{\emph{continuous functional calculus}}, and \href{https://en.wikipedia.org/wiki/Borel_functional_calculus}{\emph{borel functional calculus}}, so we have the \emph{functional calculi}.  (No one says that.)} on the finite set $\sigma(A)$
+    \item[$\circ$] $f$ merely has to be defined\footnote{In $\infty$-dimensions $f$ needs some regularity.  Thus there are separate wikipedia pages on \href{https://en.wikipedia.org/wiki/Holomorphic_functional_calculus}{\emph{holomorphic functional calculus}}, \href{https://en.wikipedia.org/wiki/Continuous_functional_calculus}{\emph{continuous functional calculus}}, and \href{https://en.wikipedia.org/wiki/Borel_functional_calculus}{\emph{borel functional calculus}}.} on the finite set $\sigma(A)$
     \item[$\circ$] the matrix $2$-norm behaves well: $\|f(A)\|_2 = \max_{\lambda\in\sigma(A)} |f(\lambda)|$
     \item[$\circ$] eigendecomposition is therefore powerful when $A$ is normal!
     \end{itemize}
@@ -359,10 +360,10 @@ for $y(t) \in \CC^n$ on $t\in [t_0,t_f]$
 \end{align*}
 where $\omega(A) = \max_{\lambda\in\sigma(A)} \operatorname{Re} \lambda$
 \begin{itemize}
-\item if $A$ is diagonalizable then the same applies \dots except the norm of the solution is determined by $\kappa(S)$ where $A=S \Lambda S^{-1}$
+\item if $A$ is diagonalizable $A=S \Lambda S^{-1}$ then the same applies \dots except the norm of the solution includes $\kappa(S)$
 \item if $A$ is defective then the general solution of the ODE system is \emph{not} exponential
-\item $\infty$-dimensional version: Schr\"odinger's equation in quantum mechanics
 \end{itemize}
+\item $\infty$-dimensional version: Schr\"odinger's equation in quantum mechanics
 \end{enumerate}
 \end{frame}
 
@@ -378,7 +379,7 @@ is the \emph{resolvent matrix}
 \end{definition}
 
 \begin{itemize}
-\item if $z \in \sigma(A)$ then $A-z I$ is not invertible
+\item recall: $z \in \sigma(A)$ if and only if $A-z I$ is not invertible
 \item the resolvent set $\CC\setminus \sigma(A)$ is open
 \item $R_z(A)$ is defined for $z \in \CC\setminus \sigma(A)$
 \item $R_0(A)=A^{-1}$ if $0\notin\sigma(A)$
@@ -396,7 +397,7 @@ so in any induced norm
     $$\|R_z(A)\| = \|S\|\|S^{-1}\|\|\Lambda - z I\| = \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
 \item if $A$ is normal then we can choose $S=Q$ unitary (spectral theorem!) so
     $$\|R_z(A)\|_2 = \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
-\item once can plot $g(z)=\|R_z(A)\|_2$
+\item one may plot $g(z)=\|R_z(A)\|_2$
 
 \vspace{-5mm}
 \hfill \includegraphics[width=0.45\textwidth]{figs/resolvesurf}
@@ -409,8 +410,8 @@ so in any induced norm
 
 \begin{Verbatim}[fontsize=\footnotesize]
    >> [A,B] = gennormal(5);  % A,B have same eigs; A normal but B not
-   >> resolveshow(A)         % normal case
-   >> resolveshow(B)         % nonnormal case
+   >> resolveshow(A)         % normal case     (LEFT)
+   >> resolveshow(B)         % nonnormal case  (RIGHT)
 \end{Verbatim}
 
 \bigskip
@@ -424,7 +425,6 @@ so in any induced norm
 \item contours of $z\mapsto\|R_z(A)\|_2= \|(A-z I)^{-1}\|_2$ may be best spectral picture (personality test?) for nonnormal matrices $A$
     \begin{itemize}
     \item[$\circ$] $\sigma_\eps(A) = \left\{z\in\CC\,:\, \|(A-z I)^{-1}\|_2 \ge \eps^{-1}\right\}$ is the $\eps$-\emph{pseudospectrum} of $A$
-    \item[$\circ$] discovery of the 1990s, esp.~Trefethen
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -434,13 +434,16 @@ so in any induced norm
 \frametitle{nonnormal matrices, a warning}
 
 \begin{itemize}
-\item we know $\|A^k\|\le \|A\|^k$ in any induced norm
-\item and if $A$ is normal then $\|A^k\|_2 = (\|A\|_2)^k = \rho(A)^k$
-\item and if $\rho(A)<1$ then $A^k \to 0$ as $k\to \infty$ \hfill \emph{proof?}
-\item \dots but if $A$ is not normal then $\|A^k\|$ can be big before going to zero
+\item facts and definitions:
+    \begin{itemize}
+    \item[$\circ$] $\|A^k\|\le \|A\|^k$ in any induced norm
+    \item[$\circ$] if $A$ is normal then $\|A^k\|_2 = (\|A\|_2)^k = \rho(A)^k$
+    \item[$\circ$] $\rho(A) = \max_{\lambda\in\sigma(A)} |\lambda|$
+    \item[$\circ$] if $\rho(A)<1$ then $A^k \to 0$ as $k\to \infty$ \hfill \emph{proof?}
+    \end{itemize}
+\item but if $A$ is not normal and $\rho(A)<1$ then $\|A^k\|_2$ \emph{can be big} for a while
     \begin{itemize}
     \item[$\circ$] e.g.~random $100\times 100$ matrices $A$,$B$ with $\rho(A)=\rho(B)<1$
-    \item[$\circ$] recall $\rho(A) = \max_{\lambda\in\sigma(A)} |\lambda|$
     \end{itemize}
 \end{itemize}
 
@@ -452,24 +455,41 @@ so in any induced norm
    ans =  0.90909
 \end{Verbatim}
 
-\vspace{-15mm}
-\hfill \includegraphics[width=0.5\textwidth]{figs/normpowers} \quad \phantom{foo}
+\vspace{-17mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/normpowers} \quad \phantom{foo}
 \end{frame}
 
 
 \section{orthogonal projections}
 
-\begin{frame}{x}
+\begin{frame}{orthogonal projections}
+
+\begin{definition}
+$P \in \CC^{n\times n}$ is an \emph{orthogonal projection} if $P^2=P$ and $P^*=P$
+\end{definition}
 
 \begin{itemize}
-\item y
+\item if $\lambda \in \sigma(P)$ then $\lambda=0,1$
+\item as for any projection ($P^2=P$):
+    $$\ker P = \image (I-P), \quad \image P = \ker (I-P), \quad \CC^n = \ker P \oplus \image P$$
+\item but now:
+    $$\ker P \perp \image P$$
+
+    \begin{itemize}
+    \item[$\circ$] \emph{proof.}  if $u\in\ker P$ and $v=Pz\in\image P$ then $u^*v = u^*(Pz)=(Pu)^*z = 0$
+    \end{itemize}
+\item examples:
+    $$0, \quad I, \quad P = \begin{bmatrix} 1 & & \\ & 1 & \\ & & 0 \end{bmatrix}$$
 \end{itemize}
 \end{frame}
 
-\begin{frame}{x}
+
+\begin{frame}{constructing orthogonal projections}
 
 \begin{itemize}
-\item y
+\item FIXME since hermitian, $P=Q \Lambda Q^* = \hat Q \hat Q^*$
+\item e.g.~rank 1 case: $P=q q^*$
+\item $P = A (A^* A)^{-1} A^*$
 \end{itemize}
 \end{frame}
 
