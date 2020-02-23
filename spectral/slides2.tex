@@ -583,6 +583,72 @@ ans =    1.1396e-15
 
 \section{singular value decomposition}
 
+\begin{frame}{why singular values?}
+
+\begin{itemize}
+\item eigenvalues are useful, but they only make sense for square matrices
+    \begin{itemize}
+    \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$ not for $T \in B(X,Y)$''
+    \end{itemize}
+\item \dots but sometimes not so useful even then
+    \begin{itemize}
+    \item[$\circ$] only ``safe'' to use eigenvalues if eigenvectors are orthogonal ($A$ normal)
+    \item[$\circ$] diagonalization $A=S\Lambda S^{-1}$ may tell us little about $A$ when $\kappa(S)\gg 1$
+    \item[$\circ$] and some square matrices are defective anyway \dots
+    \end{itemize}
+\item \emph{any} $A \in \CC^{m\times n}$ has \emph{singular values}
+\item what information do you want?
+    \begin{itemize}
+
+\medskip
+    \item[$\circ$] what do the \alert{eigenvalues} say?
+
+\medskip
+    Behavior of powers $A^k$ or functions $f(A)$.
+
+\medskip
+    \item[$\circ$] what do the \alert{singular values} say?
+
+\medskip
+Invertibility of $A$: rank, nullity
+
+\medskip
+Geometry of the action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pseudospectrum, \dots
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{visualizing a matrix}
+
+\begin{itemize}
+\item $A$ sends unit ball to hyperellipsoid
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{singular value decomposition}
+
+\begin{itemize}
+\item \textbf{theorem.} if $A\in \CC^{m\times n}$ then there exist $U\in \CC^{m\times m}$ unitary, $V \in \CC^{n\times n}$ unitary, and $\Sigma \in \RR^{m\times n}$ diagonal, with nonnegative diagonal entries, so that
+    $$A = U \Sigma V^*$$
+
+normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes $\Sigma$ unique
+
+    \begin{itemize}
+    \footnotesize
+    \item[\emph{proof.}] FIXME MODIFY Schur proof?  Induct on $n$.  If $n=1$ then the result follows with $T=A=[a_{11}]$ and $Q=I=[1]$. For $n>1$ let $v\ne 0$ be an eigenvector of $A$, with eigenvalue $\lambda$. Let $u_1=v/\|v\|$ and extend to a unitary matrix:
+    $$U = \trefmatrixthree{u_1}{u_2}{u_n}$$
+Apply $A$: $\ds AU = \trefmatrixthree{\lambda_1 u_1}{A u_2}{A u_n}$
+
+Apply $U^*=U^{-1}$, observe that $U^*Au_1 = \lambda_1 U^* u_1 = \lambda_1 e_1$, and write $w_j=U^*Au_j$:
+    $$U^*AU = \trefmatrixthree{\lambda_1 e_1}{w_2}{w_n}$$
+    \end{itemize}
+\normalsize
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{x}
 
 \begin{itemize}
