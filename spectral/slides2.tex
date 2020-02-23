@@ -588,15 +588,15 @@ ans =    1.1396e-15
 \begin{itemize}
 \item eigenvalues are useful, but they only make sense for square matrices
     \begin{itemize}
-    \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$ not for $T \in B(X,Y)$''
+    \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$, not for $T \in B(X,Y)$''
     \end{itemize}
 \item \dots but sometimes not so useful even then
     \begin{itemize}
     \item[$\circ$] only ``safe'' to use eigenvalues if eigenvectors are orthogonal ($A$ normal)
     \item[$\circ$] diagonalization $A=S\Lambda S^{-1}$ may tell us little about $A$ when $\kappa(S)\gg 1$
-    \item[$\circ$] and some square matrices are defective anyway \dots
+    \item[$\circ$] and some square matrices are defective anyway
     \end{itemize}
-\item \emph{any} $A \in \CC^{m\times n}$ has \emph{singular values}
+\item however, \emph{any} $A \in \CC^{m\times n}$ has \emph{singular values}
 \item what information do you want?
     \begin{itemize}
 
@@ -604,7 +604,7 @@ ans =    1.1396e-15
     \item[$\circ$] what do the \alert{eigenvalues} say?
 
 \medskip
-    Behavior of powers $A^k$ or functions $f(A)$.
+    Behavior of powers $A^k$ or functions $f(A)$ like $e^{At}$.
 
 \medskip
     \item[$\circ$] what do the \alert{singular values} say?
@@ -621,8 +621,20 @@ Geometry of the action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\ep
 
 \begin{frame}{visualizing a matrix}
 
+\begin{center}
+\includegraphics[width=0.6\textwidth]{figs/svd2d}
+\end{center}
+
+\vspace{-5mm}
+\hfill \tiny \emph{figure from Trefethen \& Bau, \emph{Numerical Linear Algebra}, SIAM Press 1997} \normalsize
+
+\bigskip
 \begin{itemize}
-\item $A$ sends unit ball to hyperellipsoid
+\item $A \in \RR^{m\times n}$ sends the $n$-dimensional unit sphere to a possibly-degenerate hyperellipsoid in $\RR^m$
+    \begin{itemize}
+    \item[$\circ$] this is the fundamental way to visualize a linear operator
+    \end{itemize}
+
 \end{itemize}
 \end{frame}
 
