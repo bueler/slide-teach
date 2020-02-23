@@ -469,36 +469,94 @@ $P \in \CC^{n\times n}$ is an \emph{orthogonal projection} if $P^2=P$ and $P^*=P
 \end{definition}
 
 \begin{itemize}
-\item if $\lambda \in \sigma(P)$ then $\lambda=0,1$
 \item as for any projection ($P^2=P$):
-    $$\ker P = \image (I-P), \quad \image P = \ker (I-P), \quad \CC^n = \ker P \oplus \image P$$
-\item but now:
+    $$\ker P = \image (I-P), \quad \image P = \ker (I-P), \quad \CC^n = \ker P \oplus \image P, \quad \sigma(P) \subset \{0,1\}$$
+\item but for orthogonal projections:
     $$\ker P \perp \image P$$
 
     \begin{itemize}
     \item[$\circ$] \emph{proof.}  if $u\in\ker P$ and $v=Pz\in\image P$ then $u^*v = u^*(Pz)=(Pu)^*z = 0$
     \end{itemize}
+\item orthogonal projections are hermitian, thus normal
 \item examples:
     $$0, \quad I, \quad P = \begin{bmatrix} 1 & & \\ & 1 & \\ & & 0 \end{bmatrix}$$
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{constructing orthogonal projections}
+\begin{frame}{constructing orthogonal projections from ON vectors}
 
 \begin{itemize}
-\item FIXME since hermitian, $P=Q \Lambda Q^* = \hat Q \hat Q^*$
-\item e.g.~rank 1 case: $P=q q^*$
-\item $P = A (A^* A)^{-1} A^*$
+\item since $P$ is hermitian and $\sigma(P) \subset \{0,1\}$, the spectral theorem plus re-ordering of the columns of $Q$ gives
+    $$P=Q \Lambda Q^* = Q \begin{bmatrix} \,\hat I & \\ & 0 \end{bmatrix} Q^* = \hat Q \hat Q^*$$
+where $\hat I$ is a $k\times k$ identity and $\hat Q$ is a $n\times k$ matrix of columns of $Q$
+
+\begin{lemma}  $P\in \CC^{n\times n}$ is an orthogonal projection if and only if there exist ON vectors $q_1,\dots,q_k$, for $0 \le k \le n$, so that
+
+\vspace{-3mm}
+    $$P = \hat Q \hat Q^* \quad \text{ and } \quad \hat Q = \trefmatrixthree{q_1}{q_2}{q_k}$$
+\end{lemma}
+\item hard direction of proof is above; easy direction: $(\hat Q\hat Q^*)^2 = \dots$
+\item rank 1 case: \quad $P=q q^* = (aa^*)/(a^*a)$
+\item construction from full-column-rank $A$: \quad $P = A (A^* A)^{-1} A^*$
 \end{itemize}
 \end{frame}
 
-\begin{frame}{x}
+
+\begin{frame}{spectral theorem $=$ decomposition into projections}
+
+\begin{itemize}
+\item consider this calculation for $A$ normal:
+\small
+\begin{align*}
+A &= Q\Lambda Q^* = Q \left(\begin{bmatrix} \lambda_1 & & & \\ & \lambda_2 & & \\ & & \ddots & \\ & & & \lambda_n \end{bmatrix}\right) Q^* \\
+  &= Q \left(\begin{bmatrix} \lambda_1 & & \\ & & \\ & & \end{bmatrix} + \dots + \begin{bmatrix} & & \\ & & \\ & & \lambda_n \end{bmatrix}\right) Q^* = q_1 \lambda_1 q_1^* + \dots + q_n \lambda_n q_n^* \\
+  &= \sum_{j=1}^n \lambda_j q_j q_j^*
+\end{align*}
+\normalsize
+
+    \vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] $A$ decomposes into a linear combination of rank one orthogonal projections
+    \end{itemize}
+
+\medskip
+\item thus normal matrices act on vectors like this:
+    $$A v = \sum_{j=1}^n \lambda_j q_j q_j^*v = \sum_{j=1}^n \lambda_j \ip{q_j}{v} q_j$$
+
+    \vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] this formula appears in most applications of normal operators
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{resolution of the identity}
+
+\begin{itemize}
+\item if $A$ normal then
+    $$A = \sum_{i=1}^n \lambda_i q_i q_i^*$$
+\item another way to say this: if $A=Q\Lambda Q^*$ then we can use the eigenvectors to decompose the identity:
+    $$I = Q Q^* = \sum_{i=1}^n q_i q_i^*$$
+
+    \vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] called a \emph{resolution of the identity} \href{https://en.wikipedia.org/wiki/Spectral_theory\#Resolution_of_the_identity}{(see wikipedia page)}
+    \end{itemize}
+\item application: \href{https://en.wikipedia.org/wiki/Parseval's_identity}{Parseval's identity} for any ON basis
+    $$\|v\|_2^2 = v^* v = v^* I v = \sum_{i=1}^n v^* q_i q_i^* v = \sum_{i=1}^n |\ip{q_i}{v}|^2$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{spectral subsets correspond to orthogonal projections}
 
 \begin{itemize}
 \item y
 \end{itemize}
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{X}
@@ -520,19 +578,6 @@ ans =    1.1396e-15
 \end{Verbatim}
 
 \end{itemize}
-\end{frame}
-
-
-\begin{frame}{resolution of the identity}
-
-if $A$ normal then
-
-$$Av = \sum_{i=1}^n \lambda_i q_i (q_i^*v)$$
-
-$$A = \sum_{i=1}^n \lambda_i q_i q_i^*$$
-
-\footnotesize
-\href{https://en.wikipedia.org/wiki/Spectral_theory\#Resolution_of_the_identity}{\texttt{en.wikipedia.org/wiki/Spectral\_theory\#Resolution\_of\_the\_identity}}
 \end{frame}
 
 
