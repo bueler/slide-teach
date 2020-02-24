@@ -50,6 +50,7 @@
 \newcommand{\Octave}{\textsc{Octave}\xspace}
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
+\newcommand{\rank}{\operatorname{rank}}
 \newcommand{\image}{\operatorname{im}}
 
 \newcommand{\ds}{\displaystyle}
@@ -460,6 +461,25 @@ so in any induced norm
 \end{frame}
 
 
+\begin{frame}{redefining ``spectrum'': nonexistence of resolvent}
+
+\begin{definition}
+given $A\in\CC^{n\times n}$, the \emph{spectrum of} $A$ is the set
+    $$\sigma(A) = \left\{\lambda\in\CC\,\big|\,A-\lambda I \,\text{ does not have a bounded inverse} \right\}$$
+\end{definition}
+
+\begin{itemize}
+\item in finite dimensions this is the same as our original definition:
+    $$\sigma(A)=\left\{\lambda\in\CC\,\big|\,Av=\lambda v \text{ for some }v\ne 0\right\}$$
+\item in $\infty$-dimensions it is different because there exist one-to-one bounded operators which do not have bounded inverses
+    \begin{itemize}
+    \item[$\circ$] Example 1: the one-to-one right-shift operator $R$ on $\ell^1$ has spectrum\footnote{we will prove this by showing that $\sigma(L) = \{z\in\CC\,:\,|z|\le 1\}$ for the left-shift operator $L=R^*$, and that $\sigma(A^*)=\sigma(A)$ in a Banach algebra; note $L$ has $\infty$ly-many eigenvalues} $\sigma(R) = \{z\in\CC\,:\,|z|\le 1\}$, but it has no eigenvalues
+    \item[$\circ$] Example 2: the hermitian multiplication operator $(M f)(x) = x f(x)$ on $L^2[0,1]$ has no eigenvalues but $\sigma(M) = [0,1]$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \section{orthogonal projections}
 
 \begin{frame}{orthogonal projections}
@@ -586,15 +606,15 @@ ans =    1.1396e-15
 \begin{frame}{why singular values?}
 
 \begin{itemize}
-\item eigenvalues are useful, but they only make sense for square matrices
+\item eigenvalues can be useful, but only defined for square matrices
     \begin{itemize}
     \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$, not for $T \in B(X,Y)$''
     \end{itemize}
-\item \dots but sometimes not so useful even then
+\item \dots and sometimes not so useful anyway
     \begin{itemize}
     \item[$\circ$] only ``safe'' to use eigenvalues if eigenvectors are orthogonal ($A$ normal)
     \item[$\circ$] diagonalization $A=S\Lambda S^{-1}$ may tell us little about $A$ when $\kappa(S)\gg 1$
-    \item[$\circ$] and some square matrices are defective anyway
+    \item[$\circ$] some square matrices are defective anyway
     \end{itemize}
 \item however, \emph{any} $A \in \CC^{m\times n}$ has \emph{singular values}
 \item what information do you want?
@@ -613,7 +633,7 @@ ans =    1.1396e-15
 Invertibility of $A$: rank, nullity
 
 \medskip
-Geometry of the action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pseudospectrum, \dots
+Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pseudospectrum
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -622,7 +642,7 @@ Geometry of the action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\ep
 \begin{frame}{visualizing a matrix}
 
 \begin{center}
-\includegraphics[width=0.6\textwidth]{figs/svd2d}
+\includegraphics[width=0.7\textwidth]{figs/svd2d}
 \end{center}
 
 \vspace{-5mm}
@@ -630,36 +650,74 @@ Geometry of the action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\ep
 
 \bigskip
 \begin{itemize}
-\item $A \in \RR^{m\times n}$ sends the $n$-dimensional unit sphere to a possibly-degenerate hyperellipsoid in $\RR^m$
+\item $A \in \RR^{m\times n}$ sends the unit sphere in $\RR^n$ to a possibly-degenerate hyperellipsoid in $\RR^m$
     \begin{itemize}
     \item[$\circ$] this is the fundamental way to visualize a linear operator
+    \item[$\circ$] also true for $A \in \CC^{m\times n}$ \dots but even less visualizable
     \end{itemize}
-
+\item the \emph{singular values} of $A$ define the geometry of the output hyperellipsoid
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{singular value decomposition}
 
+\begin{theorem}
+ if $A\in \CC^{m\times n}$ then there exist $U\in \CC^{m\times m}$ unitary, $V \in \CC^{n\times n}$ unitary, and $\Sigma \in \RR^{m\times n}$ diagonal, with nonnegative entries, so that
+    $$A = U \Sigma V^*,$$
+\end{theorem}
+
 \begin{itemize}
-\item \textbf{theorem.} if $A\in \CC^{m\times n}$ then there exist $U\in \CC^{m\times m}$ unitary, $V \in \CC^{n\times n}$ unitary, and $\Sigma \in \RR^{m\times n}$ diagonal, with nonnegative diagonal entries, so that
-    $$A = U \Sigma V^*$$
+\item this is a \emph{singular value decomposition (SVD)} of $A$
+\item the diagonal entries $\sigma_i = \Sigma_{ii}$ are the \emph{singular values} of $A$
 
-normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes $\Sigma$ unique
-
+\medskip
+\item \emph{example}. if $\ds A = \begin{bmatrix} 4 & 3 \\ 1 & 2 \end{bmatrix}$ then
+    $$A =
+\begin{bmatrix}    -0.92388  &  -0.38268 \\  -0.38268   &  0.92388 \end{bmatrix}
+\begin{bmatrix}      5.3983  &   0 \\   0 &  0.92621  \end{bmatrix}
+\begin{bmatrix}    -0.75545  & -0.6552 \\  -0.6552 & 0.75545 \end{bmatrix}$$
     \begin{itemize}
-    \footnotesize
-    \item[\emph{proof.}] FIXME MODIFY Schur proof?  Induct on $n$.  If $n=1$ then the result follows with $T=A=[a_{11}]$ and $Q=I=[1]$. For $n>1$ let $v\ne 0$ be an eigenvector of $A$, with eigenvalue $\lambda$. Let $u_1=v/\|v\|$ and extend to a unitary matrix:
-    $$U = \trefmatrixthree{u_1}{u_2}{u_n}$$
-Apply $A$: $\ds AU = \trefmatrixthree{\lambda_1 u_1}{A u_2}{A u_n}$
-
-Apply $U^*=U^{-1}$, observe that $U^*Au_1 = \lambda_1 U^* u_1 = \lambda_1 e_1$, and write $w_j=U^*Au_j$:
-    $$U^*AU = \trefmatrixthree{\lambda_1 e_1}{w_2}{w_n}$$
+    \item[$\circ$] $\|A\|_2 = 5.3983$, $\|A^{-1}\|_2 = 1.0797 = 1/0.92621$
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{singular value decomposition: proof}
+
+\begin{itemize}
+\footnotesize
+\item[\emph{proof.}] Induct on $n$.  If $n=1$ so $A=[a]$ then $U=[a/|a|]$, $\Sigma=[|a|]$, and $V=[1]$.
+
+For $n>1$ let $v_1 \in \CC^n$ be a unit vector which maximizes the continuous function
+	$$f(x) = \|A x\|_2$$
+over the compact set $S^n = \{x\in\CC^n\,:\,\|x\|_2=1\}$.  Then $Av_1$ is a vector in $\CC^m$ with length $\sigma_1=\|Av_1\|_2\ge 0$.  Let $u_1=Av_1/\sigma_1$ so we have $Av_1=\sigma_1 u_1$.  Extend the unit vector $v_1$ to an orthonormal basis, i.e.~a unitary matrix $\tilde V = \trefmatrixthree{v_1}{\tilde v_2}{\tilde v_n}$.  Also extend $u_1$ to a unitary: $\tilde U = \trefmatrixthree{u_1}{\tilde u_2}{\tilde u_m}$.  Now apply $A$ on the left of $\tilde V$,
+    $$A\tilde V = \trefmatrixthree{\sigma_1 u_1}{w_2}{w_n}$$
+and apply $\tilde U^*$ on the right, and note that $\tilde U^* u_1 = e_1$:
+    $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{z^*}{0}{M}$$
+FIXME
 \normalsize
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{singular value decomposition: facts}
+
+\begin{itemize}
+\item normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes $\Sigma$ unique
+\item $\|A\|_2=\sigma_1$
+\item if $A$ is square and invertible then $\|A^{-1}\|_2 = 1/\sigma_n$
+\item $\kappa_2(A) = \sigma_1/\sigma_n$ is the eccentricity of the output hyperellipsoid
+\item $\alpha$ is a singular value of $A$ if and only if $\alpha^2$ is an eigenvalue of $A^*A$
+\item the singular values of $A$ are the same as those of $A^*$
+\item if $A\in \CC^{m\times n}$ then
+    \begin{itemize}
+    \item[$\circ$] $\rank(A)=k$ where $\sigma_k>0$ and $\sigma_{k+1}=0$
+    \item[$\circ$] FIXME
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
 \begin{frame}{x}
 
