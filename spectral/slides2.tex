@@ -692,7 +692,7 @@ A &= Q\Lambda Q^* = Q \left(\begin{bmatrix} \lambda_1 & & & \\ & \lambda_2 & & \
 \item eigenvalues can be useful!
 \item but they are only defined for square matrices
     \begin{itemize}
-    \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$, not for $T \in B(X,Y)$''
+    \item[$\circ$] in $\infty$-dimensions: ``spectrum is useful, but only for $B(X)$, not $B(X,Y)$''
     \end{itemize}
 \item \dots and sometimes not so useful anyway
     \begin{itemize}
@@ -717,8 +717,10 @@ Invertibility of $A$: rank, nullity
 
 \medskip
 Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pseudospectrum
+
+\medskip
+    \item[$\circ$] so, what information do you want?
     \end{itemize}
-\item what information do you want?
 \end{itemize}
 \end{frame}
 
@@ -752,18 +754,51 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 \end{theorem}
 
 \begin{itemize}
-\item this is a \emph{singular value decomposition (SVD)} of $A$
+\item \emph{singular value decomposition (SVD)} of $A$
 \item the diagonal entries $\sigma_i = \Sigma_{ii}$ are the \emph{singular values} of $A$
+    \begin{itemize}
+    \item[$\circ$] normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes values unique
+    \end{itemize}
+\item the action of $A = U \Sigma V^*$ on a vector:
+    \begin{itemize}
+    \item[$\circ$] multiplication by $V^*$ finds coefficients of the vector in the columns of $V$
+    \item[$\circ$] multiplication by $\Sigma$ stretches the vector along standard axes
+    \item[$\circ$] multiplication by $U$ rotates the vector to the output hyperellipsoid
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
-\medskip
-\item \emph{example}. if $\ds A = \begin{bmatrix} 4 & 3 \\ 1 & 2 \end{bmatrix}$ then
+
+\begin{frame}{singular value decomposition: examples}
+
+\begin{itemize}
+\small
+\item \emph{example 1}. if $\ds A = \begin{bmatrix} 4 & 3 \\ 1 & 2 \end{bmatrix}$ then
     $$A =
 \begin{bmatrix}    -0.92388  &  -0.38268 \\  -0.38268   &  0.92388 \end{bmatrix}
-\begin{bmatrix}      5.3983  &   0 \\   0 &  0.92621  \end{bmatrix}
+\begin{bmatrix}      5.3983  &      \\   &  0.92621  \end{bmatrix}
 \begin{bmatrix}    -0.75545  & -0.6552 \\  -0.6552 & 0.75545 \end{bmatrix}$$
     \begin{itemize}
-    \item[$\circ$] $\|A\|_2 = 5.3983$, $\|A^{-1}\|_2 = 1.0797 = 1/0.92621$
+    \item[$\circ$] $\|A\|_2 = 5.3983$, $\|A^{-1}\|_2 = 1/0.92621$
+    \item[$\circ$] compare: $\sigma(A) = \{5,1\}$
     \end{itemize}
+
+\bigskip
+\item \emph{example 2}. if $\ds B = \begin{bmatrix} 6 & 5 \\ 4 & 3 \\ 1 & 2 \end{bmatrix}$ then
+\footnotesize
+    $$B =
+\begin{bmatrix} -0.82264 & -0.05242 & -0.56614 \\
+                -0.52578 & -0.30878 & 0.79259 \\
+                -0.21636 & 0.94969 & 0.22646 \end{bmatrix}
+\begin{bmatrix} 9.49393  & \\ & 0.93025 \\ & \end{bmatrix}
+\begin{bmatrix} -0.76421 & -0.64497 \\ -0.64497 & 0.76421 \end{bmatrix}$$
+\small
+    \begin{itemize}
+    \item[$\circ$] $\|B\|_2 = 9.49393$
+    \item[$\circ$] $B$ is not invertible
+    \item[$\circ$] $\sigma(B)$ is not defined
+    \end{itemize}
+
 \end{itemize}
 \end{frame}
 
@@ -772,15 +807,25 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 
 \begin{itemize}
 \footnotesize
-\item[\emph{proof.}] Induct on $n$.  If $n=1$ so $A=[a]$ then $U=[a/|a|]$, $\Sigma=[|a|]$, and $V=[1]$.
+\item[\emph{proof.}] Induct on $n$.  If $n=1$ then $A=[a]$ where $a\in \CC^m$.  Then
+  $$U=\left[\frac{a}{\|a\|_2}\right], \quad \Sigma=[\|a\|_2], \quad V=[1].$$
 
 For $n>1$ let $v_1 \in \CC^n$ be a unit vector which maximizes the continuous function
 	$$f(x) = \|A x\|_2$$
-over the compact set $S^n = \{x\in\CC^n\,:\,\|x\|_2=1\}$.  Then $Av_1$ is a vector in $\CC^m$ with length $\sigma_1=\|Av_1\|_2\ge 0$.  Let $u_1=Av_1/\sigma_1$ so we have $Av_1=\sigma_1 u_1$.  Extend the unit vector $v_1$ to an orthonormal basis, i.e.~a unitary matrix $\tilde V = \trefmatrixthree{v_1}{\tilde v_2}{\tilde v_n}$.  Also extend $u_1$ to a unitary: $\tilde U = \trefmatrixthree{u_1}{\tilde u_2}{\tilde u_m}$.  Now apply $A$ on the left of $\tilde V$,
+over the compact set $S^n = \{x\in\CC^n\,:\,\|x\|_2=1\}$.  Then $Av_1$ is a vector in $\CC^m$ with length $\sigma_1=\|Av_1\|_2\ge 0$.  If $\sigma_1>0$ then let $u_1=Av_1/\sigma_1$, and otherwise choose $u_1$ to be any unit vector in $\CC^m$, so now we have $Av_1=\sigma_1 u_1$.  Extend the unit vector $v_1$ to an orthonormal basis, i.e.~a unitary matrix $\tilde V = \trefmatrixthree{v_1}{\tilde v_2}{\tilde v_n}$.  Also extend $u_1$ to a unitary: $\tilde U = \trefmatrixthree{u_1}{\tilde u_2}{\tilde u_m}$.  Now apply $A$ on the left of $\tilde V$,
     $$A\tilde V = \trefmatrixthree{\sigma_1 u_1}{w_2}{w_n}$$
 and apply $\tilde U^*$ on the right, and note that $\tilde U^* u_1 = e_1$:
     $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{z^*}{0}{M}$$
-FIXME
+\normalsize
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{singular value decomposition: proof cont.}
+
+\begin{itemize}
+\footnotesize
+\item[\emph{cont.}] FIXME
 \normalsize
 \end{itemize}
 \end{frame}
@@ -789,31 +834,21 @@ FIXME
 \begin{frame}{singular value decomposition: facts}
 
 \begin{itemize}
-\item normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes $\Sigma$ unique
 \item $\|A\|_2=\sigma_1$
-\item if $A$ is square and invertible then $\|A^{-1}\|_2 = 1/\sigma_n$
-\item $\kappa_2(A) = \sigma_1/\sigma_n$ is the eccentricity of the output hyperellipsoid
 \item $\alpha$ is a singular value of $A$ if and only if $\alpha^2$ is an eigenvalue of $A^*A$
 \item the singular values of $A$ are the same as those of $A^*$
 \item if $A\in \CC^{m\times n}$ then
     \begin{itemize}
     \item[$\circ$] $\rank(A)=k$ where $\sigma_k>0$ and $\sigma_{k+1}=0$
-    \item[$\circ$] FIXME
+    \item[$\circ$] $\operatorname{nullity}(A)=\dim(\ker(A))=q$ where $q$ is the number of zero singular values
     \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{x}
-
-\begin{itemize}
-\item y
-\end{itemize}
-\end{frame}
-
-\begin{frame}{x}
-
-\begin{itemize}
-\item y
+\item if $A$ is square
+    \begin{itemize}
+    \item[$\circ$] $|\det(A)| = \prod_{j=1}^n \sigma_j$
+    \item[$\circ$] if $A$ is invertible then $\|A^{-1}\|_2 = 1/\sigma_n$
+    \item[$\circ$] $\kappa_2(A) = \sigma_1/\sigma_n$ is the eccentricity of the output hyperellipsoid
+    \end{itemize}
+\item if $A$ is square and normal then $\sigma_j = |\lambda_j|$
 \end{itemize}
 \end{frame}
 
@@ -823,8 +858,7 @@ FIXME
 \begin{frame}{please read the textbook backwards}
 
 \begin{itemize}
-\item go to the end of Chapter 15 ``$C^*$ algebras'' and try to read backwards
-\item find:
+\item go to the end of Chapter 15 ``$C^*$ algebras'' and read backwards:
     \begin{itemize}
     \item[$\circ$] von Neumann's spectral theorem for bounded operators on Hilbert spaces
     \item[$\circ$] functional calculus for normal elements
@@ -833,7 +867,7 @@ FIXME
     \item[$\circ$] definition of \emph{normal}, \emph{unitary}, and \emph{self-adjoint} (hermitian) elements
     \item[$\circ$] definition of a $C^*$ algebra
     \end{itemize}
-\item on the other hand, go to the beginning of Chapter 14 ``Spectral theory'' and try to read forward
+\item on the other hand, go to the beginning of Chapter 14 ``Spectral theory'' and read forward
 \item I hope that by the end of the semester it will make sense!
 \end{itemize}
 \end{frame}
