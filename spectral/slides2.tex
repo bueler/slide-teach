@@ -596,32 +596,89 @@ A &= Q\Lambda Q^* = Q \left(\begin{bmatrix} \lambda_1 & & & \\ & \lambda_2 & & \
 \end{frame}
 
 
-\begin{frame}{spectral subsets correspond to orthogonal projectors}
+\begin{frame}[fragile]
+\frametitle{spectra of big random matrices}
 
 \begin{itemize}
-\item y
+\item \emph{claim (\href{https://en.wikipedia.org/wiki/Circular_law}{circular law})}.  if $A\in \RR^{n\times n}$ has entries which are normally-distributed random variables with mean zero and variance $n^{-1}$, so $\ds a_{ij} \sim N(0,n^{-1})$, then as $n\to\infty$ the spectrum of $A$ fills the unit disc
+
+\medskip
+\begin{Verbatim}[fontsize=\footnotesize]
+>> A = randn(n,n)/sqrt(n);
+>> lam = eig(A);
+>> plot(real(lam),imag(lam),'o'),  grid on,  axis([-2 2 -2 2])
+\end{Verbatim}
+
+\bigskip
+\mbox{\includegraphics[width=0.25\textwidth]{figs/randnA16} \qquad \includegraphics[width=0.25\textwidth]{figs/randnA100} \qquad \includegraphics[width=0.25\textwidth]{figs/randnA400}}
+
+\medskip
+\item but these matrices are not normal
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
-\frametitle{X}
+\frametitle{spectra of big random \emph{normal} matrices}
 
 \begin{itemize}
-\item FIXME  goal: a large normal matrix with spectrum mostly filling the unit circle
+\item but \texttt{randn(n,n)} is not normal (i.e.~normal with probablility zero)
+\item construct a random \emph{normal} matrix with the same spectrum:
 
-\begin{Verbatim}[fontsize=\scriptsize]
->> A0 = randn(100,100)/10;
->> [Q,R] = qr(randn(100,100));
->> norm(Q'*Q-eye(100))
-ans =    1.8426e-15
->> [X,D] = eig(A0);
->> A = Q*D*Q';
->> norm(A'*A - A*A')
-ans =    1.1396e-15
->> lam = eig(A);  plot(real(lam),imag(lam),'o')
->> grid on, axis equal
+\bigskip
+\VerbatimInput[fontsize=\scriptsize]{../../bueler.github.io/M617S20/matlab/gennormal.m}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{spectral subsets correspond to orthogonal projectors}
+
+\begin{itemize}
+\item I also wrote a code \, \texttt{projmeasure.m} \, which shows $\sigma(A)$ as a subset of $\CC$ and lets you select the eigenvalues for which you want eigenvectors
+\item demo 1:
+
+\begin{Verbatim}[fontsize=\small]
+>> A = gennormal(100);
+>> P = projmeasure(A);   % <-- user input with mouse
+                         %     selects a projector
+>> k = rank(P)           % = number of selected eigenvalues
 \end{Verbatim}
+
+\item demo 2:
+
+\begin{Verbatim}[fontsize=\small]
+>> A = expm(i*eye(6) + gennormal(6));
+>> [P,Qh] = projmeasure(A);
+>> Qh                    % view selected eigenvectors
+\end{Verbatim}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{spectral subsets correspond to orthogonal projectors, cont.}
+
+\begin{itemize}
+\item demo 3:
+
+\begin{Verbatim}[fontsize=\small]
+>> U = expm(i*genherm(10));  % random unitary matrix
+>> [P,Qh] = projmeasure(U);
+>> Qh                        % view selected eigenvectors
+\end{Verbatim}
+
+\bigskip
+\item John von Neumann ($\sim$1930) imagined this before he invented computers
+    \begin{itemize}
+    \item[$\circ$] it is a \emph{projector-valued measure}
+    \item[$\circ$] built to handle quantum mechanical operators rigorously
+    \item[$\circ$] he constructed a spectral theorem for normal operators on Hilbert spaces,  which uses a projector-valued measure $E$ on $\CC$, namely
+    	$$A = \int_{\sigma(A)} \lambda\,dE_\lambda$$
+    \item[$\circ$] the functional calculus:
+    	$$f(A) = \int_{\sigma(A)} f(\lambda)\,dE_\lambda,$$
+    \end{itemize}
 
 \end{itemize}
 \end{frame}
@@ -632,7 +689,8 @@ ans =    1.1396e-15
 \begin{frame}{why singular values?}
 
 \begin{itemize}
-\item eigenvalues can be useful, but only defined for square matrices
+\item eigenvalues can be useful!
+\item but they are only defined for square matrices
     \begin{itemize}
     \item[$\circ$] in $\infty$-dimensions one would say ``spectrum is useful, but only for $A\in B(X)$, not for $T \in B(X,Y)$''
     \end{itemize}
@@ -640,10 +698,9 @@ ans =    1.1396e-15
     \begin{itemize}
     \item[$\circ$] only ``safe'' to use eigenvalues if eigenvectors are orthogonal ($A$ normal)
     \item[$\circ$] diagonalization $A=S\Lambda S^{-1}$ may tell us little about $A$ when $\kappa(S)\gg 1$
-    \item[$\circ$] some square matrices are defective anyway
+    \item[$\circ$] square matrices can be defective anyway
     \end{itemize}
 \item however, \emph{any} $A \in \CC^{m\times n}$ has \emph{singular values}
-\item what information do you want?
     \begin{itemize}
 
 \medskip
@@ -661,6 +718,7 @@ Invertibility of $A$: rank, nullity
 \medskip
 Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pseudospectrum
     \end{itemize}
+\item what information do you want?
 \end{itemize}
 \end{frame}
 
@@ -678,8 +736,8 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 \begin{itemize}
 \item $A \in \RR^{m\times n}$ sends the unit sphere in $\RR^n$ to a possibly-degenerate hyperellipsoid in $\RR^m$
     \begin{itemize}
-    \item[$\circ$] this is the fundamental way to visualize a linear operator
-    \item[$\circ$] also true for $A \in \CC^{m\times n}$ \dots but even less visualizable
+    \item[$\circ$] \alert{the fundamental way to visualize a linear operator}
+    \item[$\circ$] also true for $A \in \CC^{m\times n}$ \dots but less visualizable
     \end{itemize}
 \item the \emph{singular values} of $A$ define the geometry of the output hyperellipsoid
 \end{itemize}
@@ -690,7 +748,7 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 
 \begin{theorem}
  if $A\in \CC^{m\times n}$ then there exist $U\in \CC^{m\times m}$ unitary, $V \in \CC^{n\times n}$ unitary, and $\Sigma \in \RR^{m\times n}$ diagonal, with nonnegative entries, so that
-    $$A = U \Sigma V^*,$$
+    $$A = U \Sigma V^*$$
 \end{theorem}
 
 \begin{itemize}
@@ -749,6 +807,34 @@ FIXME
 
 \begin{itemize}
 \item y
+\end{itemize}
+\end{frame}
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item y
+\end{itemize}
+\end{frame}
+
+
+\section{conclusion}
+
+\begin{frame}{please read the textbook backwards}
+
+\begin{itemize}
+\item go to the end of Chapter 15 ``$C^*$ algebras'' and try to read backwards
+\item find:
+    \begin{itemize}
+    \item[$\circ$] von Neumann's spectral theorem for bounded operators on Hilbert spaces
+    \item[$\circ$] functional calculus for normal elements
+    \item[$\circ$] singular value decomposition for compact operators between Hilbert spaces
+    \item[$\circ$] spectral theorem for compact normal operators on a Hilbert space
+    \item[$\circ$] definition of \emph{normal}, \emph{unitary}, and \emph{self-adjoint} (hermitian) elements
+    \item[$\circ$] definition of a $C^*$ algebra
+    \end{itemize}
+\item on the other hand, go to the beginning of Chapter 14 ``Spectral theory'' and try to read forward
+\item I hope that by the end of the semester it will make sense!
 \end{itemize}
 \end{frame}
 
