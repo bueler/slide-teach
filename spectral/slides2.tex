@@ -96,6 +96,8 @@
 \end{frame}
 
 
+\section{introduction}
+
 \begin{frame}{what happened in part I}
 
 \begin{itemize}
@@ -111,7 +113,7 @@ where $Q$ is unitary, $T$ is upper-triangular, and $\Lambda$ is diagonal
     \begin{itemize}
     \item[$\circ$] both decompositions ``reveal'' the spectrum:
       $$\sigma(A) = \{\text{diagonal entries of $T$ or $\Lambda$}\}$$
-    \item[$\circ$] spectral theorem for hermitian matrices sometimes called the \emph{principal axis decomposition} for quadratic forms
+    \item[$\circ$] spectral theorem for hermitian matrices is sometimes called the \emph{principal axis decomposition} for quadratic forms
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -124,15 +126,19 @@ extend the spectral theorem to $\infty$-dimensions
 \end{block}
 
 \begin{itemize}
-\item only for linear operators on Hilbert spaces $H$
+\item only possible for linear operators on Hilbert spaces $H$
     \begin{itemize}
     \item[$\circ$] inner product needed for adjoints and unitaries
     \item[$\circ$] unitary maps needed because they preserve vector space \emph{and} metric \emph{and} adjoint structures
     \end{itemize}
-\item textbook extends to \alert{compact normal operators} on $H$
-\item recommended text (Hall, \emph{Quantum Theory for Mathematicians}) extends to \alert{bounded (continuous) normal operators} on $H$
+\item textbook (Muscat) extends to \alert{compact normal operators} on $H$
     \begin{itemize}
-    \item[$\circ$] using projector-valued measures
+    \item[$\circ$] the spectrum is eigenvalues (almost exclusively)
+    \end{itemize}
+\item recommended text (B.~Hall, \emph{Quantum Theory for Mathematicians}) extends further to \alert{bounded (continuous) normal operators} on $H$
+    \begin{itemize}
+    \item[$\circ$] spectrum is not only eigenvalues
+    \item[$\circ$] statement of theorem uses projector-valued measures
     \end{itemize}
 \item Hall also extends to unbounded normal operators on $H$
     \begin{itemize}
@@ -159,7 +165,7 @@ $U \in \CC^{n\times n}$ is \emph{unitary} if $U^*U=I$
 \end{definition}
 
 \begin{lemma}
-Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $U$ is linear map on $\CC^n$.  The following are equivalent:
+Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $U$ is linear map on $\CC^n$.  The following are equivalent:
 
 \begin{itemize}
 \item $U$ is unitary
@@ -179,11 +185,11 @@ $A \in \CC^{n\times n}$ is \emph{normal} if $A^*A=AA^*$
 \end{definition}
 
 \begin{itemize}
-\item normal includes: hermitian, unitary, skew-hermitian
+\item includes: hermitian ($A^*=A$), unitary, skew-hermitian ($A^*=-A$)
 \end{itemize}
 
 \begin{lemma}
-Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $A$ is linear map on $\CC^n$.  The following are equivalent:
+Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and $\|v\|_2 = \sqrt{\ip v v}$.  Suppose $A$ is linear map on $\CC^n$.  The following are equivalent:
 
 \begin{itemize}
 \item $A$ is normal
@@ -203,7 +209,7 @@ Consider $\CC^n$ as a inner product space with $\ip{v}{w}=v^*w$ and the $2$-norm
 \item suppose $A$ is diagonalizable: $A = S \Lambda S^{-1}$
     \begin{itemize}
     \item[$\circ$] where $S$ is invertible and $\Lambda$ is diagonal
-    \item[$\circ$] diagonal entries of $\Lambda$ are eigenvalues of $A$: $A v_i = \Lambda_{ii} v_i$ if $v_i$ is $i$th column of $S$
+    \item[$\circ$] diagonal entries of $\Lambda$ are eigenvalues of $A$
     \item[$\circ$] if $A$ is normal (e.g.~hermitian) then choose $S=Q$ unitary so $S^{-1}=Q^*$
     \end{itemize}
 \item powers of $A$:
@@ -224,7 +230,7 @@ $\displaystyle e^{tA} = \sum_{n=0}^\infty \frac{t^n}{n!} A^n =  S \begin{bmatrix
 \begin{frame}{what does ``functional calculus'' mean?}
 
 \begin{itemize}
-\item given $A\in\CC^{n\times n}$, a (finite-dimensional) \emph{functional calculus} is map from a set of functions $f(z)$ defined on $\CC$ to matrices $f(A)\in\CC^{n\times n}$ which preserves algebraic structure
+\item given $A\in\CC^{n\times n}$, a (finite-dimensional) \emph{functional calculus} is algebraic-structure-preserving map from a set of functions $f(z)$ defined on $\CC$ to matrices $f(A)\in\CC^{n\times n}$
 \item example: for $f(z)$ analytic,
 \small
 \begin{align*}
@@ -262,14 +268,12 @@ f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty 
     \item[$\circ$] actually this holds for all square $A$ \dots use the Schur or Jordan-canonical-form decompositions
     \end{itemize}
 \item if $A$ is normal then, because unitaries preserve $2$-norm,
-\begin{align*}
-\|A^k\|_2 &= \|Q\Lambda^k Q^*\|_2 \le \max_{\lambda\in\sigma(A)} |\lambda|^k = \rho(A)^k \\
-\|A^k\|_2 &= \|A\|_2^k
-\end{align*}
+    $$\|A^k\|_2 = \|Q\Lambda^k Q^*\|_2 = \max_{\lambda\in\sigma(A)} |\lambda|^k = \rho(A)^k$$
 
 \vspace{-3mm}
     \begin{itemize}
-    \item[$\circ$] note $\kappa_2(Q)=1$ for a unitary matrix
+    \item[$\circ$] thus $\|A^k\|_2 = \|A\|_2^k$
+    \item[$\circ$] note $\kappa_2(Q)=1$ for a unitary matrix $Q$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -277,10 +281,10 @@ f(z) &= \sum_{n=0}^\infty c_n (z-z_0)^n & &\implies & f(A) &= \sum_{n=0}^\infty 
 
 \begin{frame}{convergence when $f(z)$ is analytic}
 
-   $$f(A) \stackrel{?}{=} \sum_{n=0}^\infty c_n (A-z_0 I)^n$$
+does it converge? \hspace{10mm} $\ds f(A) \stackrel{\ast}{=} \sum_{n=0}^\infty c_n (A-z_0 I)^n$
 
 \begin{lemma}
-Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$. If $\|A-z_0 I\|<R$ in some induced norm then above sum converges in that norm.
+Suppose $f(z) = \sum_{n=0}^\infty c_n (z-z_0)^n$ has radius of convergence $R>0$. If $\|A-z_0 I\|<R$ in some induced norm then sum $\ast$ converges in that norm.
 \end{lemma}
 
     \begin{itemize}
@@ -346,7 +350,7 @@ but surprising behavior is possible: $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f
 \begin{enumerate}
 \item suppose $A$ is hermitian and we want to build a unitary matrix from it
     \begin{itemize}
-    \item[$\circ$] so $A$ is normal and $\sigma(A) \subset \RR$
+    \item[$\circ$] $A$ is normal and $\sigma(A) \subset \RR$
     \end{itemize}
 
 \medskip
@@ -359,7 +363,7 @@ but surprising behavior is possible: $\|f(A)\| \gg \max_{\lambda\in\sigma(A)} |f
 \medskip
 \item suppose $U$ is unitary and we want to build a hermitian matrix from it
     \begin{itemize}
-    \item[$\circ$] so $U$ is normal and $\sigma(U) \subset S^1 = \{z\in \CC\,:\, |z|=1\}$
+    \item[$\circ$] $U$ is normal and $\sigma(U) \subset S^1 = \{z\in \CC\,:\, |z|=1\}$
     \end{itemize}
 \newcommand{\Log}{\operatorname{Log}}
 
@@ -400,7 +404,7 @@ where $\omega(A) = \max_{\lambda\in\sigma(A)} \operatorname{Re} \lambda$
 \begin{frame}{resolvents}
 
 \begin{definition}
-given $A\in\CC^{n\times n}$ then $\CC\setminus \sigma(A)$ is the \emph{resolvent set}, and if $z \notin \sigma(A)$ then
+given $A\in\CC^{n\times n}$ then $\CC\setminus \sigma(A)$ is the \emph{resolvent set}, and if $z \in \CC\setminus \sigma(A)$ then
     $$R_z(A) = \left(A-z I\right)^{-1}$$
 is the \emph{resolvent matrix}
 \end{definition}
@@ -408,7 +412,6 @@ is the \emph{resolvent matrix}
 \begin{itemize}
 \item recall: $z \in \sigma(A)$ if and only if $A-z I$ is not invertible
 \item the resolvent set $\CC\setminus \sigma(A)$ is open
-\item $R_z(A)$ is defined for $z \in \CC\setminus \sigma(A)$
 \item $R_0(A)=A^{-1}$ if $0\notin\sigma(A)$
 \item $R_z(A)$ ``resolves'' the equation $Av-z v=b$
 \end{itemize}
@@ -422,7 +425,7 @@ is the \emph{resolvent matrix}
     $$R_z(A) = \left(S\Lambda S^{-1}-z S I S^{-1}\right)^{-1} = S \left(\Lambda - z I\right)^{-1} S^{-1}$$
 so in any induced norm
     $$\|R_z(A)\| = \|S\|\|S^{-1}\|\|\left(\Lambda - z I\right)^{-1}\| = \kappa(S) \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
-\item if $A$ is normal then we can choose $S=Q$ unitary so
+\item if $A$ is normal then we can choose $S=Q$ unitary with $\kappa_2(Q)=1$ so
     $$\|R_z(A)\|_2 = \max_{\lambda\in\sigma(A)} |\lambda-z|^{-1}$$
 \item one may plot $g(z)=\|R_z(A)\|$
 
@@ -435,24 +438,22 @@ so in any induced norm
 \begin{frame}[fragile]
 \frametitle{resolvent norms illustrated}
 
+\small
+\begin{itemize}
+\item contours of $z\mapsto\|R_z(A)\|_2= \|(A-z I)^{-1}\|_2$ is best spectral picture?
+
 \begin{Verbatim}[fontsize=\footnotesize]
    >> [A,B] = gennormal(5);  % A,B have same eigs; A normal but B not
    >> resolveshow(A)         % normal case     (LEFT)
    >> resolveshow(B)         % nonnormal case  (RIGHT)
 \end{Verbatim}
 
-\bigskip
 \begin{center}
 \includegraphics[width=0.31\textwidth]{figs/resolvenormal} \hspace{20mm} \includegraphics[width=0.3\textwidth]{figs/resolvenonnormal}
 \end{center}
 
-\small
-\begin{itemize}
 \item last slide already proved contours would be round for normal $A$
-\item contours of $z\mapsto\|R_z(A)\|_2= \|(A-z I)^{-1}\|_2$ may be best spectral picture (personality test?) for nonnormal matrices $A$
-    \begin{itemize}
-    \item[$\circ$] $\sigma_\eps(A) = \left\{z\in\CC\,:\, \|(A-z I)^{-1}\|_2 \ge \eps^{-1}\right\}$ is the $\eps$-\emph{pseudospectrum} of $A$
-    \end{itemize}
+\item $\sigma_\eps(A) = \left\{z\in\CC\,:\, \|(A-z I)^{-1}\|_2 \ge \eps^{-1}\right\}$ is the $\eps$-\emph{pseudospectrum} of $A$
 \end{itemize}
 \end{frame}
 
@@ -755,11 +756,14 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 
 \begin{itemize}
 \item \emph{singular value decomposition (SVD)} of $A$
-\item the diagonal entries $\sigma_i = \Sigma_{ii}$ are the \emph{singular values} of $A$
+\item diagonal entries $\sigma_i$ of $\Sigma$ are the \emph{singular values} of $A$
     \begin{itemize}
+    \item[$\circ$] note $\Sigma$ is same shape as $A$, while $U,V$ are always square
     \item[$\circ$] normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes values unique
+    \item[$\circ$] if $A=0$ we take $\Sigma=A=0$ and choose $U,V$ as any unitaries
+    \item[$\circ$] if $A\ne 0$ then $\sigma_1>0$
     \end{itemize}
-\item the action of $A = U \Sigma V^*$ on a vector:
+\item action of $A = U \Sigma V^*$ on a vector:
     \begin{itemize}
     \item[$\circ$] multiplication by $V^*$ finds coefficients of the vector in the columns of $V$
     \item[$\circ$] multiplication by $\Sigma$ stretches the vector along standard axes
@@ -777,7 +781,7 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
     $$A =
 \begin{bmatrix}    -0.92388  &  -0.38268 \\  -0.38268   &  0.92388 \end{bmatrix}
 \begin{bmatrix}      5.3983  &      \\   &  0.92621  \end{bmatrix}
-\begin{bmatrix}    -0.75545  & -0.6552 \\  -0.6552 & 0.75545 \end{bmatrix}$$
+\begin{bmatrix}    -0.75545  & -0.6552 \\  -0.6552 & 0.75545 \end{bmatrix}^*$$
     \begin{itemize}
     \item[$\circ$] $\|A\|_2 = 5.3983$, $\|A^{-1}\|_2 = 1/0.92621$
     \item[$\circ$] compare: $\sigma(A) = \{5,1\}$
@@ -791,7 +795,7 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
                 -0.52578 & -0.30878 & 0.79259 \\
                 -0.21636 & 0.94969 & 0.22646 \end{bmatrix}
 \begin{bmatrix} 9.49393  & \\ & 0.93025 \\ & \end{bmatrix}
-\begin{bmatrix} -0.76421 & -0.64497 \\ -0.64497 & 0.76421 \end{bmatrix}$$
+\begin{bmatrix} -0.76421 & -0.64497 \\ -0.64497 & 0.76421 \end{bmatrix}^*$$
 \small
     \begin{itemize}
     \item[$\circ$] $\|B\|_2 = 9.49393$
@@ -807,14 +811,19 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 
 \begin{itemize}
 \footnotesize
-\item[\emph{proof.}] Induct on $n$.  If $n=1$ then $A=[a]$ where $a\in \CC^m$.  Then
-  $$U=\left[\frac{a}{\|a\|_2}\right], \quad \Sigma=[\|a\|_2], \quad V=[1].$$
+\item[\emph{proof.}] Induct on $n$, the column size of $A$.  If $n=1$ then $A=[a]$ where $a\in \CC^m$.  Then
+  $$U=\left[\frac{a}{\|a\|_2}\right], \quad \Sigma=[\|a\|_2], \quad V=[1]$$
+is an SVD for $A$.
 
-For $n>1$ let $v_1 \in \CC^n$ be a unit vector which maximizes the continuous function
+\quad For $n>1$ let $v_1 \in \CC^n$ be a unit vector which maximizes the continuous function
 	$$f(x) = \|A x\|_2$$
-over the compact set $S^n = \{x\in\CC^n\,:\,\|x\|_2=1\}$.  Then $Av_1$ is a vector in $\CC^m$ with length $\sigma_1=\|Av_1\|_2\ge 0$.  If $\sigma_1>0$ then let $u_1=Av_1/\sigma_1$, and otherwise choose $u_1$ to be any unit vector in $\CC^m$, so now we have $Av_1=\sigma_1 u_1$.  Extend the unit vector $v_1$ to an orthonormal basis, i.e.~a unitary matrix $\tilde V = \trefmatrixthree{v_1}{\tilde v_2}{\tilde v_n}$.  Also extend $u_1$ to a unitary: $\tilde U = \trefmatrixthree{u_1}{\tilde u_2}{\tilde u_m}$.  Now apply $A$ on the left of $\tilde V$,
-    $$A\tilde V = \trefmatrixthree{\sigma_1 u_1}{w_2}{w_n}$$
-and apply $\tilde U^*$ on the right, and note that $\tilde U^* u_1 = e_1$:
+over the compact set $S^n = \{x\in\CC^n\,:\,\|x\|_2=1\}$.  (\emph{We just used finite-dimensionality!})  Then $Av_1$ is a vector in $\CC^m$ with length $\sigma_1=\|Av_1\|_2 = \|A\|_2$.  If $\sigma_1=0$ we are done because $A$ is the zero matrix.  (\emph{Why?})  Otherwise $\sigma_1>0$ so let $u_1=Av_1/\sigma_1$.  Now we have $Av_1=\sigma_1 u_1$.
+
+\quad Extend $v_1$ and $u_1$ to orthonormal bases of $\CC^n,\CC^m$, respectively, giving unitary matrices
+    $$\tilde V = \trefmatrixthree{v_1}{\tilde v_2}{\tilde v_n}, \qquad\tilde U = \trefmatrixthree{u_1}{\tilde u_2}{\tilde u_m}.$$
+Now apply $A$ to $\tilde V$,
+    $$A\tilde V = \trefmatrixthree{\sigma_1 u_1}{w_2}{w_n}.$$
+Next apply $\tilde U^*$, and note that $\tilde U^* u_1 = e_1$:
     $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{z^*}{0}{M}$$
 \normalsize
 \end{itemize}
@@ -825,7 +834,18 @@ and apply $\tilde U^*$ on the right, and note that $\tilde U^* u_1 = e_1$:
 
 \begin{itemize}
 \footnotesize
-\item[\emph{cont.}] FIXME
+\item[\emph{cont.}] We have
+    $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{z^*}{0}{M}$$
+for $z\in \CC^{n-1}$ and $M \in \CC^{(m-1)\times(n-1)}$.  Because $\tilde U,\tilde V$ are unitary, the matrix norm is unchanged: $\|\tilde U^*A\tilde V\|_2=\|A\|_2$.
+
+\quad In fact $z=0$, as follows.  Let $w\in \CC^m$ be the vector $\ds w = \begin{bmatrix} \sigma_1 \\ z \end{bmatrix}$.  It is nonzero because $\|w\|_2 = (\sigma_1^2 + \|z\|_2^2)^{1/2} \ge \sigma_1>0$.  But
+	$$\left\|\blocktwo{\sigma_1}{z^*}{0}{M} \begin{bmatrix} \sigma_1 \\ z \end{bmatrix}\right\|_2 = \left\|\begin{bmatrix} \sigma_1^2 + z^*z \\ Mz \end{bmatrix}\right\|_2 \ge \sigma_1^2 + \|z\|_2^2 = (\sigma_1^2 + \|z\|_2^2)^{1/2} \|w\|_2.$$
+That is, $\|\tilde U^*A\tilde V w\|_2 \ge (\sigma_1^2 + \|z\|_2^2)^{1/2} \|w\|_2$, so if $z\ne 0$ then $\|A\|_2=\|\tilde U^*A\tilde V\|_2 > \sigma_1$, contradicting the definition of $\sigma_1$.
+
+\quad Thus 
+    $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{0}{0}{M}$$
+By the induction hypothesis there exist $\hat U,\hat\Sigma,\hat V$ so that $M = \hat U \hat\Sigma \hat V^*$.  Since products of unitaries are unitary, we have an SVD of $A$:
+    $$A = \left(\tilde U\blocktwo{1}{0}{0}{\hat U}\right) \blocktwo{\sigma_1}{0}{0}{\hat\Sigma} \left(\tilde V \blocktwo{1}{0}{0}{\hat V}\right)^* = U \Sigma V^*\hfill \bqed$$
 \normalsize
 \end{itemize}
 \end{frame}
@@ -834,21 +854,22 @@ and apply $\tilde U^*$ on the right, and note that $\tilde U^* u_1 = e_1$:
 \begin{frame}{singular value decomposition: facts}
 
 \begin{itemize}
-\item $\|A\|_2=\sigma_1$
+\item $\|A\|_2=\|\Sigma\|_2=\sigma_1$
 \item $\alpha$ is a singular value of $A$ if and only if $\alpha^2$ is an eigenvalue of $A^*A$
 \item the singular values of $A$ are the same as those of $A^*$
-\item if $A\in \CC^{m\times n}$ then
+\item for any $A\in \CC^{m\times n}$,
     \begin{itemize}
     \item[$\circ$] $\rank(A)=k$ where $\sigma_k>0$ and $\sigma_{k+1}=0$
     \item[$\circ$] $\operatorname{nullity}(A)=\dim(\ker(A))=q$ where $q$ is the number of zero singular values
     \end{itemize}
-\item if $A$ is square
+\item if $A\in \CC^{n\times n}$ is square then
     \begin{itemize}
     \item[$\circ$] $|\det(A)| = \prod_{j=1}^n \sigma_j$
     \item[$\circ$] if $A$ is invertible then $\|A^{-1}\|_2 = 1/\sigma_n$
-    \item[$\circ$] $\kappa_2(A) = \sigma_1/\sigma_n$ is the eccentricity of the output hyperellipsoid
+    \item[$\circ$] $\kappa_2(A) = \sigma_1/\sigma_n \in [1,\infty]$ is the eccentricity of the output hyperellipsoid
+    \item[$\circ$] $\sigma_n \le \min_{\lambda\in\sigma(A)} |\lambda| \le \max_{\lambda\in\sigma(A)} |\lambda| \le \sigma_1$
     \end{itemize}
-\item if $A$ is square and normal then $\sigma_j = |\lambda_j|$
+\item if $A$ is square and normal then $\sigma_j = |\lambda_j|$ (with ordering of $\sigma(A)$)
 \end{itemize}
 \end{frame}
 
