@@ -654,14 +654,7 @@ A &= Q\Lambda Q^* = Q \left(\begin{bmatrix} \lambda_1 & & & \\ & \lambda_2 & & \
 >> [P,Qh] = projmeasure(A);
 >> Qh                    % view selected eigenvectors
 \end{Verbatim}
-\end{itemize}
-\end{frame}
 
-
-\begin{frame}[fragile]
-\frametitle{spectral subsets correspond to orthogonal projectors, cont.}
-
-\begin{itemize}
 \item demo 3:
 
 \begin{Verbatim}[fontsize=\small]
@@ -669,18 +662,31 @@ A &= Q\Lambda Q^* = Q \left(\begin{bmatrix} \lambda_1 & & & \\ & \lambda_2 & & \
 >> [P,Qh] = projmeasure(U);
 >> Qh                        % view selected eigenvectors
 \end{Verbatim}
+\end{itemize}
+\end{frame}
 
-\bigskip
-\item John von Neumann ($\sim$1930) imagined this before he invented computers
+
+\begin{frame}{projector-valued measures (von Neumann)}
+
+\begin{itemize}
+\item John von Neumann imagined these kind of spectral pictures in the 1920s
     \begin{itemize}
-    \item[$\circ$] it is a \emph{projector-valued measure}
-    \item[$\circ$] built to handle quantum mechanical operators rigorously
-    \item[$\circ$] he constructed a spectral theorem for normal operators on Hilbert spaces,  which uses a projector-valued measure $E$ on $\CC$, namely
-    	$$A = \int_{\sigma(A)} \lambda\,dE_\lambda$$
-    \item[$\circ$] the functional calculus:
-    	$$f(A) = \int_{\sigma(A)} f(\lambda)\,dE_\lambda,$$
+    \item[$\circ$] before he invented electronic computers in the 1940s
     \end{itemize}
-
+\item he proposed a \emph{projector-valued measure} $E_\lambda$ for each $A\in B(\CC^n)$ normal
+    \begin{itemize}
+    \item[$\circ$] if $Z\subset \sigma(A)\subset \CC$ then $P = E_\lambda(Z)$ is an orthogonal projector
+    \item[$\circ$] $\image P = \image E_\lambda(Z)$ is span of eigenvectors for eigenvalues $\lambda \in Z$
+    \end{itemize}
+\item he built this to handle quantum mechanical operators rigorously
+\item \emph{(von Neumann's) spectral theorem.} if $A\in B(H)$ normal, for $H$ a Hilbert space, then there exists a projector-valued measure $E_\lambda$ so that
+    	$$A = \int_{\sigma(A)} \lambda\,dE_\lambda$$
+\item the most general functional calculus follows immediately:
+    	$$f(A) = \int_{\sigma(A)} f(\lambda)\,dE_\lambda$$
+    \begin{itemize}
+    \item[$\circ$] $f$ is merely measurable
+    \item[$\circ$] $A$ could even be unbounded (i.e.~not Lipschitz)
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -739,7 +745,7 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 \begin{itemize}
 \item $A \in \RR^{m\times n}$ sends the unit sphere in $\RR^n$ to a possibly-degenerate hyperellipsoid in $\RR^m$
     \begin{itemize}
-    \item[$\circ$] \alert{the fundamental way to visualize a linear operator}
+    \item[$\circ$] this is \alert{the fundamental way to visualize a linear operator!}
     \item[$\circ$] also true for $A \in \CC^{m\times n}$ \dots but less visualizable
     \end{itemize}
 \item the \emph{singular values} of $A$ define the geometry of the output hyperellipsoid
@@ -759,9 +765,9 @@ Geometric action of $A$: $\|A\|_2$, $\|A^{-1}\|_2$, condition number, $\eps$-pse
 \item diagonal entries $\sigma_i$ of $\Sigma$ are the \emph{singular values} of $A$
     \begin{itemize}
     \item[$\circ$] note $\Sigma$ is same shape as $A$, while $U,V$ are always square
-    \item[$\circ$] normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes values unique
-    \item[$\circ$] if $A=0$ we take $\Sigma=A=0$ and choose $U,V$ as any unitaries
+    \item[$\circ$] normalization $\sigma_1\ge \sigma_2 \ge \dots \ge \sigma_{\min\{m,n\}}$ makes $\Sigma$ unique
     \item[$\circ$] if $A\ne 0$ then $\sigma_1>0$
+    \item[$\circ$] if $A=0$ we take $\Sigma=0$ and choose $U,V$ as any unitaries
     \end{itemize}
 \item action of $A = U \Sigma V^*$ on a vector:
     \begin{itemize}
@@ -838,7 +844,7 @@ Next apply $\tilde U^*$, and note that $\tilde U^* u_1 = e_1$:
     $$\tilde U^*A\tilde V = \blocktwo{\sigma_1}{z^*}{0}{M}$$
 for $z\in \CC^{n-1}$ and $M \in \CC^{(m-1)\times(n-1)}$.  Because $\tilde U,\tilde V$ are unitary, the matrix norm is unchanged: $\|\tilde U^*A\tilde V\|_2=\|A\|_2$.
 
-\quad In fact $z=0$, as follows.  Let $w\in \CC^m$ be the vector $\ds w = \begin{bmatrix} \sigma_1 \\ z \end{bmatrix}$.  It is nonzero because $\|w\|_2 = (\sigma_1^2 + \|z\|_2^2)^{1/2} \ge \sigma_1>0$.  But
+\quad In fact $z=0$, for the following reason.  Let $w\in \CC^m$ be the vector $\ds w = \begin{bmatrix} \sigma_1 \\ z \end{bmatrix}$.  It is nonzero because $\|w\|_2 = (\sigma_1^2 + \|z\|_2^2)^{1/2} \ge \sigma_1>0$.  But
 	$$\left\|\blocktwo{\sigma_1}{z^*}{0}{M} \begin{bmatrix} \sigma_1 \\ z \end{bmatrix}\right\|_2 = \left\|\begin{bmatrix} \sigma_1^2 + z^*z \\ Mz \end{bmatrix}\right\|_2 \ge \sigma_1^2 + \|z\|_2^2 = (\sigma_1^2 + \|z\|_2^2)^{1/2} \|w\|_2.$$
 That is, $\|\tilde U^*A\tilde V w\|_2 \ge (\sigma_1^2 + \|z\|_2^2)^{1/2} \|w\|_2$, so if $z\ne 0$ then $\|A\|_2=\|\tilde U^*A\tilde V\|_2 > \sigma_1$, contradicting the definition of $\sigma_1$.
 
@@ -860,7 +866,7 @@ By the induction hypothesis there exist $\hat U,\hat\Sigma,\hat V$ so that $M = 
 \item for any $A\in \CC^{m\times n}$,
     \begin{itemize}
     \item[$\circ$] $\rank(A)=k$ where $\sigma_k>0$ and $\sigma_{k+1}=0$
-    \item[$\circ$] $\operatorname{nullity}(A)=\dim(\ker(A))=q$ where $q$ is the number of zero singular values
+    \item[$\circ$] $\operatorname{nullity}(A)=q$ where $q$ is number of zero singular values ($m\ge n$)
     \end{itemize}
 \item if $A\in \CC^{n\times n}$ is square then
     \begin{itemize}
@@ -876,7 +882,7 @@ By the induction hypothesis there exist $\hat U,\hat\Sigma,\hat V$ so that $M = 
 
 \section{conclusion}
 
-\begin{frame}{please read the textbook backwards}
+\begin{frame}{please try reading the textbook backwards now}
 
 \begin{itemize}
 \item go to the end of Chapter 15 ``$C^*$ algebras'' and read backwards:
