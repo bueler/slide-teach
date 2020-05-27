@@ -241,7 +241,7 @@
     \begin{itemize}
     \item[$\circ$] \emph{acoustics} (and classic wave equation)
         $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \qquad \begin{pmatrix} \, {\large \strut} p_{tt} = \frac{K_0}{\rho_0} p_{xx}\, \\ \, {\large \strut} u_{tt} = \frac{K_0}{\rho_0} u_{xx}\, \end{pmatrix}$$
-    \item[$\circ$] linearized \emph{shallow water equations}
+    \item[$\circ$] \underline{linearized} \emph{shallow water equations}
         $$\bq = \begin{bmatrix} h \\ h u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & 1 \\ -u_0^2+gh_0 & 2 u_0 \end{bmatrix} \, \implies \, {\footnotesize \begin{matrix} {\large \strut} h_t + (hu)_x = 0 \\ {\large \strut} (h u)_t + (-u_0^2+gh_0) h_x + 2u_0 (h u)_x = 0 \end{matrix} }$$
     \item[$\circ$] boringly decoupled
         $$\bq = \begin{bmatrix} u \\ v \\ w \end{bmatrix}, \,\, A = \begin{bmatrix} a & 0 & 0 \\ 0 & b & 0 \\ 0 & 0 & c \end{bmatrix} \, \implies \begin{matrix} u_t + a u_x = 0 \\ v_t + b v_x = 0 \\ w_t + c w_x = 0 \end{matrix}$$
@@ -250,10 +250,40 @@
 \end{frame}
 
 
-\begin{frame}{eigenvectors decouple}
+\begin{frame}{eigenvectors decouple systems}
 
 \begin{itemize}
-\item x
+\item the system $\bq_t + A\, \bq_x=0$ is \emph{hyperbolic} if $A$ is diagonalizable and all of the eigenvalues of $A$ are real
+    \begin{itemize}
+    \item[$\circ$] diagonalizable means there are eigenvectors of $A$ which form a basis of $\RR^n$
+    \end{itemize}
+\item consider \emph{left eigenvectors} of $A$, namely vectors $\bw_k \in \RR^n$ so that
+    $$\bw_k^\top A = \lambda_k \bw_k^\top$$
+
+\vspace{-2mm}
+    \begin{itemize}
+    \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if system is hyperbolic
+    \item[$\circ$] $\bw$ are column vectors so $\bw_k^\top$ are row vectors
+    \end{itemize}
+\item decouple the system $\bq_t + A\, \bq_x=0$ by multiplying by $\bw_k^\top$:
+\begin{align*}
+\bw_k^\top \bq_t + \bw_k^\top A\, \bq_x &= 0 \\
+\bw_k^\top \bq_t + \lambda_k \bw_k^\top \bq_x &= 0 \\
+(v_k)_t + \lambda_k (v_k)_x &= 0
+\end{align*}
+\item scalar functions $v_k(t,x) = \bw_k^\top \bq(t,x)$ satisfy decoupled advection eqns:
+   $$(v_k)_t + \lambda_k (v_k)_x = 0$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{inner products, left eigenvectors, transposes, and \Matlab}
+
+\begin{itemize}
+\item $\bu^\top \bv = \ip{\bu}{\bv}$
+\item same as right for $A^\top$
+\item basis of left iff basis of right
+\item in \Matlab, find left this way
 \end{itemize}
 \end{frame}
 
