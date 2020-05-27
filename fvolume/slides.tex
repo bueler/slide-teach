@@ -109,13 +109,13 @@
 \item slides about numerical solutions of first-order PDEs
     \begin{itemize}
     \item[$\circ$] genuinely introductory!
-    \item[$\circ$] supported by codes in C using PETSc \dots not shown \dots see \,\href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
     \end{itemize}
 \item we will solve this tree of equations:
 
 \newcommand\mynum[1]{{\renewcommand{\insertenumlabel}{#1}%
       \usebeamertemplate{enumerate item} \,}}
 
+\bigskip
 \begin{center}
 \begin{tikzpicture}[scale=0.9,
                     >={Latex[length=2mm]},
@@ -134,6 +134,7 @@
    (linearsystem.south) edge node {} (generalsystem);
 \end{tikzpicture}
 
+\bigskip
     \begin{itemize}
     \item[$\circ$] arrows show generalizations
     \end{itemize}
@@ -146,6 +147,11 @@
 \begin{frame}{solution by characteristics}
 
 \begin{itemize}
+\item the \emph{scalar advection equation}:
+    $$u_t + a u_x=0$$
+    \begin{itemize}
+    \item[$\circ$] we will only need $a\in\RR$ constant, so let's assume that
+    \end{itemize}
 \item x
 \end{itemize}
 \end{frame}
@@ -160,6 +166,32 @@
 
 
 \begin{frame}{results}
+
+\begin{itemize}
+\item results from short \Matlab code\footnote{\href{http://bueler.github.io/codes/adcompare.m}{\texttt{bueler.github.io/codes/adcompare.m}}}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{method-of-lines thinking (MOL)}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Godunov's barrier theorem}
+
+\begin{itemize}
+\item x
+\end{itemize}
+
+\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving linear scheme for the 1D constant-coefficient equation $u_t + \alpha u_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
+\end{frame}
+
+
+\begin{frame}{x}
 
 \begin{itemize}
 \item x
@@ -199,6 +231,7 @@
 \begin{frame}{x}
 
 \begin{itemize}
+\item using C using PETSc \dots not shown \dots see \,\href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
 \item x
 \end{itemize}
 \end{frame}
