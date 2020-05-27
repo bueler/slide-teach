@@ -22,14 +22,21 @@
 \usepackage{empheq}
 \usepackage{xspace}
 \usepackage{verbatim,fancyvrb}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
+
 \usepackage{hyperref}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
 %\beamerdefaultoverlayspecification{<+->}
 
+\newcommand{\ba}{\mathbf{a}}
 \newcommand{\bb}{\mathbf{b}}
 \newcommand{\bc}{\mathbf{c}}
+\newcommand{\bg}{\mathbf{g}}
+\newcommand{\bq}{\mathbf{q}}
 \newcommand{\br}{\mathbf{r}}
 \newcommand{\bx}{\mathbf{x}}
 \newcommand{\by}{\mathbf{y}}
@@ -37,7 +44,10 @@
 \newcommand{\bu}{\mathbf{u}}
 \newcommand{\bw}{\mathbf{w}}
 
+\newcommand{\bF}{\mathbf{F}}
+
 \newcommand{\grad}{\nabla}
+\newcommand{\Div}{\nabla\cdot}
 
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\RR}{\mathbb{R}}
@@ -90,10 +100,124 @@
 \end{frame}
 
 
-\begin{frame}{xx}
+\section{scalar advection equation}
+
+\begin{frame}[fragile]
+\frametitle{overview}
 
 \begin{itemize}
-\item xx
+\item slides about numerical solutions of first-order PDEs
+    \begin{itemize}
+    \item[$\circ$] genuinely introductory!
+    \item[$\circ$] supported by codes in C using PETSc \dots not shown \dots see \,\href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+    \end{itemize}
+\item we will solve this tree of equations:
+
+\newcommand\mynum[1]{{\renewcommand{\insertenumlabel}{#1}%
+      \usebeamertemplate{enumerate item} \,}}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9,
+                    >={Latex[length=2mm]},
+  eqn/.style={
+     rectangle,draw,fill=white,align=center,line width=0.6pt,minimum width=15mm}]
+
+%center
+\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
+\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{3} scalar advection in 2D \\ {\Large \strut} $u_t + a(x,y) u_x + b(x,y) u_y=0$};
+\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
+\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{4} conservation-law system \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
+
+\path[-Latex]
+   ([xshift=-2em]scalaradvect.south) edge node {} (linearsystem)
+   ([xshift=2em]scalaradvect.south) edge node {} (scalartwod)
+   (linearsystem.south) edge node {} (generalsystem);
+\end{tikzpicture}
+
+    \begin{itemize}
+    \item[$\circ$] arrows show generalizations
+    \end{itemize}
+\end{center}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{solution by characteristics}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{upwind and Lax-Wendroff schemes}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{results}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\section{linear systems}
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+
+\section{scalar advection in 2D}
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\section{nonlinear conservation-law systems}
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{x}
+
+\begin{itemize}
+\item x
 \end{itemize}
 \end{frame}
 
