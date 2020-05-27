@@ -56,7 +56,6 @@
 \newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
 \newcommand{\Matlab}{\textsc{Matlab}\xspace}
 \newcommand{\Octave}{\textsc{Octave}\xspace}
-\newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
 \newcommand{\ip}[2]{\left<#1,#2\right>}
@@ -69,8 +68,10 @@
 \newcommand{\blocktwo}[4]{\left[\begin{array}{c|c} #1 & #2 \\ \hline #3 & #4 \end{array}\right]}
 
 \newcommand{\bqed}{{\color{blue}\qed}}
+\newcommand{\ds}{\displaystyle}
 
-\newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
+\newcommand\mynum[1]{{\renewcommand{\insertenumlabel}{#1}%
+      \usebeamertemplate{enumerate item} \,}}
 
 
 \AtBeginSection[]
@@ -99,21 +100,22 @@
   \maketitle
 \end{frame}
 
+\begin{frame}
+  \frametitle{Outline}
+  \tableofcontents[hideallsubsections]
+\end{frame}
 
-\section{scalar advection equation}
 
 \begin{frame}[fragile]
 \frametitle{overview}
 
 \begin{itemize}
-\item slides about numerical solutions of first-order PDEs
+\item numerical solutions of first-order PDEs
     \begin{itemize}
-    \item[$\circ$] genuinely introductory!
+    \item[$\circ$] finite volume (FV) methods
+    \item[$\circ$] genuine introduction
     \end{itemize}
 \item we will solve these hyperbolic equations:
-
-\newcommand\mynum[1]{{\renewcommand{\insertenumlabel}{#1}%
-      \usebeamertemplate{enumerate item} \,}}
 
 \bigskip
 \begin{center}
@@ -123,10 +125,10 @@
      rectangle,draw,fill=white,align=center,line width=0.6pt,minimum width=15mm}]
 
 %center
-\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
-\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{3} scalar advection in 2D \\ {\Large \strut} $u_t + a(x,y) u_x + b(x,y) u_y=0$};
-\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
-\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{4} conservation-law system \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
+\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1}\&\mynum{2} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
+\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{4} scalar advection in 2D \\ {\Large \strut} $u_t + a u_x + b u_y=0$};
+\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{3} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
+\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{5} conservation-law system \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
 
 \path[-Latex]
    ([xshift=-2em]scalaradvect.south) edge node {} (linearsystem)
@@ -136,13 +138,25 @@
 
 \bigskip
     \begin{itemize}
+    \item[$\circ$] ``hyperbolic'' means finite speed of influence
     \item[$\circ$] arrows show generalizations
     \end{itemize}
 \end{center}
-
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{references}
+\begin{itemize}
+\item \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}
+\item \small K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
+\item \small W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003  \, \mynum{2}
+\item \small E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020?  \, \mynum{4}
+\end{itemize}
+\end{frame}
+
+
+\section{scalar advection equation}
 
 \begin{frame}{solution by characteristics}
 
@@ -181,13 +195,11 @@
 \end{frame}
 
 
-\begin{frame}{Godunov's barrier theorem}
+\begin{frame}{x}
 
 \begin{itemize}
 \item x
 \end{itemize}
-
-\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving linear scheme for the 1D constant-coefficient equation $u_t + \alpha u_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
 \end{frame}
 
 
@@ -198,6 +210,17 @@
 \end{itemize}
 \end{frame}
 
+
+\section{high-resolution methods}
+
+\begin{frame}{Godunov's barrier theorem}
+
+\begin{itemize}
+\item can we do better?
+\end{itemize}
+
+\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving linear scheme for the 1D constant-coefficient equation $u_t + \alpha u_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
+\end{frame}
 
 \begin{frame}{x}
 
@@ -209,7 +232,25 @@
 
 \section{linear systems}
 
-\begin{frame}{x}
+\begin{frame}{linear systems}
+
+\begin{itemize}
+\item system for $\bq(t,x) \in \RR^n$ with $A\in\RR^{n\times n}$ constant:
+  $$\bq_t + A\, \bq_x=0$$
+\item for example,
+    \begin{itemize}
+    \item[$\circ$] \emph{acoustics} (and classic wave equation)
+        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \qquad \begin{pmatrix} \, {\large \strut} p_{tt} = \frac{K_0}{\rho_0} p_{xx}\, \\ \, {\large \strut} u_{tt} = \frac{K_0}{\rho_0} u_{xx}\, \end{pmatrix}$$
+    \item[$\circ$] linearized \emph{shallow water equations}
+        $$\bq = \begin{bmatrix} h \\ h u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & 1 \\ -u_0^2+gh_0 & 2 u_0 \end{bmatrix} \, \implies \, {\footnotesize \begin{matrix} {\large \strut} h_t + (hu)_x = 0 \\ {\large \strut} (h u)_t + (-u_0^2+gh_0) h_x + 2u_0 (h u)_x = 0 \end{matrix} }$$
+    \item[$\circ$] boringly decoupled
+        $$\bq = \begin{bmatrix} u \\ v \\ w \end{bmatrix}, \,\, A = \begin{bmatrix} a & 0 & 0 \\ 0 & b & 0 \\ 0 & 0 & c \end{bmatrix} \, \implies \begin{matrix} u_t + a u_x = 0 \\ v_t + b v_x = 0 \\ w_t + c w_x = 0 \end{matrix}$$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigenvectors decouple}
 
 \begin{itemize}
 \item x
@@ -217,7 +258,7 @@
 \end{frame}
 
 
-\begin{frame}{x}
+\begin{frame}{Riemann solver}
 
 \begin{itemize}
 \item x
@@ -225,6 +266,12 @@
 \end{frame}
 
 
+\begin{frame}{two ways of thinking}
+
+\begin{itemize}
+\item Riemann solver at cell face $(t,x_{j+1/2})$ versus characteristic to $(t_{n+1},x_j)$
+\end{itemize}
+\end{frame}
 
 \section{scalar advection in 2D}
 
