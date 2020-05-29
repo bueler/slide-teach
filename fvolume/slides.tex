@@ -149,11 +149,30 @@
 \begin{frame}{references}
 \begin{itemize}
 \item \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}
+
+\bigskip
 \item \small K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
 \item \small W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003  \, \mynum{2}
 \item \small E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020?  \, \mynum{4}
 \end{itemize}
 \end{frame}
+
+
+\begin{frame}{visual example 1: exact and numerical solutions}
+
+\begin{itemize}
+\item $u_t + 2 u_x = 0$, $u(t,x)$, $u(t,0)=0$ SHOW exact solution and Lax-Wendroff
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{visual example 2: merely a numerical solution}
+
+\begin{itemize}
+\item SHOW numerical solution of shallow water
+\end{itemize}
+\end{frame}
+
 
 
 \section{scalar advection equation}
@@ -174,7 +193,10 @@
 \begin{frame}{upwind and Lax-Wendroff schemes}
 
 \begin{itemize}
-\item x
+\item upwind if $a>0$
+    $$\frac{u_j^{n+1} - u_j^n}{\Delta t} + a \frac{u_j^n - u_{j-1}^n}{\Delta t} = 0$$
+\item Lax-Wendroff if $a$ FIXME
+    $$\frac{u_j^{n+1} - u_j^n}{\Delta t} + a \frac{u_j^n - u_{j-1}^n}{\Delta t} = 0$$
 \end{itemize}
 \end{frame}
 
