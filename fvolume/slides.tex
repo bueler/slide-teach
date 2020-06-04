@@ -421,7 +421,6 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \end{frame}
 
 
-
 \section{scalar advection in 2D}
 
 \begin{frame}{x}
@@ -491,6 +490,39 @@ ans =
 \end{itemize}
 \end{frame}
 
+
+
+
+\begin{frame}{summary}
+
+\begin{itemize}
+\item since the 1990s there is a recommended finite volume solver for linear and nonlinear hyperbolic systems
+\item sometimes called a ``high-resolution Godunov method''
+\item it consists of three things:
+    \begin{itemize}
+    \item[$\circ$] \alert{finite volumes}:
+        \begin{itemize}
+        \item the conservation law form is spatially integrated
+        \item the discrete unknowns are the cell averages
+        \item the flux is needed at faces between cells
+        \end{itemize}
+    \item[$\circ$] \alert{Riemann solvers}:
+        \begin{itemize}
+        \item the ``Riemann problem'' has different cell values on each side of a face
+        \item the Riemann solver is provided by the user
+        \item it determines the local wave structure (e.g.~rarefaction and shock waves) and then evaluates the flux on the face
+        \item it can be exact or approximate
+        \end{itemize}
+    \item[$\circ$] \alert{slope limiters}:
+        \begin{itemize}
+        \item in first-order upwinding the solution is a constant (slope $= 0$); this is ``classical Godunov''
+        \item for higher order the solution inside a cell is ``reconstructed'' as a sloped function
+        \item \dots but the slope is (nonlinearly) limited so that the solution does not propagate oscillations
+        \item ``does not propagate oscillations'' may mean \emph{total variation diminishing} (TVD)
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\end{frame}
 
 \end{document}
 
