@@ -125,9 +125,9 @@
      rectangle,draw,fill=white,align=center,line width=0.6pt,minimum width=15mm}]
 
 %center
-\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1}\&\mynum{2} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
+\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
 \draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{4} scalar advection in 2D \\ {\Large \strut} $u_t + a u_x + b u_y=0$};
-\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{3} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
+\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
 \draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{5} conservation-law system \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
 
 \path[-Latex]
@@ -161,7 +161,7 @@
 \begin{frame}{visual example 1: exact and numerical solutions}
 
 \begin{itemize}
-\item $u_t + 2 u_x = 0$, $u(t,x)$, $u(t,0)=0$ SHOW exact solution and Lax-Wendroff
+\item $q_t + 2 q_x = 0$, $q(t,x)$, $q(t,0)=0$ SHOW exact solution and Lax-Wendroff
 \end{itemize}
 \end{frame}
 
@@ -190,13 +190,31 @@
 \end{frame}
 
 
+\begin{frame}{upwind scheme}
+
+\begin{itemize}
+\item apply \emph{upwind} scheme to $q_t + aq_x=0$ in case $a>0$:
+    $$\frac{Q_j^{n+1} - Q_j^n}{\Delta t} + a \frac{Q_j^n - Q_{j-1}^n}{\Delta x} = 0$$
+\item equivalently, solve for new value:
+\begin{align*}
+Q_j^{n+1} &= \frac{a\Delta x}{\Delta t} Q_{j-1}^n + \left(1 - \frac{a\Delta x}{\Delta t}\right) Q_j^n = \ell(x_j-a\Delta t)
+\end{align*}
+where $\ell(x)$ linearly interpolates
+
+\noindent between $(x_{j-1},Q_{j-1}^n)$ and $(x_{j},Q_{j}^n)$
+
+\vspace{-10mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/leveque4p4a}
+\item require \emph{interpolation} instead of extrapolation:
+    $$\frac{|a|\Delta x}{\Delta t} \le 1$$
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{upwind and Lax-Wendroff schemes}
 
 \begin{itemize}
-\item upwind if $a>0$
-    $$\frac{u_j^{n+1} - u_j^n}{\Delta t} + a \frac{u_j^n - u_{j-1}^n}{\Delta t} = 0$$
-\item Lax-Wendroff if $a$ FIXME
-    $$\frac{u_j^{n+1} - u_j^n}{\Delta t} + a \frac{u_j^n - u_{j-1}^n}{\Delta t} = 0$$
+\item Lax-Wendroff FIXME is quadratic interpolation
 \end{itemize}
 \end{frame}
 
@@ -206,6 +224,29 @@
 \begin{itemize}
 \item results from short \Matlab code\footnote{\href{http://bueler.github.io/codes/adcompare.m}{\texttt{bueler.github.io/codes/adcompare.m}}}
 \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{results}
+
+\begin{itemize}
+\item also these results?
+
+\includegraphics[width=0.5\textwidth]{figs/leveque6p1}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the finite volume idea}
+
+\begin{itemize}
+\item x
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{figs/leveque4p1}
+\end{center}
 \end{frame}
 
 
@@ -233,24 +274,6 @@
 \end{frame}
 
 
-\section{high-resolution methods}
-
-\begin{frame}{Godunov's barrier theorem}
-
-\begin{itemize}
-\item can we do better?
-\end{itemize}
-
-\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving linear scheme for the 1D constant-coefficient equation $u_t + \alpha u_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
-\end{frame}
-
-\begin{frame}{x}
-
-\begin{itemize}
-\item x
-\end{itemize}
-\end{frame}
-
 
 \section{linear systems}
 
@@ -272,7 +295,26 @@
 \end{frame}
 
 
-\begin{frame}{eigenvectors decouple systems}
+
+\begin{frame}{example: acoustics}
+
+\begin{itemize}
+\item $p(t,x)$ is gas pressure, $u(t,x)$ is gas velocity
+\item constant density $\rho_0$ and modulus of compressiblity $K_0$
+\item assume pressure/velocity variations are small
+\item linear, constant-coefficient first-order PDE system:
+$$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \hspace{60mm}$$
+or $\bq_t + A \bq_x$ where
+$$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \hspace{65mm}$$
+\item example solution $\longrightarrow$
+
+\vspace{-30mm}
+\hfill \includegraphics[width=0.55\textwidth]{figs/leveque3p1}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{hyperbolic systems}
 
 \begin{itemize}
 \item the system $\bq_t + A\, \bq_x=0$ is \emph{hyperbolic} if $A$ is diagonalizable and all of the eigenvalues of $A$ are real
@@ -286,14 +328,22 @@
     \begin{itemize}
     \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if system is hyperbolic
     \item[$\circ$] $\bw$ are column vectors so $\bw_k^\top$ are row vectors
+    \item[$\circ$] $\bw$ are the right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bq_k$
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigenvectors decouple systems}
+
+\begin{itemize}
 \item decouple the system $\bq_t + A\, \bq_x=0$ by multiplying by $\bw_k^\top$:
 \begin{align*}
 \bw_k^\top \bq_t + \bw_k^\top A\, \bq_x &= 0 \\
 \bw_k^\top \bq_t + \lambda_k \bw_k^\top \bq_x &= 0 \\
 (v_k)_t + \lambda_k (v_k)_x &= 0
 \end{align*}
-\item scalar functions $v_k(t,x) = \bw_k^\top \bq(t,x)$ satisfy decoupled advection eqns:
+\item so the scalar functions $v_k(t,x) = \bw_k^\top \bq(t,x)$ satisfy decoupled advection eqns:
    $$(v_k)_t + \lambda_k (v_k)_x = 0$$
 \end{itemize}
 \end{frame}
@@ -303,9 +353,9 @@
 
 \begin{itemize}
 \item $\bu^\top \bv = \ip{\bu}{\bv}$
-\item same as right for $A^\top$
+\item left eigenvectors for $A$ are the same as right eigenvectors for $A^\top$
 \item basis of left iff basis of right
-\item in \Matlab, find left this way
+\item in \Matlab, find left eigenvectors this way
 \end{itemize}
 \end{frame}
 
@@ -325,6 +375,53 @@
 \end{itemize}
 \end{frame}
 
+
+
+\section{high-resolution methods}
+
+\begin{frame}{Godunov's barrier theorem}
+
+\begin{itemize}
+\item can we do better?
+\end{itemize}
+
+\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving linear scheme for the 1D constant-coefficient equation $u_t + \alpha u_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
+\end{frame}
+
+
+\begin{frame}{slope limiter idea}
+
+\begin{itemize}
+\item Gudonov view of upwind
+\item overshoot in Lax-Wendroff
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque6p4}
+\item actual slope limiter
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{advection equation}
+
+\begin{itemize}
+\item consider linear advection again: $q_t + a q_x=0$ with $a$ constant
+\end{itemize}
+
+\mbox{\includegraphics[width=0.5\textwidth]{figs/leveque6p1} \, \includegraphics[width=0.5\textwidth]{figs/leveque6p2}}
+\end{frame}
+
+
+\begin{frame}{MOL slope limiting}
+
+\begin{itemize}
+\item x
+\end{itemize}
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque10p2}
+\end{frame}
+
+
+
 \section{scalar advection in 2D}
 
 \begin{frame}{x}
@@ -338,18 +435,41 @@
 
 \section{nonlinear conservation-law systems}
 
-\begin{frame}{x}
+\begin{frame}{traffic}
 
 \begin{itemize}
-\item x
+\item $q_t + F(q)_x = 0$ where $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\end{itemize}
+
+\hfill \includegraphics[width=0.65\textwidth]{figs/leveque11p1}
+\end{frame}
+
+\begin{frame}{Riemann solver for traffic equation}
+
+\begin{itemize}
+\item $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\end{itemize}
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque12p1}
+\end{frame}
+
+
+\begin{frame}{shallow water equations}
+
+\begin{itemize}
+\item $h(t,x)$ is height above equilibrium, $u(t,x)$ is horizontal water velocity
+\item FIXME
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{x}
+\begin{frame}{shallow water: illustration}
 
 \begin{itemize}
-\item x
+\item dam break example
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque13p4}
+
 \end{itemize}
 \end{frame}
 
