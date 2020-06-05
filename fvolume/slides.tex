@@ -163,6 +163,11 @@
 \begin{itemize}
 \item $q_t + 2 q_x = 0$, $q(t,x)$, $q(t,0)=0$ SHOW exact solution and Lax-Wendroff
 \end{itemize}
+%  ./riemann -problem advection -da_grid_x 200 -limiter minmod -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
+% mkdir foo
+% ./plotTS.py -mx 200 -ylabel "u" -ax -1.0 -bx 1.0 -cellcentered t.dat q.dat -oroot foo/bar
+% cd foo
+% eog bar*.png
 \end{frame}
 
 
@@ -171,6 +176,11 @@
 \begin{itemize}
 \item SHOW numerical solution of shallow water
 \end{itemize}
+% ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
+% mkdir baz
+% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot baz/bar
+% cd baz
+% eog bar*.png
 \end{frame}
 
 
