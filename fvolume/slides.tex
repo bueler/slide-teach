@@ -300,42 +300,82 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
 \begin{frame}{solution by characteristics}
 
 \begin{itemize}
-\item but what about the scalar PDE
-    $$q_t + a(x) q_x=0$$
-where $a(x)$ is a spatially-variable speed
-\item now we need to expose the idea of a \emph{characteristic curve}:
-    $$\frac{dx}{dt} = a(x(t))$$
+\item but what about the scalar PDE with variable speed $a(x)$?:
+    $$q_t + a(x) q_x=0, \qquad q(0,x) = f(x)$$
+\item we need the idea of a \emph{characteristic curve} (ODE):
+    $$\ds \frac{d\xi}{ds} = a(\xi(s)) \hspace{50mm}$$
 
-    \begin{itemize}
-    \item[$\circ$] this is an ODE for $x(t) \in \RR$
-    \end{itemize}
-\item FIXME solve by characteristics $\frac{d}{dt} q(t,x(t)) = q_t(t,x(t)) + q_x(t,x(t)) x'(t) = q_t(t,x(t)) + q_x(t,x(t)) a(x(t)) = 0$
-\item FIXME show solution of $q_t + a(t,x) q_x = g(t,x)$
+\vspace{-10mm}
+
+\hfill \includegraphics[width=0.32\textwidth]{figs/characteristicsketch}
+
+\vspace{-20mm}
+\item using $\xi'$ for $d\xi/ds$, we calculate
+\begin{align*}
+\Big(q(s,\xi(s))\Big)' &= q_t(s,\xi(s)) + q_x(s,\xi(s)) \xi'(s) \hspace{40mm} \\
+                          &= q_t(s,\xi(s)) + q_x(s,\xi(s)) a(\xi(s)) \\
+                          &= 0,
+\end{align*}
+\item thus $q(t,\xi(t)) = q(0,\xi(0))$
+\item \emph{solution by characteristics}: $q(t,x)$ has the same value as $f(x_0)$ if $\xi(s)$ is a characteristic curve that ends at $(t,x)$ and starts at $(0,x_0)$
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{upwind scheme}
+\begin{frame}{solution by characteristics 2}
+
+\begin{itemize}
+\item the method can, at least, be extended to the (still scalar) equation
+     $$q_t + a(t,x) q_x = g(t,x,q), \qquad q(0,x) = f(x)$$
+
+    \begin{itemize}
+    \item[$\circ$] $a$ is the speed of the characteristic curve
+    \item[$\circ$] $g$ is the \emph{source term}
+    \item[$\circ$] solution $q$ changes at rate $g$ along the characteristic
+    \item[$\circ$] if $g=0$ then $q$ is constant along the characteristic
+    \end{itemize}
+\item there are a pair of ODEs to solve:
+\begin{align*}
+\xi'(s) &= a(s,\xi(s)) \\
+\omega'(s) &= g(s,\xi(s),\omega(s))
+\end{align*}
+\item \emph{solution by characteristics}:
+    \begin{itemize}
+    \item[i)] from first ODE, find characteristic $\xi(s)$ through $(0,x_0)$ and $(t,x)$
+    \item[ii)] solve ODE $\omega'(s) = g(s,\xi(s),\omega(s))$ with initial condition $\omega(0)=f(x_0)$
+    \item[iii)] then $q(t,x) = \omega(t)$
+    \end{itemize}
+\item \alert{main idea} about characteristics of hyperbolic PDEs:
+
+\begin{center}
+information travels along the characteristics
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{upwind scheme for one-way advection}
 
 \begin{itemize}
 \item apply \emph{upwind} scheme to $q_t + aq_x=0$ in case $a>0$:
-    $$\frac{Q_j^{n+1} - Q_j^n}{\Delta t} + a \frac{Q_j^n - Q_{j-1}^n}{\Delta x} = 0$$
-\item equivalently, solve for new value:
+    $$\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + a \frac{Q_i^n - Q_{i-1}^n}{\Delta x} = 0$$
+\item equivalently, solve for the new value at $t_{n+1}$:
 \begin{align*}
-Q_j^{n+1} &= \frac{a\Delta x}{\Delta t} Q_{j-1}^n + \left(1 - \frac{a\Delta x}{\Delta t}\right) Q_j^n = \ell(x_j-a\Delta t)
+Q_i^{n+1} &= \frac{a\Delta t}{\Delta x} Q_{i-1}^n + \left(1 - \frac{a\Delta t}{\Delta x}\right) Q_i^n = \ell(x_i-a\Delta t)
 \end{align*}
 where $\ell(x)$ linearly interpolates
 
-\noindent between $(x_{j-1},Q_{j-1}^n)$ and $(x_{j},Q_{j}^n)$
+\noindent between $(x_{i-1},Q_{i-1}^n)$ and $(x_i,Q_i^n)$
 
 \vspace{-9mm}
 \hfill \includegraphics[width=0.45\textwidth]{figs/leveque4p4a}
 
 \vspace{-7mm}
-\item interpolate $\ell$ at the characteristic
+\item interpolate $\ell$ where the characteristic
 
-\noindent through $(x_{j},Q_j^{n+1})$
-\item except we must require \emph{interpolation} instead of extrapolation: $\ds \frac{|a|\Delta x}{\Delta t} \le 1$
+\noindent through $(x_i,Q_i^{n+1})$ hits the $t_n$ line
+
+\item except we must require \emph{interpolation} instead of extrapolation: $\ds \frac{|a|\Delta t}{\Delta x} \le 1$
 \end{itemize}
 \end{frame}
 
@@ -343,7 +383,37 @@ where $\ell(x)$ linearly interpolates
 \begin{frame}{upwind and Lax-Wendroff schemes}
 
 \begin{itemize}
-\item Lax-Wendroff FIXME is quadratic interpolation
+\item while upwind uses linear interpolation using two points, \dots
+\item the \emph{Lax-Wendroff} scheme uses quadratic interpolation with three points
+\item for formulas, let $\nu = a\Delta t/\Delta x$; then
+\begin{align*}
+Q_i^{n+1} &= \nu Q_{i-1}^n + \left(1 - \nu\right) Q_i^n \\
+Q_i^{n+1} &= \tfrac{1}{2} \nu (1+\nu) Q_{i-1}^n + \left(1 - \nu^2\right) Q_i^n + \tfrac{1}{2} \nu (1-\nu) Q_{i+1}^n
+\end{align*}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{figs/stencilssketch}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{stability}
+
+\begin{itemize}
+\item \emph{BUT} we still need CFL so that these upwind and Lax-Wendroff formulas are \emph{interpolations} not \emph{extrapolations}:
+    $$|\nu| = \frac{|a|\Delta t}{\Delta x} \le 1 \qquad \iff \qquad \Delta t \le \frac{\Delta x}{|a|}$$
+
+    \begin{itemize}
+    \item[$\circ$] the errors from extrapolation are known to propagate forward, time step by time step, as exponential growth, i.e.~\emph{unstably}
+    \end{itemize}
+\item essentially the same can be said for any finite difference, finite volume, or finite element scheme for hyperbolic PDEs:
+
+\begin{center}
+a CFL condition is \emph{necessary} for stability (and thus for convergence)
+\end{center}
+
+\item \alert{main idea:} the characteristic(s) through the new location $(t_{n+1},x_i)$ must pass through the numerical ``domain of dependence'' of the scheme at the old time $t_n$
 \end{itemize}
 \end{frame}
 
@@ -351,9 +421,22 @@ where $\ell(x)$ linearly interpolates
 \begin{frame}{results}
 
 \begin{itemize}
-\item x
+\item suppose same problem as in earlier movie:
 
-\hfill \includegraphics[width=0.7\textwidth]{figs/leveque6p1}
+$q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
+
+\medskip
+\hfill \includegraphics[width=0.72\textwidth]{figs/leveque6p1}
+
+\vspace{-25mm}
+
+\emph{issues:}
+
+{\footnotesize oversmoothing}
+
+{\footnotesize oscillation}
+
+{\footnotesize loss of original bounds}
 \end{itemize}
 \end{frame}
 
@@ -512,8 +595,8 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \item can we do better for the simple problem $q_t + a q_x=0$?
 \item can we have higher accuracy without oscillations?
     \begin{itemize}
-    \item[$\circ$] upwinding is only first-order accurate,\footnote{$O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$} but it avoids oscillations
-    \item[$\circ$] Lax-Wendroff is second-order,\footnote{$O(\Delta t^2 + \Delta x^2)$ local truncation error} but it generates oscillations beyond the range of the initial condition
+    \item[$\circ$] upwinding is only first-order accurate, $O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$, but it avoids oscillations
+    \item[$\circ$] Lax-Wendroff is second-order, $O(\Delta t^2 + \Delta x^2)$, but it generates oscillations beyond the range of the initial condition
     \end{itemize}
 \item \alert{NO.}
 
