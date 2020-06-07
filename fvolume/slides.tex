@@ -45,6 +45,8 @@
 \newcommand{\bw}{\mathbf{w}}
 
 \newcommand{\bF}{\mathbf{F}}
+\newcommand{\bG}{\mathbf{G}}
+\newcommand{\bQ}{\mathbf{Q}}
 
 \newcommand{\grad}{\nabla}
 \newcommand{\Div}{\nabla\cdot}
@@ -529,6 +531,11 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \int_\ximhalf^\xiphalf q_t + f(q)_x \,dx = 0 \hspace{20mm}  \\
 \frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0
 \end{gather*}
+
+\vspace{-4mm}
+\hfill \includegraphics[width=0.27\textwidth]{figs/fvsketch}
+
+\vspace{-20mm}
 \item interpret: $\ds Q_i^n \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t_n,x)\,dx$
     \begin{itemize}
     \item[$\circ$] versus in a finite difference scheme: $Q_i^n \approx q(t_n,x_i)$
@@ -564,14 +571,33 @@ q_t + f(q)_x = 0  \\
 \end{itemize}
 \end{frame}
 
+\newcommand{\Fiphalf}{{F^n_{i+\frac{1}{2}}}}
+\newcommand{\Fimhalf}{{F^n_{i-\frac{1}{2}}}}
 
 \begin{frame}{method-of-lines thinking (MOL)}
 
 \begin{itemize}
-\item \emph{but} we did not need to commit to forward Euler so soon!
+\item \emph{but} we should not commit to forward Euler so soon!
 \item suppose
     $$Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t_n,x)\,dx$$
-\item x
+\item similarly, $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$
+\item then integrating $q_t + f(q)_x = 0$
+
+over the cell gives
+    $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0 \hspace{60mm}$$
+
+\vspace{-30mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/molsketch}
+
+\vspace{-21mm}
+\item this is a system of ODEs in time
+    $$\frac{d\bQ}{dt} = \bG(t,\bQ) \hspace{60mm}$$
+
+\item why? because of good black-box
+
+ODE solvers (\texttt{ode23}, etc.)
+
+\bigskip\bigskip
 \end{itemize}
 \end{frame}
 
