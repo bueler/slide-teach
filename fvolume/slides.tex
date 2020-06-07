@@ -787,12 +787,68 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 
 \section{scalar advection in 2D}
 
-\begin{frame}{x}
+\begin{frame}{finite volumes in 2D}
 
 \begin{itemize}
-\item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+\item equation $q_t + \Div \bF(q) = 0$
+\item for example, $\bF(q) = \ba q$ where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is a velocity field
+\item that is,
+    $$q_t + (u q)_x + (v q)_y = 0$$
+\end{itemize}
+
+\hfill \includegraphics[width=0.4\textwidth]{figs/bueler11p1}
+\end{frame}
+
+
+\begin{frame}{flux-limiter higher-resolution schemes}
+
+\begin{itemize}
 \item x
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{implementation of flux-limiter in 2D}
+
+\begin{itemize}
+\item x
+\item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.6\textwidth]{figs/bueler11p8}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{results}
+
+\begin{itemize}
+\item x
+\end{itemize}
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/bueler11p7}
+\end{frame}
+
+
+\begin{frame}{movie}
+
+\begin{itemize}
+\item domain is square $\Omega = (-1,1) \times (-1,1)$
+\item $q_t + \Div \bF(q) = 0$ where $\bF(q) = \ba q$ and $\ba$ is pure rotation:
+    $$\ba(x,y) = \left<y,-x\right>$$
+\item again, see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+\end{itemize}
+
+\vspace{10mm}
+\begin{center}
+\alert{SHOW MOVIE}
+\end{center}
+
+% cd p4pdes/c/ch11
+% make advect
+% ./advect -da_refine 4 -adv_problem rotation -ts_max_time 6.283 -ts_monitor_solution draw
 \end{frame}
 
 
