@@ -62,6 +62,13 @@
 
 \newcommand{\ip}[2]{\left<#1,#2\right>}
 
+\newcommand{\xiphalf}{{x_{i+\frac{1}{2}}}}
+\newcommand{\ximhalf}{{x_{i-\frac{1}{2}}}}
+\newcommand{\Fiphalf}{{F_{i+\frac{1}{2}}}}
+\newcommand{\Fimhalf}{{F_{i-\frac{1}{2}}}}
+\newcommand{\Fiphalfn}{{F^n_{i+\frac{1}{2}}}}
+\newcommand{\Fimhalfn}{{F^n_{i-\frac{1}{2}}}}
+
 \newcommand{\trefcolumn}[1]{\begin{bmatrix} \phantom{x} \\ #1 \\ \phantom{x} \end{bmatrix}}
 \newcommand{\trefmatrixtwo}[2]{\left[\begin{array}{c|c|c} & & \\ #1 & \dots & #2 \\ & & \end{array}\right]}
 \newcommand{\trefmatrixthree}[3]{\left[\begin{array}{c|c|c|c} & & & \\ #1 & #2 & \dots & #3 \\ & & & \end{array}\right]}
@@ -141,10 +148,10 @@
      rectangle,draw,fill=white,align=center,line width=0.6pt,minimum width=15mm}]
 
 %center
-\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $u_t + a u_x=0$};
-\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{4} scalar advection in 2D \\ {\Large \strut} $u_t + a u_x + b u_y=0$};
-\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear system \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
-\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{5} conservation-law system \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
+\draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $q_t + a q_x=0$};
+\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{4} scalar advection in 2D \\ {\Large \strut} $q_t + (u q)_x + (v q)_y=0$};
+\draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear systems \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
+\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{5} conservation-law systems \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
 
 \path[-Latex]
    ([xshift=-2em]scalaradvect.south) edge node {} (linearsystem)
@@ -341,20 +348,20 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
 \begin{frame}{solution by characteristics}
 
 \begin{itemize}
-\item but what about the scalar PDE with variable speed $a(x)$?:
-    $$q_t + a(x) q_x=0, \qquad q(0,x) = f(x)$$
+\item but what about the scalar PDE with variable speed $a(t,x)$?:
+    $$q_t + a(t,x) q_x=0, \qquad q(0,x) = f(x)$$
 \item we need the idea of a \emph{characteristic curve} (ODE):
-    $$\ds \frac{d\xi}{ds} = a(\xi(s)) \hspace{50mm}$$
+    $$\ds \frac{d\xi}{ds} = a(s,\xi(s)) \hspace{50mm}$$
 
 \vspace{-10mm}
 
 \hfill \includegraphics[width=0.32\textwidth]{figs/characteristicsketch}
 
 \vspace{-20mm}
-\item using $\xi'$ for $d\xi/ds$, we calculate
+\item for a solution $q(t,x)$, we calculate $\left[\xi'=\tfrac{d\xi}{ds}\right]$
 \begin{align*}
 \Big(q(s,\xi(s))\Big)' &= q_t(s,\xi(s)) + q_x(s,\xi(s)) \xi'(s) \hspace{40mm} \\
-                          &= q_t(s,\xi(s)) + q_x(s,\xi(s)) a(\xi(s)) \\
+                          &= q_t(s,\xi(s)) + q_x(s,\xi(s)) a(s,\xi(s)) \\
                           &= 0,
 \end{align*}
 \item thus $q(t,\xi(t)) = q(0,\xi(0))$
@@ -366,7 +373,7 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
 \begin{frame}{solution by characteristics 2}
 
 \begin{itemize}
-\item the method can, at least, be extended to the (still scalar) equation
+\item the method can be extended to the possibly-nonlinear equation
      $$q_t + a(t,x) q_x = g(t,x,q), \qquad q(0,x) = f(x)$$
 
     \begin{itemize}
@@ -375,18 +382,18 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
     \item[$\circ$] solution $q$ changes at rate $g$ along the characteristic
     \item[$\circ$] if $g=0$ then $q$ is constant along the characteristic
     \end{itemize}
-\item there are a pair of ODEs to solve:
+\item now a pair of ODEs to solve:
 \begin{align*}
 \xi'(s) &= a(s,\xi(s)) \\
 \omega'(s) &= g(s,\xi(s),\omega(s))
 \end{align*}
 \item \emph{solution by characteristics}:
     \begin{itemize}
-    \item[i)] from first ODE, find characteristic $\xi(s)$ through $(0,x_0)$ and $(t,x)$
-    \item[ii)] solve ODE $\omega'(s) = g(s,\xi(s),\omega(s))$ with initial condition $\omega(0)=f(x_0)$
+    \item[i)] from 1st ODE, find characteristic $\xi(s)$ through $(0,x_0)$ and $(t,x)$
+    \item[ii)] solve 2nd ODE with initial condition $\omega(0)=f(x_0)$
     \item[iii)] then $q(t,x) = \omega(t)$
     \end{itemize}
-\item \alert{main idea} about characteristics of hyperbolic PDEs:
+\item \alert{main idea} about advection PDEs:
 
 \begin{center}
 information travels along the characteristics
@@ -471,18 +478,18 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 
 \vspace{-25mm}
 
-\emph{issues:}
+\alert{\emph{issues:}
 
 {\footnotesize oversmoothing}
 
 {\footnotesize oscillation}
 
-{\footnotesize loss of original bounds}
+{\footnotesize loss of original bounds}}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{how to do better?}
+\begin{frame}{how to do better? \dots the historical picture}
 
 \begin{itemize}
 \item the results above suffer from three diseases:
@@ -512,12 +519,7 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \end{frame}
 
 
-\newcommand{\xiphalf}{{x_{i+\frac{1}{2}}}}
-\newcommand{\ximhalf}{{x_{i-\frac{1}{2}}}}
-\newcommand{\Fiphalfn}{{F^n_{i+\frac{1}{2}}}}
-\newcommand{\Fimhalfn}{{F^n_{i-\frac{1}{2}}}}
-
-\begin{frame}{the finite volume idea}
+\begin{frame}{the finite volume (FV) idea}
 
 \begin{itemize}
 \item assume the problem is in flux-conservation form
@@ -526,7 +528,7 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
     \begin{itemize}
     \item[$\circ$] $f(q) = aq$ in scalar advection $q_t + a q_x = 0$
     \end{itemize}
-\item put a grid on $t$ and $x$, namely $(x_i,t_n)$, suppose $x_i$ is center of a \emph{cell}, and integrate over the cell:
+\item put a grid on $x$: suppose $x_i$ is center of a \emph{cell}, and integrate over the cell:
 \begin{gather*}
 \int_\ximhalf^\xiphalf q_t + f(q)_x \,dx = 0 \hspace{20mm}  \\
 \frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0
@@ -536,68 +538,64 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \hfill \includegraphics[width=0.27\textwidth]{figs/fvsketch}
 
 \vspace{-20mm}
-\item interpret: $\ds Q_i^n \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t_n,x)\,dx$
+\item interpret: $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$
     \begin{itemize}
     \item[$\circ$] versus in a finite difference scheme: $Q_i^n \approx q(t_n,x_i)$
     \end{itemize}
-\item also, $\Fiphalfn \approx f\left(q(t_n,\xiphalf)\right)$ is flux at \emph{cell face}
+\item also, $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$ is flux at \emph{cell face}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{the finite volume idea 2}
+\begin{frame}{the FV idea 2}
 
 \begin{itemize}
-\item if we now use forward Euler in time, we have this sequence of equations:
+\item suppose we put a grid on $t$ and use forward Euler in time
+\item now we have this sequence of equations:
 \small
 \begin{gather*}
-q_t + f(q)_x = 0  \\
-\frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0 \\
-\Delta x \left(\frac{Q_i^{n+1} - Q_i^n}{\Delta t}\right) + \Fiphalfn - \Fimhalfn = 0 \\
-\alert{\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + \frac{\Fiphalfn - \Fimhalfn}{\Delta x} = 0}
+q_t + f(q)_x = 0 \hspace{50mm} \\
+\frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0 \hspace{50mm} \\
+\frac{dQ_i}{dt} + \Fiphalf - \Fimhalf = 0 \hspace{50mm} \\
+\Delta x \left(\frac{Q_i^{n+1} - Q_i^n}{\Delta t}\right) + \Fiphalfn - \Fimhalfn = 0 \hspace{50mm} \\
+\alert{\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + \frac{\Fiphalfn - \Fimhalfn}{\Delta x} = 0} \hspace{50mm}
 \end{gather*}
+
+\vspace{-15mm}
 
 \hfill \includegraphics[width=0.45\textwidth]{figs/leveque4p1}
 
 \normalsize
-
-\vspace{-12mm}
-    \begin{itemize}
-    \item[$\circ$] distinguish $q(t_n,x_i)$ and $Q_i^n$
-    \end{itemize}
-
-\vspace{8mm}
-\item \alert{last equation} is a computable numerical scheme \emph{if} we have a scheme for approximating the face fluxes $\Fiphalfn$
+\medskip
+\item the \alert{last equation} is a computable numerical scheme \emph{if} we have a scheme for approximating the face fluxes $\Fiphalfn$
+\item note we distinguish $q(t_n,x_i)$ and $Q_i^n$ \quad \dots you should too!
 \end{itemize}
 \end{frame}
 
-\newcommand{\Fiphalf}{{F^n_{i+\frac{1}{2}}}}
-\newcommand{\Fimhalf}{{F^n_{i-\frac{1}{2}}}}
 
-\begin{frame}{method-of-lines thinking (MOL)}
+\begin{frame}{method-of-lines (MOL) thinking}
 
 \begin{itemize}
 \item \emph{but} we should not commit to forward Euler so soon!
-\item suppose
-    $$Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t_n,x)\,dx$$
-\item similarly, $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$
+\item suppose again: $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$ and $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$
 \item then integrating $q_t + f(q)_x = 0$
 
 over the cell gives
-    $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0 \hspace{60mm}$$
+    $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0, \hspace{60mm}$$
 
-\vspace{-30mm}
-\hfill \includegraphics[width=0.45\textwidth]{figs/molsketch}
+the basic FV scheme
+
+\vspace{-24mm}
+\hfill \includegraphics[width=0.42\textwidth]{figs/molsketch}
 
 \vspace{-21mm}
 \item this is a system of ODEs in time
-    $$\frac{d\bQ}{dt} = \bG(t,\bQ) \hspace{60mm}$$
+    $$\frac{d\bQ}{dt} = \bG(t,\bQ), \quad \bQ(t) = \begin{bmatrix} Q_1(t) \\ \vdots \\ Q_J(t) \end{bmatrix}   \hspace{60mm}$$
 
-\item why? because of good black-box
-
-ODE solvers (\texttt{ode23}, etc.)
-
-\bigskip\bigskip
+\item why? because good black-box ODE solvers are already available
+    \begin{itemize}
+    \item[$\circ$] \texttt{ode23}, etc. \qquad \dots it is not 1970 anymore, people!
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -605,15 +603,24 @@ ODE solvers (\texttt{ode23}, etc.)
 \begin{frame}{upwind again, as ``donor cell'' method}
 
 \begin{itemize}
-\item x
-\end{itemize}
-\end{frame}
+\item the classic upwind method for $q_t + a q_x = 0$, when regarded in FV terms, amounts to three things:
+    \begin{itemize}
+    \item[i)] integrate over the spatial cell (FV MOL):
+        $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0 \hspace{50mm}$$
+    \item[ii)] compute flux $F(q)=aq$ from the upwind \emph{donor cell}:
+        $$\Fiphalf = \begin{cases} a Q_{i}, & a \ge 0, \\
+                                   a Q_{i+1}, & a < 0 \end{cases} \hspace{50mm}$$
+    \item[iii)] forward Euler for time stepping:
+        $$\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + a \frac{\begin{Bmatrix} Q^n_{i}-Q^n_{i-1} \quad [a\ge 0] \\ Q^n_{i+1}-Q^n_{i} \quad [a<0] \end{Bmatrix}}{\Delta x} = 0 \hspace{50mm}$$
+    \end{itemize}
 
+\vspace{-30mm}
 
-\begin{frame}{x}
+\hfill \includegraphics[width=0.34\textwidth]{figs/fvsketch}
 
-\begin{itemize}
-\item x
+\vspace{3mm}
+\item for ii) we can already do better (e.g.~RK2a from MOL)
+\item for iii) we will do better (slope-limiters)
 \end{itemize}
 \end{frame}
 
@@ -624,12 +631,12 @@ ODE solvers (\texttt{ode23}, etc.)
 \begin{frame}{linear systems}
 
 \begin{itemize}
-\item system for $\bq(t,x) \in \RR^n$ with $A\in\RR^{n\times n}$ constant:
+\item system for $\bq(t,x) \in \RR^d$ with $A\in\RR^{d\times d}$ constant:
   $$\bq_t + A\, \bq_x=0$$
 \item for example,
     \begin{itemize}
     \item[$\circ$] \emph{acoustics} (and classic wave equation)
-        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \qquad \begin{pmatrix} \, {\large \strut} p_{tt} = \frac{K_0}{\rho_0} p_{xx}\, \\ \, {\large \strut} u_{tt} = \frac{K_0}{\rho_0} u_{xx}\, \end{pmatrix}$$
+        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \qquad \begin{pmatrix} \text{thus } {\large \strut} p_{tt} = \frac{K_0}{\rho_0} p_{xx}, \\ {\large \strut} u_{tt} = \frac{K_0}{\rho_0} u_{xx}\, \end{pmatrix}$$
     \item[$\circ$] \underline{linearized} \emph{shallow water equations}
         $$\bq = \begin{bmatrix} h \\ h u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & 1 \\ -u_0^2+gh_0 & 2 u_0 \end{bmatrix} \, \implies \, {\footnotesize \begin{matrix} {\large \strut} h_t + (hu)_x = 0 \\ {\large \strut} (h u)_t + (-u_0^2+gh_0) h_x + 2u_0 (h u)_x = 0 \end{matrix} }$$
     \item[$\circ$] boringly decoupled
@@ -644,62 +651,74 @@ ODE solvers (\texttt{ode23}, etc.)
 
 \begin{itemize}
 \item $p(t,x)$ is gas pressure, $u(t,x)$ is gas velocity
-\item constant density $\rho_0$ and modulus of compressiblity $K_0$
 \item assume pressure/velocity variations are small
-\item linear, constant-coefficient first-order PDE system:
+\item constant density $\rho_0$ and compressiblity $K_0$
+\item thus linear, constant-coefficient first-order PDE system:
 $$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \hspace{60mm}$$
-or $\bq_t + A \bq_x$ where
+\item or $\bq_t + A \bq_x=0$ where
 $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \hspace{65mm}$$
 \item example solution $\longrightarrow$
 
 \vspace{-30mm}
-\hfill \includegraphics[width=0.55\textwidth]{figs/leveque3p1}
+\hfill \includegraphics[width=0.5\textwidth]{figs/leveque3p1}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{hyperbolic systems}
 
+\begin{definition} a first-order system $\bq_t + A\, \bq_x=0$ is \emph{hyperbolic} if $A$ is diagonalizable and all of the eigenvalues of $A$ are real
+\end{definition}
+
 \begin{itemize}
-\item the system $\bq_t + A\, \bq_x=0$ is \emph{hyperbolic} if $A$ is diagonalizable and all of the eigenvalues of $A$ are real
-    \begin{itemize}
-    \item[$\circ$] diagonalizable means there are eigenvectors of $A$ which form a basis of $\RR^n$
-    \end{itemize}
-\item consider \emph{left eigenvectors} of $A$, namely vectors $\bw_k \in \RR^n$ so that
+\item \emph{diagonalizable} means there is a basis of $\RR^d$ from eigenvectors of $A$
+\item consider \emph{left eigenvectors} of $A$, namely vectors $\bw_k \in \RR^d$ so that
     $$\bw_k^\top A = \lambda_k \bw_k^\top$$
 
 \vspace{-2mm}
     \begin{itemize}
-    \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if system is hyperbolic
-    \item[$\circ$] $\bw$ are column vectors so $\bw_k^\top$ are row vectors
-    \item[$\circ$] $\bw$ are the right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bq_k$
+    \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if the system is hyperbolic
+    \item[$\circ$] $\bw_k$ are column vectors so $\bw_k^\top$ are row vectors
+    \item[$\circ$] $\bw_k$ are the right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bw_k$
+    \item[$\circ$] note that the eigenvalues are the same whether we use left or right eigenvectors
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{eigenvectors decouple systems}
+\begin{frame}{eigenvectors decouple hyperbolic systems}
 
 \begin{itemize}
-\item decouple the system $\bq_t + A\, \bq_x=0$ by multiplying by $\bw_k^\top$:
+\item assume the system $\bq_t + A\, \bq_x=0$ is hyperbolic
+\item decouple it by multiplying by $\bw_k^\top$:
 \begin{align*}
 \bw_k^\top \bq_t + \bw_k^\top A\, \bq_x &= 0 \\
-\bw_k^\top \bq_t + \lambda_k \bw_k^\top \bq_x &= 0 \\
-(v_k)_t + \lambda_k (v_k)_x &= 0
+\bw_k^\top \bq_t + \lambda_k \bw_k^\top \bq_x &= 0
 \end{align*}
-\item so the scalar functions $v_k(t,x) = \bw_k^\top \bq(t,x)$ satisfy decoupled advection eqns:
+\item define the scalar functions
+    $$v_k(t,x) = \bw_k^\top \bq(t,x)$$
+\item so these scalar functions satisfy decoupled advection equations:
    $$(v_k)_t + \lambda_k (v_k)_x = 0$$
+\item note that the matrix $A$ needs to be time- and space-independent if this calculation is going to work
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{inner products, left eigenvectors, transposes, and \Matlab}
+\begin{frame}[fragile]
+\frametitle{inner products, left eigenvectors, transposes, and \Matlab}
 
 \begin{itemize}
-\item $\bu^\top \bv = \ip{\bu}{\bv}$
-\item left eigenvectors for $A$ are the same as right eigenvectors for $A^\top$
-\item basis of left iff basis of right
-\item in \Matlab, find left eigenvectors this way
+\item I'll use bold for column vectors, e.g.~$\bu\in\RR^d$
+\item inner product: \quad $\bu^\top \bv = \ip{\bu}{\bv}$
+\item recall left eigenvectors for $A$ are the same as right eigenvectors for $A^\top$
+\item in \Matlab, find left eigenvectors this way on \texttt{A'}$=A^\top$:
+\begin{Verbatim}[fontsize=\small]
+>> A = [...; ...; ...];     % input square matrix A
+>> [X,D] = eig(A');
+>> lam1 = D(1,1);           % get first eigenvalue
+>> w1 = X(:,1);             % get first eigenvector
+\end{Verbatim}
+\item FIXME recover $\bq$ from $v_k$
 \end{itemize}
 \end{frame}
 
@@ -753,25 +772,33 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \end{frame}
 
 
-\begin{frame}{slope limiter idea}
+\begin{frame}{slope within the cells?}
 
 \begin{itemize}
-\item Gudonov view of upwind
+\item FIXME reconstruct-evolve-average view
 \item overshoot in Lax-Wendroff
 
 \hfill \includegraphics[width=0.75\textwidth]{figs/leveque6p4}
-\item actual slope limiter
+\item FIXME upwind version sketch
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{advection equation}
+\begin{frame}{slope limiter idea}
 
 \begin{itemize}
-\item consider linear advection again: $q_t + a q_x=0$ with $a$ constant
+\item FIXME  actual slope limiter
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{results for advection equation}
+
+\begin{itemize}
+\item consider scalar advection again: $q_t + a q_x=0$ with $a$ constant
 \end{itemize}
 
-\mbox{\includegraphics[width=0.5\textwidth]{figs/leveque6p1} \, \includegraphics[width=0.5\textwidth]{figs/leveque6p2}}
+\includegraphics<1>[width=0.7\textwidth]{figs/leveque6p1} \includegraphics<2>[width=0.7\textwidth]{figs/leveque6p2}
 \end{frame}
 
 
@@ -852,7 +879,7 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \end{frame}
 
 
-\section{nonlinear conservation-law systems}
+\section{nonlinear conservation laws}
 
 \begin{frame}{traffic}
 
@@ -893,34 +920,29 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \end{frame}
 
 
-\begin{frame}[fragile]
-\frametitle{xx}
+\begin{frame}{shallow water: my results}
 
 \begin{itemize}
-\item xx:
-
-\medskip
-\begin{Verbatim}[fontsize=\scriptsize]
->> size(A)
-ans =
-      201        5
-\end{Verbatim}
-
-%\includegraphics[width=0.55\textwidth]{figs/legendre} \quad 
+\item FIXME with \texttt{riemann.c}
 \end{itemize}
+
+\vspace{10mm}
+\begin{center}
+\alert{SHOW MOVIE}
+\end{center}
 \end{frame}
-
-
 
 
 \begin{frame}{summary}
 
 \begin{itemize}
-\item since the 1990s there is a recommended finite volume solver for linear and nonlinear hyperbolic systems
-\item sometimes called a ``high-resolution Godunov method''
+\item since the 1990s there is a recommended finite volume solver, a ``high-resolution Godunov method,'' for nonlinear hyperbolic systems
+    \begin{itemize}
+    \item[$\circ$] shallow water and Euler (gas) equations, for examples
+    \end{itemize}
 \item it consists of three things:
     \begin{itemize}
-    \item[$\circ$] \alert{finite volumes}:
+    \item[$\circ$] \alert{finite volume thinking}:
         \begin{itemize}
         \item the conservation law form is spatially integrated
         \item the discrete unknowns are the cell averages
@@ -929,15 +951,15 @@ ans =
     \item[$\circ$] \alert{Riemann solvers}:
         \begin{itemize}
         \item the ``Riemann problem'' has different cell values on each side of a face
-        \item the Riemann solver is provided by the user
-        \item it determines the local wave structure (e.g.~rarefaction and shock waves) and then evaluates the flux on the face
-        \item it can be exact or approximate
+        \item the Riemann solver, provided by the user, determines the local wave structure (e.g.~rarefaction and shock waves) and it returns the flux on the face
+        \item it can be exact or approximate (e.g.~Roe approximate solver for shallow water)
         \end{itemize}
     \item[$\circ$] \alert{slope limiters}:
         \begin{itemize}
-        \item in first-order upwinding the solution is a constant (slope $= 0$); this is ``classical Godunov''
+        \item in first-order upwinding the solution in a cell is constant (``classical Godunov'')
         \item for higher order the solution inside a cell is ``reconstructed'' as a sloped function
-        \item \dots but the slope is (nonlinearly) limited so that the solution does not propagate oscillations
+        \item \dots but the slope is (nonlinearly) limited
+        \item \dots thus translating (evolving) does not propagate oscillations
         \item ``does not propagate oscillations'' may mean \emph{total variation diminishing} (TVD)
         \end{itemize}
     \end{itemize}
