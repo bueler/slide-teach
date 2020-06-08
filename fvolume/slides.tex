@@ -35,6 +35,7 @@
 \newcommand{\ba}{\mathbf{a}}
 \newcommand{\bb}{\mathbf{b}}
 \newcommand{\bc}{\mathbf{c}}
+\newcommand{\bbf}{\mathbf{f}}
 \newcommand{\bg}{\mathbf{g}}
 \newcommand{\bq}{\mathbf{q}}
 \newcommand{\br}{\mathbf{r}}
@@ -616,9 +617,9 @@ the basic FV scheme
 
 \vspace{-30mm}
 
-\hfill \includegraphics[width=0.34\textwidth]{figs/fvsketch}
+\hfill \includegraphics[width=0.4\textwidth]{figs/cellfluxsketch}
 
-\vspace{3mm}
+\vspace{12mm}
 \item for ii) we can already do better (e.g.~RK2a from MOL)
 \item for iii) we will do better (slope-limiters)
 \end{itemize}
@@ -631,17 +632,16 @@ the basic FV scheme
 \begin{frame}{linear systems}
 
 \begin{itemize}
-\item system for $\bq(t,x) \in \RR^d$ with $A\in\RR^{d\times d}$ constant:
+\item linear, constant-coefficient system for $\bq(t,x) \in \RR^d$ with $A\in\RR^{d\times d}$:
   $$\bq_t + A\, \bq_x=0$$
-\item for example,
-    \begin{itemize}
-    \item[$\circ$] \emph{acoustics} (and classic wave equation)
-        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \qquad \begin{pmatrix} \text{thus } {\large \strut} p_{tt} = \frac{K_0}{\rho_0} p_{xx}, \\ {\large \strut} u_{tt} = \frac{K_0}{\rho_0} u_{xx}\, \end{pmatrix}$$
-    \item[$\circ$] \underline{linearized} \emph{shallow water equations}
+
+\setlength{\itemindent}{11mm}
+\item[example:] \emph{acoustics} (and classic wave equation)
+        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
+\item[example:] \underline{linearized} \emph{shallow water equations}
         $$\bq = \begin{bmatrix} h \\ h u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & 1 \\ -u_0^2+gh_0 & 2 u_0 \end{bmatrix} \, \implies \, {\footnotesize \begin{matrix} {\large \strut} h_t + (hu)_x = 0 \\ {\large \strut} (h u)_t + (-u_0^2+gh_0) h_x + 2u_0 (h u)_x = 0 \end{matrix} }$$
-    \item[$\circ$] boringly decoupled
+\item[example:] boringly decoupled
         $$\bq = \begin{bmatrix} u \\ v \\ w \end{bmatrix}, \,\, A = \begin{bmatrix} a & 0 & 0 \\ 0 & b & 0 \\ 0 & 0 & c \end{bmatrix} \, \implies \begin{matrix} u_t + a u_x = 0 \\ v_t + b v_x = 0 \\ w_t + c w_x = 0 \end{matrix}$$
-    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -651,16 +651,22 @@ the basic FV scheme
 
 \begin{itemize}
 \item $p(t,x)$ is gas pressure, $u(t,x)$ is gas velocity
-\item assume pressure/velocity variations are small
-\item constant density $\rho_0$ and compressiblity $K_0$
+\item assume pressure/velocity variations are small, and density $\rho_0$ and compressiblity $K_0$ are constant
 \item thus linear, constant-coefficient first-order PDE system:
-$$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \hspace{60mm}$$
+$$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix} \hspace{70mm}$$
 \item or $\bq_t + A \bq_x=0$ where
-$$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \hspace{65mm}$$
+$$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \hspace{75mm}$$
+\item or in 2nd-order form
+
+with $c^2 = \frac{K_0}{\rho_0}$:
+\begin{align*}
+p_{tt} &= c^2 p_{xx} \hspace{70mm} \\
+u_{tt} &= c^2 u_{xx}
+\end{align*}
 \item example solution $\longrightarrow$
 
-\vspace{-30mm}
-\hfill \includegraphics[width=0.5\textwidth]{figs/leveque3p1}
+\vspace{-60mm}
+\hfill \includegraphics[width=0.55\textwidth]{figs/leveque3p1}
 \end{itemize}
 \end{frame}
 
@@ -671,7 +677,7 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \end{definition}
 
 \begin{itemize}
-\item \emph{diagonalizable} means there is a basis of $\RR^d$ from eigenvectors of $A$
+\item \emph{diagonalizable} means there is a $\RR^d$ basis of eigenvectors of $A$
 \item consider \emph{left eigenvectors} of $A$, namely vectors $\bw_k \in \RR^d$ so that
     $$\bw_k^\top A = \lambda_k \bw_k^\top$$
 
@@ -679,8 +685,13 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
     \begin{itemize}
     \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if the system is hyperbolic
     \item[$\circ$] $\bw_k$ are column vectors so $\bw_k^\top$ are row vectors
-    \item[$\circ$] $\bw_k$ are the right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bw_k$
-    \item[$\circ$] note that the eigenvalues are the same whether we use left or right eigenvectors
+    \item[$\circ$] $\bw_k$ are right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bw_k$
+    \item[$\circ$] note that the left/right eigenvalues are the same
+    \end{itemize}
+
+\item I'll use bold for column vectors, e.g.~$\bu\in\RR^d$
+    \begin{itemize}
+    \item[$\circ$] note inner product: \quad $\bu^\top \bv = \ip{\bu}{\bv}$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -699,26 +710,42 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
     $$v_k(t,x) = \bw_k^\top \bq(t,x)$$
 \item so these scalar functions satisfy decoupled advection equations:
    $$(v_k)_t + \lambda_k (v_k)_x = 0$$
-\item note that the matrix $A$ needs to be time- and space-independent if this calculation is going to work
+\item solve these one-way advection problems by characteristics:
+   $$v_k(t,x) = v_k(0,x-\lambda_k t)$$
+\item matrix $A$ must be constant for this calculation
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigenvectors decouple hyperbolic systems 2}
+
+\begin{itemize}
+\item the functions $v_k(t,x)$ are called \emph{Riemann invariants}:
+    $$v_k(t,x) = \bw_k^\top \bq(t,x) = v_k(0,x-\lambda_k t) = \bw_k^\top \bq(0,x-\lambda_k t)$$
+\item how to write the solution for $\bq(t,x)$ if we have $v_k(t,x)$?
+\item we may expand in basis $\bw_k$, with scalar coefficients $c_k(t,x)$:
+    $$\alert{\bq(t,x) = \sum_{k=1}^d c_k(t,x) \bw_k}$$
+\item thus: \qquad $\ds \bw_\ell^\top \bq(t,x) = \sum_{k=1}^d c_k(t,x) \bw_\ell^\top \bw_k$
+\item solve using (invertible) matrix $B\in \RR^{d\times d}$ with entries \alert{$B_{lk} = \bw_\ell^\top \bw_k$}:
+    $$B \bc = \bv \qquad \iff \qquad \alert{\sum_{k=1}^d B_{lk} c_k(t,x) = \bw_\ell^\top \bq(0,x-\lambda_\ell t)}$$
+\item \alert{red equations} combine into a solution
+\item in fact we can do most examples by hand without forming $B$
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
-\frametitle{inner products, left eigenvectors, transposes, and \Matlab}
+\frametitle{left eigenvectors, transposes, and \Matlab}
 
 \begin{itemize}
-\item I'll use bold for column vectors, e.g.~$\bu\in\RR^d$
-\item inner product: \quad $\bu^\top \bv = \ip{\bu}{\bv}$
-\item recall left eigenvectors for $A$ are the same as right eigenvectors for $A^\top$
-\item in \Matlab, find left eigenvectors this way on \texttt{A'}$=A^\top$:
+\item left eigenvectors for $A$ are the same as right eigenvectors for $A^\top$
+\item in \Matlab, find left eigenvectors $\bw_k$ by applying \texttt{eig()} to \texttt{A'}$=A^\top$:
 \begin{Verbatim}[fontsize=\small]
 >> A = [...; ...; ...];     % input square matrix A
 >> [X,D] = eig(A');
->> lam1 = D(1,1);           % get first eigenvalue
->> w1 = X(:,1);             % get first eigenvector
+>> lamk = D(k,k);           % eigenvalue
+>> wk = X(:,k);             % left eigenvector
 \end{Verbatim}
-\item FIXME recover $\bq$ from $v_k$
 \end{itemize}
 \end{frame}
 
@@ -726,7 +753,28 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \begin{frame}{Riemann solver}
 
 \begin{itemize}
-\item x
+\item in a FV scheme at some time $t_n$ we will have two different values on either side of the cell face at $x_{i+1/2}$:
+    $$\bQ_{i} = \bQ_L, \quad \bQ_{i+1} = \bQ_R \hspace{50mm}$$
+
+\vspace{-12mm}
+\hfill \includegraphics[width=0.4\textwidth]{figs/cellfluxsketch}
+
+\medskip
+\item $\bbf(\bq) = A\bq$ is a function of $\bq$, so to get flux $\bF_{i+1/2}$ we must know the solution on the face: $\bq(t,x_{i+1/2})$ for $t > t_n$
+\item a \emph{Riemann solver} solves this problem:
+
+\bigskip
+find $\bq(t,x_{i+1/2})$, thus $\bF_{i+1/2}(t)$,
+
+for $t > t_n$, given
+\begin{align*}
+\bq_t + A \bq_x &= 0 \\
+\bq(t_n,x) &= \begin{cases} \bQ_L, & x < x_{i+1/2} \\
+                            \bQ_R, & x > x_{i+1/2} \end{cases} \hspace{60mm}
+\end{align*}
+
+\vspace{-30mm}
+\hfill \includegraphics[width=0.44\textwidth]{figs/rsolversketch}
 \end{itemize}
 \end{frame}
 
@@ -734,7 +782,7 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \begin{frame}{two ways of thinking}
 
 \begin{itemize}
-\item Riemann solver at cell face $(t,x_{j+1/2})$ versus characteristic to $(t_{n+1},x_j)$
+\item FIXME Riemann solver at cell face $(t,x_{j+1/2})$ versus characteristic to $(t_{n+1},x_j)$
 \end{itemize}
 \end{frame}
 
@@ -742,7 +790,53 @@ $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \, A = \begin{bmatrix} 0 & K_0 \\ 
 \begin{frame}{Riemann solver for the acoustics problem}
 
 \begin{itemize}
-\item FIXME
+\item recall the acoustics problem $\bq_t + A \bq_x = 0$:
+        $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
+\item eigen-decomposition of $A$:
+\begin{align*}
+\lambda_1 &= -c_0, \, \bw_1 = \begin{bmatrix} 1 \\ -Z_0 \end{bmatrix} & \lambda_2 = +c_0, \, \bw_2 = \begin{bmatrix} 1 \\ +Z_0 \end{bmatrix}
+\end{align*}
+where \, $c_0 = \sqrt{K_0/\rho_0}$ \, and \, $Z_0=\rho_0 c_0 = \sqrt{\rho_0 K_0}$
+\item thus the Riemann invariants $v_k(t,x) = \bw_k^\top \bq(t,x)$ are:
+\begin{align*}
+v_1(t,x) &= p(t,x) - Z_0 u(t,x), & v_2(t,x) &= p(t,x) + Z_0 u(t,x)
+\end{align*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Riemann solver for the acoustics problem 2}
+
+\begin{itemize}
+\item denote $x_*=x_{i+1/2}$ and let $\quad \bQ_L = \begin{bmatrix} p_L \\ u_L \end{bmatrix}, \quad \bQ_R = \begin{bmatrix} p_R \\ u_R \end{bmatrix}$
+\item $\lambda_1 < 0$ so $v_1$ is left-going, so we solve forward from $t=t_n$:
+\begin{align*}
+p(t,x_*) - Z_0 u(t,x_*) &= v_1(t,x_*) = v_1(t_n,x_*-\lambda_1 (t-t_n)) \\
+   &= p_R - Z_0 u_R
+\end{align*}
+\item $\lambda_2 > 0$ so $v_2$ is right-going:
+\begin{align*}
+p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
+   &= p_L - Z_0 u_L
+\end{align*}
+\item solve for the solution at the face, namely $\bq(t,x_*)$:
+\begin{align*}
+\alert{p(t,x_*)} &\alert{= \frac{1}{2} \left(p_L + p_R + Z_0 (u_L - u_R)\right)} \\
+\alert{u(t,x_*)} &\alert{= \frac{1}{2} \left(\frac{1}{Z_0} (p_L - p_R) + u_L + u_R)\right)}
+\end{align*}
+\item thus the face flux is \alert{computable} by the Riemann solver:
+    $$\alert{\bF_{i+1/2}(t) =} A \bQ(t,x_*) = \alert{\begin{bmatrix} K_0 u(t,x_*) \\ \frac{1}{\rho_0} p(t,x_*) \end{bmatrix}}$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{acoustics problem boundary conditions}
+
+\begin{itemize}
+\item FIXME grid of cells; boundaries $x=a,b$ are at face locations
+\item FIXME at $x=a$ have reflecting condition $u(t,a)=0$ \dots so modify Riemann invariants accordingly and re-solve to get $\bF(t,a)$
+\item FIXME at $x=b$ have outflow condition $v_1(t,b)=0$ \dots so modify Riemann invariants accordingly and re-solve to get $\bF(t,b)$
+\item FIXME show movie
 \end{itemize}
 \end{frame}
 
