@@ -134,10 +134,10 @@
 \frametitle{overview}
 
 \begin{itemize}
-\item numerical solutions of first-order, time-dependent PDEs
+\item numerical solutions of systems of first-order, time-dependent PDEs
     \begin{itemize}
     \item[$\circ$] finite volume (FV) methods
-    \item[$\circ$] a genuine introduction!
+    \item[$\circ$] a genuine introduction
     \end{itemize}
 \item we will solve these hyperbolic equations:
 
@@ -213,9 +213,9 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 % make riemann
 % ./riemann -problem advection -da_grid_x 200 -limiter minmod -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
 % make petscPyScripts
-% mkdir foo
-% ./plotTS.py -mx 200 -ylabel "q" -ax 0.0 -bx 1.0 -cellcentered t.dat q.dat -oroot foo/bar
-% cd foo
+% mkdir advection
+% ./plotTS.py -mx 200 -ylabel "q" -ax 0.0 -bx 1.0 -cellcentered t.dat q.dat -oroot advection/bar
+% cd advection
 % eog bar*.png
 \end{frame}
 
@@ -257,9 +257,9 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \vspace{10mm}
 
 % ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
-% mkdir baz
-% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot baz/bar
-% cd baz
+% mkdir swater
+% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot swater/bar
+% cd swater
 % eog bar*.png
 \end{itemize}
 \end{frame}
@@ -875,6 +875,13 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \alert{SHOW MOVIE}
 \end{center}
 \end{itemize}
+
+% ./riemann -da_grid_x 500 -ts_max_time 5 -limiter mc -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
+% make petscPyScripts
+% mkdir acoustic
+% ./plotTS.py -mx 500 -dof 2 -c 0 -ylabel "p (pressure)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustic/bar t.dat q.dat
+% cd acoustic/
+% eog bar*.png
 \end{frame}
 
 
