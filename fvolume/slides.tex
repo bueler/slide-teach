@@ -779,10 +779,28 @@ for $t > t_n$, given
 \end{frame}
 
 
-\begin{frame}{two ways of thinking}
+\begin{frame}{forward versus backward characteristics}
 
 \begin{itemize}
-\item FIXME Riemann solver at cell face $(t,x_{j+1/2})$ versus characteristic to $(t_{n+1},x_j)$
+\item when constructing numerical schemes there are two ways of thinking about characteristics:
+    \begin{itemize}
+    \item[i)] Riemann solvers generate a flux at $x_*$ at times $t>t_n$
+    \item[ii)] FD methods (e.g.~Lax-Wendroff) find solution at $t_{n+1}$ by going back to $t_n$
+    \end{itemize}
+\item 
+
+\medskip
+
+\includegraphics[height=0.34\textheight]{figs/rscharssketch} \hfill \includegraphics[height=0.38\textheight]{figs/fdcharssketch}
+
+\medskip
+\qquad Riemann solver view \hfill finite difference (FD) view \qquad \phantom{x}
+
+\item Riemann solver view easier (perhaps) for
+    \begin{itemize}
+    \item[$\circ$] generalization to nonlinear systems
+    \item[$\circ$] working with the MOL equations (w/o choosing time-stepping)
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -794,9 +812,9 @@ for $t > t_n$, given
         $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
 \item eigen-decomposition of $A$:
 \begin{align*}
-\lambda_1 &= -c_0, \, \bw_1 = \begin{bmatrix} 1 \\ -Z_0 \end{bmatrix} & \lambda_2 = +c_0, \, \bw_2 = \begin{bmatrix} 1 \\ +Z_0 \end{bmatrix}
+\lambda_1 &= -c_0, \quad \bw_1 = \begin{bmatrix} 1 \\ -Z_0 \end{bmatrix} & \lambda_2 = +c_0, \quad \bw_2 = \begin{bmatrix} 1 \\ +Z_0 \end{bmatrix}
 \end{align*}
-where \, $c_0 = \sqrt{K_0/\rho_0}$ \, and \, $Z_0=\rho_0 c_0 = \sqrt{\rho_0 K_0}$
+where \, $c_0 = \sqrt{K_0/\rho_0}$ \, and \, $Z_0=\rho_0 c_0$
 \item thus the Riemann invariants $v_k(t,x) = \bw_k^\top \bq(t,x)$ are:
 \begin{align*}
 v_1(t,x) &= p(t,x) - Z_0 u(t,x), & v_2(t,x) &= p(t,x) + Z_0 u(t,x)
@@ -830,13 +848,32 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{acoustics problem boundary conditions}
+\begin{frame}{flux boundary conditions, and the grid}
 
 \begin{itemize}
-\item FIXME grid of cells; boundaries $x=a,b$ are at face locations
-\item FIXME at $x=a$ have reflecting condition $u(t,a)=0$ \dots so modify Riemann invariants accordingly and re-solve to get $\bF(t,a)$
-\item FIXME at $x=b$ have outflow condition $v_1(t,b)=0$ \dots so modify Riemann invariants accordingly and re-solve to get $\bF(t,b)$
-\item FIXME show movie
+\item boundary conditions at $x=a,b$
+\item easiest if think in terms of the value of the \emph{flux} there,
+\item \dots thus we set up the grid to have cell faces at $x=a,b$
+
+\medskip
+\begin{center}
+\includegraphics[width=0.45\textwidth]{figs/fluxbdrysketch}
+\end{center}
+
+\vspace{-2mm}
+    $$x_j = a + (j-1/2) \Delta x \quad \text{ where } \quad \Delta x = \frac{b-a}{J}$$
+
+\item for the acoustics problem, suppose
+    \begin{itemize}
+    \item[$\circ$] at $x=a$ have reflecting condition: $u(t,a)=0$
+    \item[$\circ$] at $x=b$ have outflow condition: $v_1(t,b)=0$
+    \end{itemize}
+\item modify the Riemann solvers at $x=a$ and $x=b$ accordingly
+
+\vspace{3mm}
+\begin{center}
+\alert{SHOW MOVIE}
+\end{center}
 \end{itemize}
 \end{frame}
 
@@ -846,20 +883,20 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{Godunov's barrier theorem}
 
 \begin{itemize}
-\item can we do better for the simple problem $q_t + a q_x=0$?
+\item can we do better than Lax-Wendroff for the simple problem $q_t + a q_x=0$?
 \item can we have higher accuracy without oscillations?
     \begin{itemize}
-    \item[$\circ$] upwinding is only first-order accurate, $O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$, but it avoids oscillations
+    \item[$\circ$] upwinding is only first-order accurate, with $O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$, but it avoids oscillations
     \item[$\circ$] Lax-Wendroff is second-order, $O(\Delta t^2 + \Delta x^2)$, but it generates oscillations beyond the range of the initial condition
     \end{itemize}
-\item \alert{NO.}
 
-\begin{theorem}[\emph{Godunov's barrier theorem, 1959}]  A monotonicity-preserving \alert<2>{linear} scheme for the 1D constant-coefficient equation $q_t + a q_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
+\bigskip
+\begin{theorem}[\emph{Godunov, 1959}]  A monotonicity-preserving \alert<2>{linear} scheme for the 1D constant-coefficient equation $q_t + a q_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
 
-\item this theorem is the beginning of modern hyperbolic PDE solvers
+\item this is the beginning of modern hyperbolic PDE solvers
     \begin{itemize}
     \item[$\circ$] upwinding, Lax-Friedrichs, Lax-Wendroff, leapfrog are all older
-    \item[$\circ$] ``high-resolution'' schemes of the 1970s--1990s finally overcame it
+    \item[$\circ$] ``high-resolution'' schemes of the 1970s--1990s overcame the barrier
     \item[$\circ$] \alert{how?}
     \end{itemize}
 \end{itemize}
@@ -882,6 +919,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item FIXME  actual slope limiter
+\item FIXME minmod
 \end{itemize}
 \end{frame}
 
@@ -889,10 +927,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{results for advection equation}
 
 \begin{itemize}
-\item consider scalar advection again: $q_t + a q_x=0$ with $a$ constant
+\item consider scalar advection again: $q_t + a q_x=0$, $a=1$, periodic b.c.s
 \end{itemize}
 
+\begin{center}
 \includegraphics<1>[width=0.7\textwidth]{figs/leveque6p1} \includegraphics<2>[width=0.7\textwidth]{figs/leveque6p2}
+\end{center}
 \end{frame}
 
 
@@ -1030,31 +1070,37 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{summary}
 
 \begin{itemize}
-\item since the 1990s there is a recommended finite volume solver, a ``high-resolution Godunov method,'' for nonlinear hyperbolic systems
+\item since 1990s, a preferred finite volume approach for hyperbolic systems:
+\begin{center}
+\alert{high-resolution Godunov method}
+\end{center}
     \begin{itemize}
-    \item[$\circ$] shallow water and Euler (gas) equations, for examples
+    \item[$\circ$] linear systems: acoustics, elasticity, Maxwell's equations
+    \item[$\circ$] nonlinear systems: shallow water, compressible gas equations
     \end{itemize}
-\item it consists of three things:
+\item this approach consists of three things:
     \begin{itemize}
     \item[$\circ$] \alert{finite volume thinking}:
         \begin{itemize}
-        \item the conservation law form is spatially integrated
-        \item the discrete unknowns are the cell averages
-        \item the flux is needed at faces between cells
+        \item conservation law is spatially integrated
+        \item discrete unknowns are cell averages
+        \item flux is needed at faces between cells
         \end{itemize}
     \item[$\circ$] \alert{Riemann solvers}:
         \begin{itemize}
-        \item the ``Riemann problem'' has different cell values on each side of a face
-        \item the Riemann solver, provided by the user, determines the local wave structure (e.g.~rarefaction and shock waves) and it returns the flux on the face
-        \item it can be exact or approximate (e.g.~Roe approximate solver for shallow water)
+        \item ``Riemann problem'' has different cell values on each side of a face
+        \item a Riemann solver determines local wave structure (rarefaction, shock)
+            \begin{description}[abc]
+            \item[$\diamond$] provided by the user
+            \item[$\diamond$] computes the flux on the face
+            \end{description}
+        \item can be exact or approximate (e.g.~Roe approximate solver for shallow water)
         \end{itemize}
     \item[$\circ$] \alert{slope limiters}:
         \begin{itemize}
-        \item in first-order upwinding the solution in a cell is constant (``classical Godunov'')
-        \item for higher order the solution inside a cell is ``reconstructed'' as a sloped function
-        \item \dots but the slope is (nonlinearly) limited
-        \item \dots thus translating (evolving) does not propagate oscillations
-        \item ``does not propagate oscillations'' may mean \emph{total variation diminishing} (TVD)
+        \item first-order upwinding: solution is constant in a cell (``classical Godunov'')
+        \item higher-order: solution is ``reconstructed'' with slope in each cell
+        \item the slope is (nonlinearly) limited so translating does not propagate oscillations
         \end{itemize}
     \end{itemize}
 \end{itemize}
