@@ -646,7 +646,6 @@ the basic FV scheme
 \end{frame}
 
 
-
 \begin{frame}{example: acoustics}
 
 \begin{itemize}
@@ -768,7 +767,7 @@ find $\bq(t,x_{i+1/2})$, thus $\bF_{i+1/2}(t)$,
 
 for $t > t_n$, given
 \begin{align*}
-\bq_t + A \bq_x &= 0 \\
+\bq_t + \bbf(\bq)_x &= 0 \\
 \bq(t_n,x) &= \begin{cases} \bQ_L, & x < x_{i+1/2} \\
                             \bQ_R, & x > x_{i+1/2} \end{cases} \hspace{60mm}
 \end{align*}
@@ -796,10 +795,10 @@ for $t > t_n$, given
 \medskip
 \qquad Riemann solver view \hfill finite difference (FD) view \qquad \phantom{x}
 
-\item Riemann solver view easier (perhaps) for
+\item the Riemann solver view makes it easier to
     \begin{itemize}
-    \item[$\circ$] generalization to nonlinear systems
-    \item[$\circ$] working with the MOL equations (w/o choosing time-stepping)
+    \item[$\circ$] generalize to nonlinear systems
+    \item[$\circ$] work with the MOL equations (w/o choosing time-stepping)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -885,39 +884,69 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
+\begin{frame}{summary of linear systems and Riemann solvers}
+
+\begin{itemize}
+\item if a linear system $\bq_t + A\, \bq_x=0$ in $\RR^d$ is \alert{\emph{hyperbolic}} then (by definition) it can be decoupled into $d$ scalar advection problems
+\item the solutions of these advection problems, forward from time $t_n$, are the \alert{\emph{Riemann invariants}} (from $\bw_k^\top A = \lambda_k \bw_k$):
+    $$v_k(t,x) = \bw_k^\top \bq(t,x) = v_k(t_n,x-\lambda_k (t-t_n))$$
+\item if the linear system is written in conservation form, $\bq_t + \bbf(\bq)_x=0$ where $\bbf(\bq) = A\bq$, then for the finite volume (FV) \alert{\emph{method-of-lines (MOL)}} view we only integrate in space:
+    $$\frac{d\bQ_j}{dt} + \frac{\bF_{i+1/2} - \bF_{i-1/2}}{\Delta x} = 0$$
+\item a \alert{\emph{Riemann solver}} finds the face fluxes $\bF_{i+1/2}=A \bQ^*$ by solving the \emph{Riemann problem} with $\bQ_L$ on the left of the face and $\bQ_R$ on the right of the face to find $\bQ^*$ on the face from the Riemann invariants
+\end{itemize}
+\end{frame}
+
+
 \section{high-resolution methods}
 
 \begin{frame}{Godunov's barrier theorem}
 
 \begin{itemize}
-\item can we do better than Lax-Wendroff for the simple problem $q_t + a q_x=0$?
-\item can we have higher accuracy without oscillations?
+\item can we do better than Lax-Wendroff, even for scalar advection?
+\item can we have high accuracy without oscillations? recall:
     \begin{itemize}
-    \item[$\circ$] upwinding is only first-order accurate, with $O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$, but it avoids oscillations
-    \item[$\circ$] Lax-Wendroff is second-order, $O(\Delta t^2 + \Delta x^2)$, but it generates oscillations beyond the range of the initial condition
+    \item[$\circ$] upwinding is only first-order accurate,\footnote{$O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$; LW has $O(\Delta t^2 + \Delta x^2)$} but it avoids oscillations
+    \item[$\circ$] Lax-Wendroff is second-order but it generates oscillations beyond the range of the initial condition
     \end{itemize}
+\item rough answer: \alert{NO}
 
-\bigskip
-\begin{theorem}[\emph{Godunov, 1959}]  A monotonicity-preserving \alert<2>{linear} scheme for the 1D constant-coefficient equation $q_t + a q_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
+\medskip
+\begin{theorem}[\emph{Godunov, 1959}]  A monotonicity-preserving \alert<2>{linear} scheme for $q_t + a q_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
 
-\item this is the beginning of modern hyperbolic PDE solvers
+\item ``monotonicity-preserving'' means (essentially) that the scheme does not add oscillations
+\item Godunov's theorem is the beginning of modern hyperbolic PDE solvers
     \begin{itemize}
     \item[$\circ$] upwinding, Lax-Friedrichs, Lax-Wendroff, leapfrog are all older
-    \item[$\circ$] ``high-resolution'' schemes of the 1970s--1990s overcame the barrier
-    \item[$\circ$] \alert{how?}
+    \item[$\circ$] ``high-resolution'' schemes of the 1970--90s overcame the barrier \only<2>{\quad \alert{how?}}
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{slope within the cells?}
+\begin{frame}{the reconstruct-evolve-average view}
 
 \begin{itemize}
-\item FIXME reconstruct-evolve-average view
-\item overshoot in Lax-Wendroff
+\item to learn how to kill oscillation, another view is helpful
+\item problem is $q_t + a q_x=0$ for $a>0$, where $q(t_n,x)$ has two levels
+\item step from $t_n$ (left) to $t_{n+1}$ (right) with first-order upwinding:
 
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque6p4}
-\item FIXME upwind version sketch
+\begin{center}
+\quad \includegraphics[width=0.3\textwidth]{figs/upreconstructleft} \qquad \includegraphics[width=0.3\textwidth]{figs/upreconstructright}
+\end{center}
+
+    \begin{itemize}
+    \item[$\circ$] dots on right show new cell averages
+    \item[$\circ$] upwinding translates constant values, then computes new cell averages
+    \end{itemize}
+\item versus Lax-Wendroff, which is equivalent to using the downwind slope:
+
+\begin{center}
+\includegraphics[width=0.69\textwidth]{figs/leveque6p4}
+\end{center}
+
+    \begin{itemize}
+    \item[$\circ$] note the \alert{overshoot}
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -925,6 +954,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{slope limiter idea}
 
 \begin{itemize}
+\item so now we focus on ``slope reconstruction'' within cells
 \item FIXME  actual slope limiter
 \item FIXME minmod
 \end{itemize}
