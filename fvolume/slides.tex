@@ -189,7 +189,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW MOVIE}
+\alert{SHOW ADVECTION MOVIE}
 \end{center}
 \vspace{10mm}
 
@@ -236,7 +236,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW MOVIE}
+\alert{SHOW SHALLOW WATER MOVIE}
 \end{center}
 
 \vspace{10mm}
@@ -307,6 +307,10 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \item \alert{PLEASE} ask lots of questions, about any topic at all
     \begin{itemize}
     \item[$\circ$] slowing me down is a \emph{good} thing!
+    \end{itemize}
+\item also email \quad \texttt{elbueler\@@alaska.edu} \quad any time
+    \begin{itemize}
+    \item[$\circ$] I might be able to help with numerical PDE questions
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -879,10 +883,22 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     \item[$\circ$] at $x=b$ have outflow condition: $v_1(t,b)=0$
     \end{itemize}
 \item modify the Riemann solvers at $x=a$ and $x=b$ accordingly
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{demonstration of acoustics solver}
+
+\begin{itemize}
+\item I used all these ideas in a C PETSc program which solves this acoustics problem
+\item see \texttt{riemann} at
+\begin{center}
+\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
+\end{center}
 
 \vspace{3mm}
 \begin{center}
-\alert{SHOW MOVIE}
+\alert{SHOW ACOUSTICS MOVIE}
 \end{center}
 \end{itemize}
 
@@ -1102,24 +1118,22 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{traffic model}
 
 \begin{itemize}
-\item let us consider a scalar conservation law first
-\item $q(t,x)$ is the density of cars, $0\le q \le 1$
-\item they move at speed
+\item consider a scalar conservation law first
+\item for a traffice model, $q(t,x)$ is the density of cars, $0\le q \le 1$
+\item cars move at speed
     $$U(q) = u_{\max} (1-q)$$
 
     \begin{itemize}
     \item[$\circ$] they slow down when the density is high
     \end{itemize}
-\item as conservation law $q_t + f(q)_x = 0$, the flux of cars is
+\item the flux of cars is
     $$f(q) = U(q) q = u_{\max} (1-q) q$$
-\item note that
+\item but note that
     $$f'(q) = u_{\max} (1-2q)$$
-\item thus nonlinear equation is like scalar advection:
+\item scalar nonlinear conservation laws are like advection:
     $$q_t + f'(q) q_x = 0$$
-
-    \begin{itemize}
-    \item[$\circ$] characteristic speed is $a = f'(q) = u_{\max} (1-2q)$
-    \end{itemize}
+\item the solution is constant along characteristics, but the characteristic speed depends on the solution:
+    $$a = f'(q) = u_{\max} (1-2q)$$
 \end{itemize}
 \end{frame}
 
@@ -1150,13 +1164,58 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{Riemann solver for traffic equation}
+\begin{frame}{Riemann problem for scalar conservation laws}
 
 \begin{itemize}
-\item $F(q) = U(q) q$ and $U(q) = u_{\max} (1-q)$
+\item recall that the Riemann problem addresses a discontinuity at $x_*=x_{i+1/2}$:
+    $$q_t + f'(q)q_x = 0, \qquad q(t_n,x) = \begin{cases} Q_L & x < x_* \\ Q_R & x > x_* \end{cases}$$
+
+    \begin{itemize}
+    \item[$\circ$] the goal is to compute $Q_*$ on the face at $x_*$
+    \item[$\circ$] and thereby compute the flux $F_{i+1/2}$
+    \end{itemize}
+\item for scalar nonlinear conservation laws there are several possibilities:
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{figs/leveque12p1}
+\end{center}
+
+    \begin{itemize}
+    \item[$\circ$] (a), (e) are left/right-going shocks
+    \item[$\circ$] (b), (d) are left/right-going rarefaction waves
+    \item[$\circ$] in all these cases $Q_*=Q_L$ or $Q_*=Q_R$
+    \item[$\circ$] in (c), a \emph{transonic rarefaction wave}: $Q_* \text{ satisfies } f'(Q_*)=0$
+    \item[$\circ$] these are all the possibilities if $f(q)$ is convex or concave
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Riemann solver for scalar conservation laws}
+
+\begin{itemize}
+\item LeVeque (2002) shows formula (12.4), the flux solution of the Riemann problem for a scalar conservation law:
+
+    $$F_{i+1/2} = \begin{cases} {\displaystyle \min_{Q_L \le q \le Q_R} f(q)} & \text{if } Q_L \le Q_R \\ {\displaystyle \max_{Q_R \le q \le Q_L} f(q)} & \text{if } Q_L \ge Q_R \end{cases}$$
+\item I used this in a C PETSc code; see \texttt{riemann} at
+\begin{center}
+\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
+\end{center}
+
+\vspace{10mm}
+\begin{center}
+\alert{SHOW SHOCK MOVIE}
+\end{center}
 \end{itemize}
 
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque12p1}
+% cd p4pdes-next/riemann
+% make riemann
+% make petscPyScripts
+% ./riemann -problem traffic -da_grid_x 1000 -limiter mc -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
+% mkdir traffic
+% ./plotTS.py -mx 1000 -ylabel "q (density)" -ax -30.0 -bx 30.0 -cellcentered -oroot traffic/bar t.dat q.dat
+% cd traffic
+% eog bar*.png
 \end{frame}
 
 
@@ -1196,7 +1255,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{summary}
 
 \begin{itemize}
-\item for hyperbolic conservation-law systems
+\item for hyperbolic conservation-law systems $\bq_t + \bbf(\bq)_x = 0$
     \begin{itemize}
     \item[$\circ$] linear: acoustics, elasticity, Maxwell's equations
     \item[$\circ$] nonlinear: shallow water, compressible gas equations
@@ -1210,8 +1269,8 @@ a preferred numerical approach since the 1990s is a
     \item[\alert{1.}] \alert{finite volume thinking}
         \begin{itemize}
         \item conservation law is spatially integrated
-        \item discrete unknowns are cell averages
-        \item flux is needed at faces between cells
+        \item discrete unknowns $\bQ_i$ are cell averages
+        \item flux is needed at faces between cells: $\bF_{i+1/2}$
         \end{itemize}
     \item[\alert{2.}] \alert{Riemann solvers}
         \begin{itemize}
@@ -1219,8 +1278,8 @@ a preferred numerical approach since the 1990s is a
         \item a Riemann solver determines the local wave structure (rarefaction, shock)
             \begin{description}[abc]
             \item[$\diamond$] computes the flux on the face
-            \item[$\diamond$] provided by the user
-            \item[$\diamond$] exact or approximate (e.g.~Roe for shallow water)
+            \item[$\diamond$] for a system, uses eigen-expansion of $A = \bbf'(\bq)$
+            \item[$\diamond$] provided by the user; exact or approximate (e.g.~Roe)
             \end{description}
         \end{itemize}
     \item[\alert{3.}] \alert{slope limiters}
@@ -1295,7 +1354,7 @@ a preferred numerical approach since the 1990s is a
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW MOVIE}
+\alert{SHOW 2D ADVECTION MOVIE}
 \end{center}
 
 % cd p4pdes/c/ch11
