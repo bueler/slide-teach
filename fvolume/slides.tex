@@ -1,6 +1,6 @@
 % Copyright 2020  Ed Bueler
 
-\documentclass[10pt,hyperref]{beamer}
+\documentclass[10pt,hyperref,dvipsnames]{beamer}
 
 \mode<presentation>{
   \usetheme{Madrid}
@@ -51,6 +51,7 @@
 
 \newcommand{\grad}{\nabla}
 \newcommand{\Div}{\nabla\cdot}
+\newcommand{\minmod}{\operatorname{minmod}}
 
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\RR}{\mathbb{R}}
@@ -150,9 +151,9 @@
 
 %center
 \draw[line width=1pt] (0,0)     node[eqn] (scalaradvect)  {\mynum{1} scalar advection \\ {\Large \strut} $q_t + a q_x=0$};
-\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{4} scalar advection in 2D \\ {\Large \strut} $q_t + (u q)_x + (v q)_y=0$};
+\draw[line width=1pt] (3,-1.7)     node[eqn] (scalartwod)  {\mynum{5} scalar advection in 2D \\ {\Large \strut} $q_t + (u q)_x + (v q)_y=0$};
 \draw[line width=1pt] (-2,-1.7)    node[eqn] (linearsystem)  {\mynum{2} linear systems \\ {\Large \strut} $\bq_t + A\, \bq_x=0$};
-\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{5} conservation-law systems \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
+\draw[line width=1pt] (-2,-3.55)    node[eqn] (generalsystem)  {\mynum{4} conservation-law systems \\ {\Large \strut} $\bq_t + \bF(t,x,\bq)_x=\bg(t,x,\bq)$};
 
 \path[-Latex]
    ([xshift=-2em]scalaradvect.south) edge node {} (linearsystem)
@@ -923,30 +924,54 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{the reconstruct-evolve-average view}
+\begin{frame}{the reconstruct-evolve-average view of schemes}
 
 \begin{itemize}
-\item to learn how to kill oscillation, another view is helpful
-\item problem is $q_t + a q_x=0$ for $a>0$, where $q(t_n,x)$ has two levels
-\item step from $t_n$ (left) to $t_{n+1}$ (right) with first-order upwinding:
+\item if we want to kill oscillation then another view is helpful
+\item consider: $q_t + a q_x=0$ for $a>0$, where values $\{Q_i^n\}$ are on two levels, and Euler step from $t_n$ (left) to $t_{n+1}$ (right) w.~1st-order upwinding:
 
 \begin{center}
 \quad \includegraphics[width=0.3\textwidth]{figs/upreconstructleft} \qquad \includegraphics[width=0.3\textwidth]{figs/upreconstructright}
 \end{center}
 
     \begin{itemize}
+    \item[$\circ$] upwinding uses constant values (zero slope) in cells
     \item[$\circ$] dots on right show new cell averages
-    \item[$\circ$] upwinding translates constant values, then computes new cell averages
     \end{itemize}
-\item versus Lax-Wendroff, which is equivalent to using the downwind slope:
+\item versus Lax-Wendroff, which uses downwind slope:
 
 \begin{center}
 \includegraphics[width=0.69\textwidth]{figs/leveque6p4}
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] note the \alert{overshoot}
+    \item[$\circ$] note the \alert{overshoot}, which we want to avoid
     \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{slope reconstruction}
+
+\begin{itemize}
+\item at time $t_n$ we only know the discrete unknowns $\{Q_j^n\}$
+\item but we can attempt to ``reconstruct'' a linear function $\tilde q(t_n,x)$ on each cell $x_{i-1/2} \le x \le x_{i+1/2}$:
+    $$\tilde q(t_n,x) = Q_i^n + \sigma_i^n (x - x_i)$$
+
+    \begin{itemize}
+    \item[$\circ$] $\sigma_i^n$ is the \emph{slope} in the cell
+    \item[$\circ$] the average remains as $Q_i^n$
+    \end{itemize}
+\item possibilities for slope ($a>0$):
+\begin{align*}
+&\text{zero:}     & \sigma_i &= 0 \hspace{75mm} \\
+&\text{{\color{red} downwind:}} & \sigma_i &= \frac{Q_{i+1}-Q_i}{\Delta x} \\
+&\text{{\color{ForestGreen} upwind:}}   & \sigma_i &= \frac{Q_i-Q_{i-1}}{\Delta x} \\
+&\text{{\color{blue} centered:}} & \sigma_i &= \frac{Q_{i+1}-Q_{i-1}}{2\Delta x}
+\end{align*}
+
+\vspace{-45mm}
+\hfill \includegraphics[width=0.47\textwidth]{figs/slopessketch}
 \end{itemize}
 \end{frame}
 
@@ -954,9 +979,35 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{slope limiter idea}
 
 \begin{itemize}
-\item so now we focus on ``slope reconstruction'' within cells
-\item FIXME  actual slope limiter
-\item FIXME minmod
+\item the slope limiter idea is to use one of these slopes to get higher accuracy \emph{except} if using that slope puts the reconstruction out of range of the values $\{Q_{i-1},Q_i,Q_{i+1}\}$
+\item \alert{$\minmod$ \emph{slope limiter}:}
+    $$\sigma_i = \minmod\left\{\frac{Q_i-Q_{i-1}}{\Delta x},\frac{Q_{i+1}-Q_i}{\Delta x}\right\}$$
+
+    \begin{itemize}
+    \item[$\circ$] by definition, for real numbers $a,b$ of the same sign:
+        $$\minmod\{a,b\} = \begin{cases} 0, & ab \le 0 \\
+                                         a, & ab>0 \text{ and } |a| \le |b| \\
+                                         b, & ab>0 \text{ and } |a| > |b| \end{cases}$$
+    \item[$\circ$] in words: $\minmod\{a,b\}$ is closest of $a$ or $b$ to zero unless they differ in sign; then it is zero
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{slope limiter idea 2}
+
+\begin{itemize}
+\item another, recommended, alternative is the \alert{\emph{MC slope limiter}:}
+    $$\sigma_i = \minmod\left\{\frac{Q_{i+1}-Q_{i-1}}{2\Delta x},2\minmod\Big\{\frac{Q_i-Q_{i-1}}{\Delta x},\frac{Q_{i+1}-Q_i}{\Delta x}\Big\}\right\}$$
+\item in pictures:
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{figs/leveque6p5}
+\end{center}
+
+\hspace{15mm} $\minmod$ limiter \hfill MC limiter \hspace{15mm} \phantom{x}
+\item can you draw-in the downwind (i.e.~Lax-Wendroff) case in your head?  it has overshoots
+\item theory of \emph{total variation diminishing} (TVD) schemes, circa 1990s, arises from these pictures
 \end{itemize}
 \end{frame}
 
@@ -973,13 +1024,118 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{MOL slope limiting}
+\begin{frame}{MOL slope limiting and Riemann solvers}
 
 \begin{itemize}
-\item x
+\item one detail \dots
+\item suppose we want to use limited slopes \emph{and} build Riemann solvers, \emph{in the method-of-lines (MOL) framework}
+\item then we first apply the slope-limiter as usual, \dots
+\item and then compute the flux $\bF_{i-1/2}$ in terms of this picture:
+
+\medskip
+\begin{center}
+\includegraphics[width=0.6\textwidth]{figs/leveque10p2}
+\end{center}
+\item the left and right values at the face, $\bQ_{i-1}^R$ and $\bQ_i^L$, are the ones seen by (used in) the Riemann solver to compute the solution value at the face forward in time, and thus the flux $\bF_{i-1/2}(t)$ for $t>t_n$
+\end{itemize}
+\end{frame}
+
+
+\section{nonlinear conservation laws}
+
+\begin{frame}{traffic}
+
+\begin{itemize}
+\item $q_t + F(q)_x = 0$ where $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
 \end{itemize}
 
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque10p2}
+\hfill \includegraphics[width=0.65\textwidth]{figs/leveque11p1}
+\end{frame}
+
+\begin{frame}{Riemann solver for traffic equation}
+
+\begin{itemize}
+\item $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\end{itemize}
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque12p1}
+\end{frame}
+
+
+\begin{frame}{shallow water equations}
+
+\begin{itemize}
+\item $h(t,x)$ is height above equilibrium, $u(t,x)$ is horizontal water velocity
+\item FIXME
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{shallow water: illustration}
+
+\begin{itemize}
+\item dam break example
+
+\hfill \includegraphics[width=0.75\textwidth]{figs/leveque13p4}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{shallow water: my results}
+
+\begin{itemize}
+\item FIXME with \texttt{riemann.c}
+\end{itemize}
+
+\vspace{10mm}
+\begin{center}
+\alert{SHOW MOVIE}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{summary}
+
+\begin{itemize}
+\item for hyperbolic conservation-law systems
+    \begin{itemize}
+    \item[$\circ$] linear: acoustics, elasticity, Maxwell's equations
+    \item[$\circ$] nonlinear: shallow water, compressible gas equations
+    \end{itemize}
+a preferred numerical approach since the 1990s is a
+\begin{center}
+\alert{high-resolution Godunov method}
+\end{center}
+\item consists of three things:
+    \begin{itemize}
+    \item[\alert{1.}] \alert{finite volume thinking}
+        \begin{itemize}
+        \item conservation law is spatially integrated
+        \item discrete unknowns are cell averages
+        \item flux is needed at faces between cells
+        \end{itemize}
+    \item[\alert{2.}] \alert{Riemann solvers}
+        \begin{itemize}
+        \item a ``Riemann problem'' considers different cell values on each side of a face
+        \item a Riemann solver determines the local wave structure (rarefaction, shock)
+            \begin{description}[abc]
+            \item[$\diamond$] computes the flux on the face
+            \item[$\diamond$] provided by the user
+            \item[$\diamond$] exact or approximate (e.g.~Roe for shallow water)
+            \end{description}
+        \end{itemize}
+    \item[\alert{3.}] \alert{slope limiters}
+        \begin{itemize}
+        \item first-order upwinding: solution is constant in a cell (``classical Godunov'')
+        \item for higher-order without oscillations:
+            \begin{description}[abc]
+            \item[$\diamond$] solution is ``reconstructed'' with slope in each cell
+            \item[$\diamond$] slope is (nonlinearly) limited
+            \end{description}
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 
@@ -1047,100 +1203,6 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 % cd p4pdes/c/ch11
 % make advect
 % ./advect -da_refine 4 -adv_problem rotation -ts_max_time 6.283 -ts_monitor_solution draw
-\end{frame}
-
-
-\section{nonlinear conservation laws}
-
-\begin{frame}{traffic}
-
-\begin{itemize}
-\item $q_t + F(q)_x = 0$ where $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
-\end{itemize}
-
-\hfill \includegraphics[width=0.65\textwidth]{figs/leveque11p1}
-\end{frame}
-
-\begin{frame}{Riemann solver for traffic equation}
-
-\begin{itemize}
-\item $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
-\end{itemize}
-
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque12p1}
-\end{frame}
-
-
-\begin{frame}{shallow water equations}
-
-\begin{itemize}
-\item $h(t,x)$ is height above equilibrium, $u(t,x)$ is horizontal water velocity
-\item FIXME
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{shallow water: illustration}
-
-\begin{itemize}
-\item dam break example
-
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque13p4}
-
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{shallow water: my results}
-
-\begin{itemize}
-\item FIXME with \texttt{riemann.c}
-\end{itemize}
-
-\vspace{10mm}
-\begin{center}
-\alert{SHOW MOVIE}
-\end{center}
-\end{frame}
-
-
-\begin{frame}{summary}
-
-\begin{itemize}
-\item since 1990s, a preferred finite volume approach for hyperbolic systems:
-\begin{center}
-\alert{high-resolution Godunov method}
-\end{center}
-    \begin{itemize}
-    \item[$\circ$] linear systems: acoustics, elasticity, Maxwell's equations
-    \item[$\circ$] nonlinear systems: shallow water, compressible gas equations
-    \end{itemize}
-\item this approach consists of three things:
-    \begin{itemize}
-    \item[$\circ$] \alert{finite volume thinking}:
-        \begin{itemize}
-        \item conservation law is spatially integrated
-        \item discrete unknowns are cell averages
-        \item flux is needed at faces between cells
-        \end{itemize}
-    \item[$\circ$] \alert{Riemann solvers}:
-        \begin{itemize}
-        \item ``Riemann problem'' has different cell values on each side of a face
-        \item a Riemann solver determines local wave structure (rarefaction, shock)
-            \begin{description}[abc]
-            \item[$\diamond$] provided by the user
-            \item[$\diamond$] computes the flux on the face
-            \end{description}
-        \item can be exact or approximate (e.g.~Roe approximate solver for shallow water)
-        \end{itemize}
-    \item[$\circ$] \alert{slope limiters}:
-        \begin{itemize}
-        \item first-order upwinding: solution is constant in a cell (``classical Godunov'')
-        \item higher-order: solution is ``reconstructed'' with slope in each cell
-        \item the slope is (nonlinearly) limited so translating does not propagate oscillations
-        \end{itemize}
-    \end{itemize}
-\end{itemize}
 \end{frame}
 
 \end{document}
