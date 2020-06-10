@@ -224,7 +224,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \vspace{-11.5mm}
 \begin{align*}
 \hspace{60mm} h_t + (hu)_x &= 0 \\
-(hu)_t + \left(h u^2 + \frac{1}{2} g h^2\right)_x &= 0
+(hu)_t + \left(h u^2 + \frac{g}{2} h^2\right)_x &= 0
 \end{align*}
 \item suppose initial condition is a ``hump'' on $x\in[-5,5]$
     \begin{itemize}
@@ -1066,9 +1066,11 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     \begin{itemize}
     \item[$\circ$] $\bbf$ could depend on $t$ or $x$: \qquad $\bq_t + \bbf(t,x,\bq)_x=0$
     \item[$\circ$] there could be a right-hand side: \qquad $\bq_t + \bbf(t,x,\bq)_x=\bg(t,x,\bq)$
-    \item[$\circ$] if $\bbf$ depends on $\grad \bq$ then \dots not hyperbolic
+    \item[$\circ$] the conservation law is linear if $\bbf(\bq) = A\bq$
+    \item[$\circ$] if $\bbf$ depends on $\grad \bq$ \dots e.g.~heat equation \dots then the system is not hyperbolic
     \end{itemize}
 
+\bigskip
 \item two scalar, nonlinear examples:
     \begin{itemize}
     \item[$\circ$] \emph{Burger's equation} with $f(q)=\frac{1}{2} q^2$:
@@ -1084,27 +1086,74 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \setlength{\itemindent}{11mm}
-\item[example:] \emph{shallow water equations} with
-        $$x$$
-\item[example:] \emph{isentropic gas equations} with
-        $$x$$
+\item[example:] \emph{shallow water equations} with height $h(t,x)$ and velocity $u(t,x)$:
+        $$\bq = \begin{bmatrix} h \\ hu \end{bmatrix}, \, \bF(\bq) = \begin{bmatrix} h \\ h u^2 + \frac{g}{2} h^2 \end{bmatrix} \quad \implies \quad \begin{matrix} h_t + (hu)_x = 0 \\ (hu)_t + \Big(h u^2 + \frac{g}{2} h^2\Big)_x = 0 \end{matrix}$$
+\item[example:] \emph{Euler equations for an ideal gas}:
+        $$\bq = \begin{bmatrix} \rho \\ \rho u \\ E \end{bmatrix}, \, \bF(\bq) = \begin{bmatrix} \rho u \\ \rho u^2 + p \\ (E+p) u \end{bmatrix} \quad \implies \quad \begin{matrix} \rho_t + (\rho u)_x = 0 \\ (\rho u)_t + \Big(\rho u^2 + p\Big)_x = 0 \\ E_t + \Big((E+p) u\Big)_x = 0 \end{matrix}$$
+    \begin{itemize}
+    \item[$\circ$] variables are density $\rho(t,x)$, velocity $u(t,x)$, and energy density $E(t,x)$
+    \item[$\circ$] the pressure $p$ is found from an equation of state, for example for a polytropic ideal gas ($\gamma \approx 1.4$ for air):
+        $$E = \frac{p}{\gamma - 1} + \frac{1}{2} \rho u^2$$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{traffic}
+\begin{frame}{traffic model}
 
 \begin{itemize}
-\item $q_t + f(q)_x = 0$ where $f(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\item let us consider a scalar conservation law first
+\item $q(t,x)$ is the density of cars, $0\le q \le 1$
+\item they move at speed
+    $$U(q) = u_{\max} (1-q)$$
+
+    \begin{itemize}
+    \item[$\circ$] they slow down when the density is high
+    \end{itemize}
+\item as conservation law $q_t + f(q)_x = 0$, the flux of cars is
+    $$f(q) = U(q) q = u_{\max} (1-q) q$$
+\item note that
+    $$f'(q) = u_{\max} (1-2q)$$
+\item thus nonlinear equation is like scalar advection:
+    $$q_t + f'(q) q_x = 0$$
+
+    \begin{itemize}
+    \item[$\circ$] characteristic speed is $a = f'(q) = u_{\max} (1-2q)$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{traffic: speed versus speed}
+
+\begin{itemize}
+\item speed of car is $U(q) = u_{\max} (1-q)$
+\item speed of characteristic is $f'(q) = u_{\max} (1-2q)$
 \end{itemize}
 
-\hfill \includegraphics[width=0.65\textwidth]{figs/leveque11p1}
+\begin{center}
+\includegraphics[width=0.68\textwidth]{figs/leveque11p1}
+\end{center}
 \end{frame}
+
+
+\begin{frame}{traffic: shock and rarefaction waves}
+
+\begin{itemize}
+\item previous slide shows formation of a \emph{shock wave} from a smooth hump
+\item one can also form a \emph{rarefaction wave}
+\end{itemize}
+
+\begin{center}
+FIXME %\includegraphics[width=0.65\textwidth]{figs/leveque11p3}
+\end{center}
+\end{frame}
+
 
 \begin{frame}{Riemann solver for traffic equation}
 
 \begin{itemize}
-\item $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\item $F(q) = U(q) q$ and $U(q) = u_{\max} (1-q)$
 \end{itemize}
 
 \hfill \includegraphics[width=0.75\textwidth]{figs/leveque12p1}
