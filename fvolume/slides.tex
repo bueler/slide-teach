@@ -85,14 +85,6 @@
       \usebeamertemplate{enumerate item} \,}}
 
 
-\AtBeginSection[]
-{
-  \begin{frame}<beamer>
-    \frametitle{Outline}
-    \tableofcontents[currentsection,hideallsubsections]
-  \end{frame}
-}
-
 \title[Finite volume methods]{Finite volume methods for \\ advection equations and hyperbolic systems}
 
 %\subtitle{part I: xx}
@@ -128,8 +120,7 @@
 \end{frame}
 
 
-
-\section{introduction}
+\section{overview}
 
 \begin{frame}[fragile]
 \frametitle{overview}
@@ -216,7 +207,8 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \begin{frame}{visual example 1: numerical \emph{and exact} solutions}
 
 \begin{itemize}
-\item was it clear what the movie showed?  compare:
+\item was it clear what the movie showed?
+\item compare when we have the exact solution:
 \end{itemize}
 
 \bigskip
@@ -264,9 +256,13 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \item exact solutions are needed for \emph{verifying} simulations
     \begin{itemize}
     \item[$\circ$] i.e.~measure norm of difference between exact and numerical solutions
-    \item[$\circ$] exact solutions are precise tools for ``mathematical engineering'' of numerical solvers
+    \item[$\circ$] they are precise tools for ``mathematical engineering'' of numerical solvers
     \end{itemize}
-\item also we will see that numerical solvers for hyperbolic systems need something called a ``Riemann solver,'' for which one needs the exact solution for a discontinuous initial condition
+\item also: numerical solvers for hyperbolic systems use a ``Riemann solver'' 
+    \begin{itemize}
+    \item[$\circ$] essentially an exact solution for a discontinuous initial condition
+    \item[$\circ$] explaining this is a main goal of my talk
+    \end{itemize}
 \item generally, exact solutions are rare but valuable
 \end{itemize}
 \end{frame}
@@ -315,6 +311,14 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \end{itemize}
 \end{frame}
 
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,hideallsubsections]
+  \end{frame}
+}
 
 \section{scalar advection equation}
 
@@ -636,7 +640,7 @@ the basic FV scheme
 
 \section{linear systems}
 
-\begin{frame}{linear systems}
+\begin{frame}{linear systems: examples}
 
 \begin{itemize}
 \item linear, constant-coefficient system for $\bq(t,x) \in \RR^d$ with $A\in\RR^{d\times d}$:
@@ -891,15 +895,20 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{summary of linear systems and Riemann solvers}
+\begin{frame}{summary of systems and Riemann solvers}
 
 \begin{itemize}
-\item if a linear system $\bq_t + A\, \bq_x=0$ in $\RR^d$ is \alert{\emph{hyperbolic}} then (by definition) it can be decoupled into $d$ scalar advection problems
-\item the solutions of these advection problems, forward from time $t_n$, are the \alert{\emph{Riemann invariants}} (from $\bw_k^\top A = \lambda_k \bw_k$):
+\item if a linear system $\bq_t + A\, \bq_x=0$ in $\RR^d$ is \alert{\emph{hyperbolic}} then (by definition) it can be decoupled ($\bw_k^\top A = \lambda_k \bw_k$) into $d$ scalar (real) advection problems
+\item the solutions of these advection problems, forward from time $t_n$, are the \alert{\emph{Riemann invariants}}:
     $$v_k(t,x) = \bw_k^\top \bq(t,x) = v_k(t_n,x-\lambda_k (t-t_n))$$
-\item if the linear system is written in conservation form, $\bq_t + \bbf(\bq)_x=0$ where $\bbf(\bq) = A\bq$, then for the finite volume (FV) \alert{\emph{method-of-lines (MOL)}} view we only integrate in space:
+\item now write in conservation form: $\bq_t + \bbf(\bq)_x=0$ where $\bbf(\bq) = A\bq$
+\item in the FV \alert{\emph{method-of-lines (MOL)}} view we only integrate in space:
     $$\frac{d\bQ_j}{dt} + \frac{\bF_{i+1/2} - \bF_{i-1/2}}{\Delta x} = 0$$
-\item a \alert{\emph{Riemann solver}} finds the face fluxes $\bF_{i+1/2}=A \bQ^*$ by solving the \emph{Riemann problem} with $\bQ_L$ on the left of the face and $\bQ_R$ on the right of the face to find $\bQ^*$ on the face from the Riemann invariants
+\item a \alert{\emph{Riemann solver}} finds the face fluxes $\bF_{i+1/2}=A \bQ^*$ by solving the \emph{Riemann problem}, with $\bQ_L,\bQ_R$ on sides of the face, to find $\bQ^*$ on the face
+    \begin{itemize}
+    \item[$\circ$] this uses the Riemann invariants
+    \end{itemize}
+\item mostly generalizable to nonlinear systems: use $A=\bbf'(\bq)$
 \end{itemize}
 \end{frame}
 
@@ -1049,10 +1058,44 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \section{nonlinear conservation laws}
 
+\begin{frame}{conservation laws}
+
+\begin{itemize}
+\item a \emph{conservation law} is a first-order system for $\bq(t,x) \in \RR^d$ with a given \emph{flux function} $\bbf:\RR^d\to \RR^d$:
+  $$\bq_t + \bbf(\bq)_x=0$$
+    \begin{itemize}
+    \item[$\circ$] $\bbf$ could depend on $t$ or $x$: \qquad $\bq_t + \bbf(t,x,\bq)_x=0$
+    \item[$\circ$] there could be a right-hand side: \qquad $\bq_t + \bbf(t,x,\bq)_x=\bg(t,x,\bq)$
+    \item[$\circ$] if $\bbf$ depends on $\grad \bq$ then \dots not hyperbolic
+    \end{itemize}
+
+\item two scalar, nonlinear examples:
+    \begin{itemize}
+    \item[$\circ$] \emph{Burger's equation} with $f(q)=\frac{1}{2} q^2$:
+        $$q_t + \left(\tfrac{1}{2} q^2\right)_x = 0 \qquad \iff \qquad q_t + q q_x = 0$$
+    \item[$\circ$] \emph{nonlinear traffic model} with $f(q)=u_{\max} (1-q) q$:
+        $$q_t + \left(u_{\max} (1-q) q\right)_x = 0$$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{nonlinear conservation laws: system examples}
+
+\begin{itemize}
+\setlength{\itemindent}{11mm}
+\item[example:] \emph{shallow water equations} with
+        $$x$$
+\item[example:] \emph{isentropic gas equations} with
+        $$x$$
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{traffic}
 
 \begin{itemize}
-\item $q_t + F(q)_x = 0$ where $F(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
+\item $q_t + f(q)_x = 0$ where $f(q) = U(q) q$ and $U(q) = u_{max} (1-q)$
 \end{itemize}
 
 \hfill \includegraphics[width=0.65\textwidth]{figs/leveque11p1}
