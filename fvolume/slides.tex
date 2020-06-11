@@ -1077,12 +1077,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{conservation laws}
 
 \begin{itemize}
-\item a \emph{conservation law} is a first-order system for $\bq(t,x) \in \RR^d$ with a given \emph{flux function} $\bbf:\RR^d\to \RR^d$:
+\item a \emph{conservation law} is a first-order PDE system, for $\bq(t,x) \in \RR^d$, with a given \emph{flux function} $\bbf:\RR^d\to \RR^d$:
   $$\bq_t + \bbf(\bq)_x=0$$
     \begin{itemize}
-    \item[$\circ$] $\bbf$ could depend on $t$ or $x$: \qquad $\bq_t + \bbf(t,x,\bq)_x=0$
+    \item[$\circ$] $\bbf$ could also depend on $t$ or $x$: \qquad $\bq_t + \bbf(t,x,\bq)_x=0$
     \item[$\circ$] there could be a right-hand side: \qquad $\bq_t + \bbf(t,x,\bq)_x=\bg(t,x,\bq)$
-    \item[$\circ$] the conservation law is linear if $\bbf(\bq) = A\bq$
+    \item[$\circ$] linear conservation law: \qquad $\bbf(\bq) = A\bq$
     \item[$\circ$] if $\bbf$ depends on $\grad \bq$ \dots e.g.~heat equation \dots then the system is not hyperbolic
     \end{itemize}
 
@@ -1103,9 +1103,9 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{itemize}
 \setlength{\itemindent}{11mm}
 \item[example:] \emph{shallow water equations} with height $h(t,x)$ and velocity $u(t,x)$:
-        $$\bq = \begin{bmatrix} h \\ hu \end{bmatrix}, \, \bF(\bq) = \begin{bmatrix} h \\ h u^2 + \frac{g}{2} h^2 \end{bmatrix} \quad \implies \quad \begin{matrix} h_t + (hu)_x = 0 \\ (hu)_t + \Big(h u^2 + \frac{g}{2} h^2\Big)_x = 0 \end{matrix}$$
+        $$\bq = \begin{bmatrix} h \\ hu \end{bmatrix}, \, \bbf(\bq) = \begin{bmatrix} hu \\ h u^2 + \frac{g}{2} h^2 \end{bmatrix} \quad \implies \quad \begin{matrix} h_t + (hu)_x = 0 \\ (hu)_t + \Big(h u^2 + \frac{g}{2} h^2\Big)_x = 0 \end{matrix}$$
 \item[example:] \emph{Euler equations for an ideal gas}:
-        $$\bq = \begin{bmatrix} \rho \\ \rho u \\ E \end{bmatrix}, \, \bF(\bq) = \begin{bmatrix} \rho u \\ \rho u^2 + p \\ (E+p) u \end{bmatrix} \quad \implies \quad \begin{matrix} \rho_t + (\rho u)_x = 0 \\ (\rho u)_t + \Big(\rho u^2 + p\Big)_x = 0 \\ E_t + \Big((E+p) u\Big)_x = 0 \end{matrix}$$
+        $$\bq = \begin{bmatrix} \rho \\ \rho u \\ E \end{bmatrix}, \, \bbf(\bq) = \begin{bmatrix} \rho u \\ \rho u^2 + p \\ (E+p) u \end{bmatrix} \quad \implies \quad \begin{matrix} \rho_t + (\rho u)_x = 0 \\ (\rho u)_t + \Big(\rho u^2 + p\Big)_x = 0 \\ E_t + \Big((E+p) u\Big)_x = 0 \end{matrix}$$
     \begin{itemize}
     \item[$\circ$] variables are density $\rho(t,x)$, velocity $u(t,x)$, and energy density $E(t,x)$
     \item[$\circ$] the pressure $p$ is found from an equation of state, for example for a polytropic ideal gas ($\gamma \approx 1.4$ for air):
@@ -1115,11 +1115,10 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{traffic model}
+\begin{frame}{scalar conservation law: traffic model}
 
 \begin{itemize}
-\item consider a scalar conservation law first
-\item for a traffice model, $q(t,x)$ is the density of cars, $0\le q \le 1$
+\item for this traffic model, $q(t,x)$ is the density of cars, $0\le q \le 1$
 \item cars move at speed
     $$U(q) = u_{\max} (1-q)$$
 
@@ -1130,7 +1129,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     $$f(q) = U(q) q = u_{\max} (1-q) q$$
 \item but note that
     $$f'(q) = u_{\max} (1-2q)$$
-\item scalar nonlinear conservation laws are like advection:
+\item scalar nonlinear conservation laws are nonlinear advection problems:
     $$q_t + f'(q) q_x = 0$$
 \item the solution is constant along characteristics, but the characteristic speed depends on the solution:
     $$a = f'(q) = u_{\max} (1-2q)$$
@@ -1164,10 +1163,26 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
+\begin{frame}{recall the FV-MOL-Riemann solver idea}
+
+\begin{itemize}
+\item for problems in flux-conservation form: \quad $q_t + f(q)_x = 0$
+\item put a grid on $x$, with $x_i$ at cell center
+\item integrate over the cell:
+    $$\frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0$$
+\item interpret discrete unknowns as cell averages (FV):
+    $$Q_i(t) = \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$$
+\item get a big ODE system (MOL) for solution by an ODE black box:
+    $$\frac{dQ_i}{dt} + \frac{F_{i+1/2} - F_{i-1/2}}{\Delta x} = 0$$
+\item a (slope-limited) Riemann solver will compute the face fluxes $F_{i+1/2}$
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{Riemann problem for scalar conservation laws}
 
 \begin{itemize}
-\item recall that the Riemann problem addresses a discontinuity at $x_*=x_{i+1/2}$:
+\item the Riemann problem addresses a discontinuity at $x_*=x_{i+1/2}$:
     $$q_t + f'(q)q_x = 0, \qquad q(t_n,x) = \begin{cases} Q_L & x < x_* \\ Q_R & x > x_* \end{cases}$$
 
     \begin{itemize}
@@ -1181,10 +1196,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] (a), (e) are left/right-going shocks
-    \item[$\circ$] (b), (d) are left/right-going rarefaction waves
-    \item[$\circ$] in all these cases $Q_*=Q_L$ or $Q_*=Q_R$
-    \item[$\circ$] in (c), a \emph{transonic rarefaction wave}: $Q_* \text{ satisfies } f'(Q_*)=0$
+    \item[$\circ$] (a), (e) are shocks while (b), (d) are rarefaction waves
+        \begin{itemize}
+        \item (a),(b) left-going or (d),(e) right-going, as shown
+        \item in all these cases $Q_*=Q_L$ or $Q_*=Q_R$
+        \end{itemize}
+    \item[$\circ$] (c) is a \emph{transonic rarefaction wave}: $Q_* \text{ satisfies } f'(Q_*)=0$
     \item[$\circ$] these are all the possibilities if $f(q)$ is convex or concave
     \end{itemize}
 \end{itemize}
@@ -1194,9 +1211,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{Riemann solver for scalar conservation laws}
 
 \begin{itemize}
-\item LeVeque (2002) shows formula (12.4), the flux solution of the Riemann problem for a scalar conservation law:
-
+\item the flux solution of the Riemann problem for a scalar conservation law:
     $$F_{i+1/2} = \begin{cases} {\displaystyle \min_{Q_L \le q \le Q_R} f(q)} & \text{if } Q_L \le Q_R \\ {\displaystyle \max_{Q_R \le q \le Q_L} f(q)} & \text{if } Q_L \ge Q_R \end{cases}$$
+
+    \begin{itemize}
+    \item[$\circ$] formula (12.4) in LeVeque (2002)
+    \end{itemize}
 \item I used this in a C PETSc code; see \texttt{riemann} at
 \begin{center}
 \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
@@ -1222,19 +1242,98 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{shallow water equations}
 
 \begin{itemize}
-\item $h(t,x)$ is height above equilibrium, $u(t,x)$ is horizontal water velocity
-\item FIXME
+\item $h(t,x)$ is water surface height, $u(t,x)$ is horizontal water velocity
+    \begin{itemize}
+    \item[$\circ$] assuming $h>0$ throughout
+    \end{itemize}
+\item conservation law \quad $\bq_t + \bbf(\bq)_x = 0$ with
+        $$\bq = \begin{bmatrix} h \\ hu \end{bmatrix}, \qquad \bbf(\bq) = \begin{bmatrix} hu \\ h u^2 + \frac{g}{2} h^2 \end{bmatrix}$$
+\item eigen-decomposition of \quad $\ds A=\bbf'(\bq) = \begin{bmatrix} 0 & 1 \\ -u^2 + g h & 2 u \end{bmatrix}$:
+\begin{align*}
+\lambda_1&=u-\sqrt{gh}, \quad \bw_1 = \begin{bmatrix} 1 \\ u-\sqrt{gh} \end{bmatrix} \\
+\lambda_2&=u+\sqrt{gh}, \quad \bw_2 = \begin{bmatrix} 1 \\ u+\sqrt{gh} \end{bmatrix}
+\end{align*}
+
+    \begin{itemize}
+    \item[$\circ$] main idea: the eigen-decomposition depends on $\bq$
+    \item[$\circ$] the speeds always bracket the water velocity: $\lambda_1 < u < \lambda_2$
+        \begin{itemize}
+        \item it is possible that both $\lambda_i$ are negative, or both are positive
+        \end{itemize}
+    \item[$\circ$] these \emph{gravity waves} travel at speed at least $\sqrt{gh}$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{shallow water: illustration}
+\begin{frame}{shallow water equations: illustration of a Riemann problem}
 
 \begin{itemize}
-\item dam break example
+\item what does a Riemann problem look like?
+    \begin{itemize}
+    \item[$\circ$] recall: \quad $\bq_t + \bbf(\bq)_x = 0, \quad \bq(t_n,x) = \left\{\bQ_L, \bQ_R\right\}$
+    \end{itemize}
+\item in the case where $\bQ_L = [3,0]^\top$, $\bQ_R = [1,0]^\top$ it is a ``dam break'':
 
-\hfill \includegraphics[width=0.75\textwidth]{figs/leveque13p4}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{figs/leveque13p4}
+\end{center}
 
+    \begin{itemize}
+    \item[$\circ$] nontrivial wave structure with left-going rarefaction and right-going shock
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Riemann solver options}
+
+\begin{itemize}
+\item how should the Riemann solver work?
+\item \alert{exact (harder)}:
+    \begin{itemize}
+    \item[$\circ$] fully-solve the nonlinear Riemann problem
+    $$\bq_t + \bbf(\bq)_x = 0, \quad \bq(t_n,x) = \left\{\bQ_L, \bQ_R\right\}$$
+    \item[$\circ$] evaluate $\bQ_*$ as the solution $\bq(t,x_*)$ at $x_*=x_{i+1/2}$ for $t>t_n$
+    \item[$\circ$] get $\bF_{i+1/2} = \bbf(\bQ_*)$
+    \end{itemize}
+\item \alert{average-and-linearization (easier)}:
+    \begin{itemize}
+    \item[$\circ$] compute $\bQ_0$ as an average of $\bQ_L$ and $\bQ_R$
+    \item[$\circ$] let $\hat A = \bbf'(\bQ_0)$
+    \item[$\circ$] solve Riemann problem for linear system
+    $$\bq_t + \hat A \bq_x = 0, \quad \bq(t_n,x) = \left\{\bQ_L, \bQ_R\right\}$$
+
+        \begin{itemize}
+        \item use the Riemann invariants $v_k(t,x) = \bw_k^\top \bq(t,x)$ from $\bw_k^\top \hat A = \lambda_k \bw_k^\top$
+        \end{itemize}
+    \item[$\circ$] evaluate $\bQ_*$ as the solution $\bq(t,x_*)$ at $x_*=x_{i+1/2}$ for $t>t_n$
+    \item[$\circ$] get $\bF_{i+1/2} = \bbf(\bQ_*)$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Roe approximate solver}
+
+\begin{itemize}
+\item for the easier average-and-linearization route, almost all steps are the same as for a linear system (e.g.~acoustics)
+\item but how to ``compute $\bQ_0$ as an average of $\bQ_L$ and $\bQ_R$''?
+    \begin{itemize}
+    \item[1.] low-accuracy approximation results from a simple average:
+        $$\bQ_0 = \frac{1}{2} \left(\bQ_L + \bQ_R\right) \implies \hat A = \bbf'(\bQ_0)$$
+    \item[2.] different low-accuracy approximation from:
+        $$\hat A = \frac{1}{2} \left(\bbf'(\bQ_L) + \bbf'(\bQ_R)\right)$$
+
+        \begin{itemize}
+        \item not a good idea; no guarantee $\hat A$ is hyperbolic
+        \end{itemize}
+    \item[3.] higher-accuracy idea of Roe (1981), called \emph{Roe averaging}:
+        $$\begin{matrix} \hat h = \frac{1}{2} (h_L + h_R) {\Large\strut} \\
+\hat u = \frac{\sqrt{h_L}\, u_L + \sqrt{h_R}\, u_R}{\sqrt{h_L} + \sqrt{h_R}}
+\end{matrix}
+\implies \bQ_0 = \begin{bmatrix} \hat h \\ \hat h \hat u \end{bmatrix} \implies \hat A = \bbf'(\bQ_0)$$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -1242,12 +1341,20 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{shallow water: my results}
 
 \begin{itemize}
-\item FIXME with \texttt{riemann.c}
+\item put together the above tools \dots
+\item if you do it in C and PETSc and you use PETSc' ODE solvers then \dots you get my program \texttt{riemann} at
+    \begin{center}
+    \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
+    \end{center}
+\item if you do it in \Matlab and you use \texttt{ode23} then \dots you get Denys Dutykh's program
 \end{itemize}
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW MOVIE}
+\alert{SHOW SHALLOW WATER ``DAM'' MOVIE}
+
+\bigskip
+\alert{SHOW SHALLOW WATER ``HUMP'' MOVIE}
 \end{center}
 \end{frame}
 
