@@ -296,7 +296,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \begin{itemize}
 \item the rest of the talk is about the math not the movies
     \begin{itemize}
-    \item[$\circ$] but with manyf figures to explain concepts
+    \item[$\circ$] but with many figures to explain concepts
     \end{itemize}
 \item \alert{PLEASE} ask lots of questions, about any topic at all
     \begin{itemize}
@@ -517,6 +517,20 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \end{frame}
 
 
+\begin{frame}{a \Matlab code to play with}
+
+\begin{itemize}
+\item mostly I have been playing with PETSc, but \dots
+\item here is a simple \Matlab code:
+
+\begin{center}
+\href{http://bueler.github.io/programs/adcompare.m}{\texttt{bueler.github.io/programs/adcompare.m}}
+\end{center}
+\item it implements upwind and Lax-Wendroff for scalar advection
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{the finite volume (FV) idea}
 
 \begin{itemize}
@@ -554,7 +568,7 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \begin{gather*}
 q_t + f(q)_x = 0 \hspace{50mm} \\
 \frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0 \hspace{50mm} \\
-\frac{dQ_i}{dt} + \Fiphalf - \Fimhalf = 0 \hspace{50mm} \\
+\Delta x \frac{dQ_i}{dt} + \Fiphalf - \Fimhalf = 0 \hspace{50mm} \\
 \Delta x \left(\frac{Q_i^{n+1} - Q_i^n}{\Delta t}\right) + \Fiphalfn - \Fimhalfn = 0 \hspace{50mm} \\
 \alert{\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + \frac{\Fiphalfn - \Fimhalfn}{\Delta x} = 0} \hspace{50mm}
 \end{gather*}
@@ -617,21 +631,8 @@ the basic FV scheme
 \hfill \includegraphics[width=0.4\textwidth]{figs/cellfluxsketch}
 
 \vspace{12mm}
-\item for ii) we can already do better (e.g.~RK2a from MOL)
-\item for iii) we will do better (slope-limiters)
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{a \Matlab code to play with}
-
-\begin{itemize}
-\item mostly I have been playing with PETSc, but \dots
-\item upwind and Lax-Wendroff for scalar advection are implemented in this simple \Matlab code:
-
-\begin{center}
-\href{http://bueler.github.io/programs/adcompare.m}{\texttt{bueler.github.io/programs/adcompare.m}}
-\end{center}
+\item for ii) we will do better (``high-resolution'' methods; ``slope-limiters'')
+\item for iii) we can already do better (e.g.~Runge-Kutta methods; \texttt{ode23})
 \end{itemize}
 \end{frame}
 
