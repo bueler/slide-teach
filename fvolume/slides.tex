@@ -37,6 +37,7 @@
 \newcommand{\bc}{\mathbf{c}}
 \newcommand{\bbf}{\mathbf{f}}
 \newcommand{\bg}{\mathbf{g}}
+\newcommand{\bn}{\mathbf{n}}
 \newcommand{\bq}{\mathbf{q}}
 \newcommand{\br}{\mathbf{r}}
 \newcommand{\bx}{\mathbf{x}}
@@ -1398,19 +1399,77 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\section{scalar advection in 2D}
+\section{scalar advection in two spatial dimensions (2D)}
+
+\begin{frame}{scalar conservation laws in 2D}
+
+\begin{itemize}
+\item finally, a few slides which might help clarify finite volume (FV) thinking by showing how it works in 2D
+
+    \begin{itemize}
+    \item[$\circ$] FV ``cells'' in 1D are just intervals \dots boring
+    \item[$\circ$] in 2D cells are polygons (e.g.~triangles or rectangles, etc.)
+    \item[$\circ$] in 3D cells would be polyhedra (e.g.~tetrahedra or cubes, etc.)
+    \end{itemize}
+
+\item the scalar conservation law equation is for $q(t,x,y)$:
+    $$q_t + \Div \bF(q) = 0$$
+
+    \begin{itemize}
+    \item[$\circ$] $q$ might be a (conserved) density like mass or energy
+    \item[$\circ$] \emph{advection} is when $\bF(q) = \ba q$, where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is velocity:
+    $$q_t + (u q)_x + (v q)_y = 0$$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{scalar conservation laws in 2D: integral form}
+
+\begin{itemize}
+\item the FV method (in MOL form) starts with basic manipulations \dots
+\item suppose $V \subset \RR^2$ is a region in the plane, and integrate:
+    $$\int_V q_t\,dx dy + \int_V \Div \bF(q)\,dx dy = 0$$
+\item let $Q_V(t)$ be the average over the region, which has volume (area) $|V|$:
+    $$Q_V(t) := \frac{1}{|V|} \int_V q(t,x,y)\,dx dy$$
+\item apply divergence theorem ($\partial V$ is the boundary of $V$):
+    $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}{finite volumes in 2D}
 
 \begin{itemize}
-\item FIXME FROM HERE ONWARD
-\item equation $q_t + \Div \bF(q) = 0$
-\item for example, $\bF(q) = \ba q$ where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is a velocity field
-\item that is,
-    $$q_t + (u q)_x + (v q)_y = 0$$
+\item scalar conservation law $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
+    $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
+\item suppose computational domain is a rectangle: $\Omega = [a,b] \times [c,d]$
+\item a \emph{structured} FV method cuts $\Omega$ into a grid of cells $V=V_{ij}$ (shown)
+    \begin{itemize}
+    \item[$\circ$] cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
+    \end{itemize}
+\item apply the equation for each cell:
+    $$\frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \bF\cdot \bn\,ds = 0 \hspace{50mm}$$
+\item now a system of ODEs: $\ds \frac{d\bQ}{dt} = \bG(t,\bQ)$
+\item to actually construct this system
+
+we need a method for computing the
+
+flux $\bF$ on the boundary of each $V_{ij}$
 \end{itemize}
 
+\vspace{-45mm}
 \hfill \includegraphics[width=0.4\textwidth]{figs/bueler11p1}
+\end{frame}
+
+
+\begin{frame}{upwinding in 2D}
+
+\begin{itemize}
+\item x
+\end{itemize}
+
+\hfill \includegraphics[width=0.4\textwidth]{figs/bueler11p8upwind}
 \end{frame}
 
 
@@ -1422,23 +1481,24 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\begin{frame}{implementation of flux-limiter in 2D}
+\begin{frame}{flux-limiters in 2D}
 
 \begin{itemize}
 \item x
-\item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
 \end{itemize}
 
 \begin{center}
-\includegraphics[width=0.6\textwidth]{figs/bueler11p8}
+\includegraphics[width=0.7\textwidth]{figs/bueler11p8}
 \end{center}
-
 \end{frame}
 
 
 \begin{frame}{results}
 
 \begin{itemize}
+\item domain is square $\Omega = (-1,1) \times (-1,1)$
+\item $q_t + \Div \bF(q) = 0$ where $\bF(q) = \ba q$ and $\ba$ is pure rotation:
+    $$\ba(x,y) = \left<y,-x\right>$$
 \item x
 \end{itemize}
 
@@ -1446,23 +1506,26 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\begin{frame}{movie}
+\begin{frame}[fragile]
+\frametitle{parallel movie}
 
 \begin{itemize}
-\item domain is square $\Omega = (-1,1) \times (-1,1)$
-\item $q_t + \Div \bF(q) = 0$ where $\bF(q) = \ba q$ and $\ba$ is pure rotation:
-    $$\ba(x,y) = \left<y,-x\right>$$
-\item again, see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+\item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
+\item command line:
+% cd p4pdes/c/ch11
+% make advect
+\begin{Verbatim}[fontsize=\small]
+$ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 4 \
+    -ts_max_time 6.283 -ts_monitor_solution draw
+\end{Verbatim}
+%$
 \end{itemize}
 
 \vspace{10mm}
-\begin{center}
-\alert{SHOW 2D ADVECTION MOVIE}
-\end{center}
+\hspace{15mm} \alert{SHOW 2D ADVECTION MOVIE}
 
-% cd p4pdes/c/ch11
-% make advect
-% ./advect -da_refine 4 -adv_problem rotation -ts_max_time 6.283 -ts_monitor_solution draw
+\vspace{-10mm}
+\hfill \includegraphics[width=0.3\textwidth]{figs/buelerfourproc}
 \end{frame}
 
 \end{document}
