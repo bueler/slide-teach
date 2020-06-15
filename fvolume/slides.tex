@@ -1399,28 +1399,27 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\section{scalar advection in two spatial dimensions (2D)}
+\section{advection in two spatial dimensions (2D)}
 
 \begin{frame}{scalar conservation laws in 2D}
 
 \begin{itemize}
 \item how does finite volumes (FV) work in 2D?
-    \begin{itemize}
-    \item[$\circ$] this might clarify how people think and talk about it
-    \end{itemize}
-\item the ``finite volumes'' are the ``cells''
+\item language: ``finite volumes'' $=$ ``cells''
     \begin{itemize}
     \item[$\circ$] 1D cells are just intervals
     \item[$\circ$] 2D cells are polygons (e.g.~triangles or rectangles, etc.)
     \item[$\circ$] 3D cells are polyhedra (e.g.~tetrahedra or cubes, etc.)
     \end{itemize}
-\item there is one equation per cell \dots see next slide
+\item the domain on which you solve the PDE is cut into finitely-many cells
+\item there is one equation per cell (as on next slides)
 
 \bigskip
-\item for remaining slides, the problem is a scalar conservation law equation for $q(t,x,y)$:
+\item for remaining slides, the problem is a scalar conservation law:
     $$q_t + \Div \bF(q) = 0$$
 
     \begin{itemize}
+    \item[$\circ$] the solution is a scalar $q(t,x,y)$ but the flux is a vector $\bF(q)$
     \item[$\circ$] $q$ might be a (conserved) density like mass or energy
     \item[$\circ$] \emph{advection} is when $\bF(q) = \ba q$, where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is velocity:
     $$q_t + (u q)_x + (v q)_y = 0$$
@@ -1432,14 +1431,21 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D: integral form}
 
 \begin{itemize}
-\item the FV method always starts with the same manipulations
-\item suppose $V \subset \RR^2$ is a region (cell) in the $x,y$ plane, with volume (area) $|V|$
+\item the FV method always starts with these same manipulations
+\item suppose $V \subset \RR^2$ is a region (cell) in the $x,y$ plane
+    \begin{itemize}
+    \item[$\circ$] the cell has volume (area) $|V|$
+    \end{itemize}
 \item integrate the conservation law over the cell:
     $$\int_V q_t\,dx dy + \int_V \Div \bF(q)\,dx dy = 0$$
 \item let $Q_V(t)$ be the average of the solution over the cell:
     $$Q_V(t) := \frac{1}{|V|} \int_V q(t,x,y)\,dx dy$$
-\item apply divergence theorem ($\partial V$ is the boundary of $V$):
+\item apply divergence theorem:
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
+
+    \begin{itemize}
+    \item[$\circ$] $\partial V$ is the boundary of $V$
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -1447,17 +1453,17 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{finite volumes in 2D}
 
 \begin{itemize}
-\item the PDE $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
+\item PDE $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
 \item suppose the computational domain is a rectangle: $\Omega = [a,b] \times [c,d]$
-\item my \emph{structured} FV method cuts $\Omega$ into a grid of cells $V=V_{ij}$ (shown)
+\item here, a \emph{structured} FV method cuts $\Omega$ into a grid of indexed cells $V_{ij}$
     \begin{itemize}
     \item[$\circ$] cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
     \end{itemize}
 \item apply the equation for each cell:
     $$\frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \bF\cdot \bn\,ds = 0 \hspace{50mm}$$
-\item now a system of ODEs: $\ds \frac{d\bQ}{dt} = \bG(t,\bQ)$
-\item to actually construct this system
+\item i.e.~a system of ODEs: $\ds \frac{d\bQ}{dt} = \bG(t,\bQ)$
+\item to actually construct $\bG$ for this system
 
 we need a method for computing the
 
@@ -1469,59 +1475,58 @@ flux $\bF$ on the boundary of each $V_{ij}$
 \end{frame}
 
 
-\begin{frame}{upwinding in 2D}
+\begin{frame}{advection in 2D}
 
 \begin{itemize}
-\item consider advection with $\bF(q) = \left<uq,vq\right>$:
+\item consider advection with $\bF(q) = \ba q$ where $\ba = \left<u,v\right>$:
 \begin{align*}
 \frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \left<uq,vq\right> \cdot \bn \,ds &= 0
 \end{align*}
-\item the boundary $\partial V_{ij}$ has 4 sides (faces) $N,E,S,W$; need 4 integrals:
-    $$\int_{\partial V_{ij}} \left<uq,vq\right> \cdot \bn \,ds = \int_N + \int_E + \int_S + \int_W \hspace{40mm}$$
+\item the boundary $\partial V_{ij}$ has 4 sides (faces) $N,E,S,W$
+\item thus need 4 integrals:
+    $$\int_{\partial V_{ij}} \left<uq,vq\right> \cdot \bn \,ds = \int_N + \int_E + \int_S + \int_W \hspace{50mm}$$
 
     \begin{itemize}
-    \item[$\circ$] actually, only compute $N,E$ faces for each
-
-    cell because $S$ is $N$ of cell below, and etc.
+    \item[$\circ$] actually, only compute $N,E$ faces \dots
     \end{itemize}
 
-\item simplest integral (quadrature) choice uses
+\item simplest integral (\emph{quadrature}) choice uses
 
 the value at the midpoint of the face
-\item the simplest (Godunov) ``donor cell''
 
-upwinding method decides which side
-
-of a face contributes the solution value
-
-when computing the flux
+    \begin{itemize}
+    \item[$\circ$] open circles in figure
+    \end{itemize}
 \end{itemize}
 
-\vspace{-50mm}
-\hfill \includegraphics[width=0.35\textwidth]{figs/bueler11p8upwind}
+\vspace{-35mm}
+\hfill \includegraphics[width=0.33\textwidth]{figs/bueler11p8facemidpoints}
 \end{frame}
 
 
-\begin{frame}{upwinding in 2D, cont.}
+\begin{frame}{upwinding (donor-cell) in 2D}
 
 \begin{itemize}
+\item consider advection with $\bF(q) = \ba q$ where $\ba = \left<u,v\right>$
+\item the simplest (Godunov) ``donor cell'' upwinding method decides which side contributes the solution value $Q$ when computing the flux
 \item for example, at $N = (x_i,y_j+\tfrac{h_y}{2})$ the normal direction is $\hat \by = \left<0,1\right>$:
 \begin{align*}
 \int_N \left<uq,vq\right> \cdot \bn \,ds &= \int_N \left<uq,vq\right> \cdot \left<0,1\right> \,ds \\
-   &= \int_{x_i-\frac{h_x}{2}}^{x_i-\frac{h_x}{2}} v(x,y_j+\tfrac{h_y}{2}) q(t,x,y_j+\tfrac{h_y}{2}) \,dx \hspace{40mm} \\
-   &\approx h_x\, v(N) \tilde Q  \quad [\text{midpoint rule}]
+   &= \int_N vq \,ds \\
+   &\approx h_x\, v(N) \tilde Q  \quad [\text{\footnotesize midpoint rule}] \hspace{40mm}
 \end{align*}
-\item where, for upwinding,
+
+where
     $$\tilde Q = \begin{cases} Q_{i,j}   & v(N) \ge 0 \\
                                Q_{i,j+1} & v(N) < 0 \end{cases} \hspace{40mm}$$
-\item decisions like this are made at all 4 faces
-    \begin{itemize}
-    \item[$\circ$] actually, at only two faces per cell
-    \end{itemize}
+\item such decisions are made at all 4 faces
 
+    \begin{itemize}
+    \item[$\circ$] figure: at $N$ and $E$ faces for given $\ba$
+    \end{itemize}
 \end{itemize}
 
-\vspace{-36mm}
+\vspace{-45mm}
 \hfill \includegraphics[width=0.33\textwidth]{figs/bueler11p8upwind}
 \end{frame}
 
