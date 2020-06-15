@@ -1404,15 +1404,20 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D}
 
 \begin{itemize}
-\item finally, a few slides which might help clarify finite volume (FV) thinking by showing how it works in 2D
-
+\item how does finite volumes (FV) work in 2D?
     \begin{itemize}
-    \item[$\circ$] FV ``cells'' in 1D are just intervals \dots boring
-    \item[$\circ$] in 2D cells are polygons (e.g.~triangles or rectangles, etc.)
-    \item[$\circ$] in 3D cells would be polyhedra (e.g.~tetrahedra or cubes, etc.)
+    \item[$\circ$] this might clarify how people think and talk about it
     \end{itemize}
+\item the ``finite volumes'' are the ``cells''
+    \begin{itemize}
+    \item[$\circ$] 1D cells are just intervals
+    \item[$\circ$] 2D cells are polygons (e.g.~triangles or rectangles, etc.)
+    \item[$\circ$] 3D cells are polyhedra (e.g.~tetrahedra or cubes, etc.)
+    \end{itemize}
+\item there is one equation per cell \dots see next slide
 
-\item the scalar conservation law equation is for $q(t,x,y)$:
+\bigskip
+\item for remaining slides, the problem is a scalar conservation law equation for $q(t,x,y)$:
     $$q_t + \Div \bF(q) = 0$$
 
     \begin{itemize}
@@ -1427,10 +1432,11 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D: integral form}
 
 \begin{itemize}
-\item the FV method (in MOL form) starts with basic manipulations \dots
-\item suppose $V \subset \RR^2$ is a region in the plane, and integrate:
+\item the FV method always starts with the same manipulations
+\item suppose $V \subset \RR^2$ is a region (cell) in the $x,y$ plane, with volume (area) $|V|$
+\item integrate the conservation law over the cell:
     $$\int_V q_t\,dx dy + \int_V \Div \bF(q)\,dx dy = 0$$
-\item let $Q_V(t)$ be the average over the region, which has volume (area) $|V|$:
+\item let $Q_V(t)$ be the average of the solution over the cell:
     $$Q_V(t) := \frac{1}{|V|} \int_V q(t,x,y)\,dx dy$$
 \item apply divergence theorem ($\partial V$ is the boundary of $V$):
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
@@ -1441,10 +1447,10 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{finite volumes in 2D}
 
 \begin{itemize}
-\item scalar conservation law $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
+\item the PDE $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
-\item suppose computational domain is a rectangle: $\Omega = [a,b] \times [c,d]$
-\item a \emph{structured} FV method cuts $\Omega$ into a grid of cells $V=V_{ij}$ (shown)
+\item suppose the computational domain is a rectangle: $\Omega = [a,b] \times [c,d]$
+\item my \emph{structured} FV method cuts $\Omega$ into a grid of cells $V=V_{ij}$ (shown)
     \begin{itemize}
     \item[$\circ$] cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
     \end{itemize}
@@ -1458,18 +1464,65 @@ we need a method for computing the
 flux $\bF$ on the boundary of each $V_{ij}$
 \end{itemize}
 
-\vspace{-45mm}
-\hfill \includegraphics[width=0.4\textwidth]{figs/bueler11p1}
+\vspace{-40mm}
+\hfill \includegraphics[width=0.35\textwidth]{figs/bueler11p1}
 \end{frame}
 
 
 \begin{frame}{upwinding in 2D}
 
 \begin{itemize}
-\item x
+\item consider advection with $\bF(q) = \left<uq,vq\right>$:
+\begin{align*}
+\frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \left<uq,vq\right> \cdot \bn \,ds &= 0
+\end{align*}
+\item the boundary $\partial V_{ij}$ has 4 sides (faces) $N,E,S,W$; need 4 integrals:
+    $$\int_{\partial V_{ij}} \left<uq,vq\right> \cdot \bn \,ds = \int_N + \int_E + \int_S + \int_W \hspace{40mm}$$
+
+    \begin{itemize}
+    \item[$\circ$] actually, only compute $N,E$ faces for each
+
+    cell because $S$ is $N$ of cell below, and etc.
+    \end{itemize}
+
+\item simplest integral (quadrature) choice uses
+
+the value at the midpoint of the face
+\item the simplest (Godunov) ``donor cell''
+
+upwinding method decides which side
+
+of a face contributes the solution value
+
+when computing the flux
 \end{itemize}
 
-\hfill \includegraphics[width=0.4\textwidth]{figs/bueler11p8upwind}
+\vspace{-50mm}
+\hfill \includegraphics[width=0.35\textwidth]{figs/bueler11p8upwind}
+\end{frame}
+
+
+\begin{frame}{upwinding in 2D, cont.}
+
+\begin{itemize}
+\item for example, at $N = (x_i,y_j+\tfrac{h_y}{2})$ the normal direction is $\hat \by = \left<0,1\right>$:
+\begin{align*}
+\int_N \left<uq,vq\right> \cdot \bn \,ds &= \int_N \left<uq,vq\right> \cdot \left<0,1\right> \,ds \\
+   &= \int_{x_i-\frac{h_x}{2}}^{x_i-\frac{h_x}{2}} v(x,y_j+\tfrac{h_y}{2}) q(t,x,y_j+\tfrac{h_y}{2}) \,dx \hspace{40mm} \\
+   &\approx h_x\, v(N) \tilde Q  \quad [\text{midpoint rule}]
+\end{align*}
+\item where, for upwinding,
+    $$\tilde Q = \begin{cases} Q_{i,j}   & v(N) \ge 0 \\
+                               Q_{i,j+1} & v(N) < 0 \end{cases} \hspace{40mm}$$
+\item decisions like this are made at all 4 faces
+    \begin{itemize}
+    \item[$\circ$] actually, at only two faces per cell
+    \end{itemize}
+
+\end{itemize}
+
+\vspace{-36mm}
+\hfill \includegraphics[width=0.33\textwidth]{figs/bueler11p8upwind}
 \end{frame}
 
 
@@ -1507,24 +1560,33 @@ flux $\bF$ on the boundary of each $V_{ij}$
 
 
 \begin{frame}[fragile]
-\frametitle{parallel movie}
+\frametitle{live movie, computed in parallel}
 
 \begin{itemize}
 \item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
-\item command line:
-% cd p4pdes/c/ch11
-% make advect
+    \begin{itemize}
+    \item[$\circ$] to compile and run do \, \texttt{make advect}
+    \end{itemize}
+\item command line using MPI parallel run with 4 processors, Koren limiter, and SSP time-stepping:
 \begin{Verbatim}[fontsize=\small]
 $ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 4 \
-    -ts_max_time 6.283 -ts_monitor_solution draw
+    -ts_max_time 3.1416 -ts_monitor_solution draw \
+    -ts_type ssp -adv_limiter koren
 \end{Verbatim}
 %$
-\end{itemize}
 
 \vspace{10mm}
 \hspace{15mm} \alert{SHOW 2D ADVECTION MOVIE}
 
-\vspace{-10mm}
+\vspace{10mm}
+    \begin{itemize}
+    \item[$\circ$] compare \texttt{-adv\_limiter none}
+    \item[$\circ$] compare \texttt{-adv\_limiter centered}
+    \item[$\circ$] compare \texttt{-ts\_type rk}
+    \end{itemize}
+\end{itemize}
+
+\vspace{-35mm}
 \hfill \includegraphics[width=0.3\textwidth]{figs/buelerfourproc}
 \end{frame}
 
