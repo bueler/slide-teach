@@ -88,6 +88,8 @@
 
 \title[Finite volume methods]{Finite volume methods for \\ advection equations and hyperbolic systems}
 
+\subtitle{version 2}
+
 \author{Ed Bueler}
 
 \institute[UAF]{University of Alaska Fairbanks}
@@ -920,7 +922,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     \begin{itemize}
     \item[$\circ$] this uses the Riemann invariants
     \end{itemize}
-\item mostly generalizable to nonlinear systems: use $A=\bbf'(\bq)$
+\item generalize to nonlinear systems by using $A=\bbf'(\bq)$ \quad (?)
 \end{itemize}
 \end{frame}
 
@@ -982,13 +984,15 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item at time $t_n$ we only know the discrete unknowns $\{Q_j^n\}$
-\item but we can attempt to ``reconstruct'' a linear function $\tilde q(t_n,x)$ on each cell $x_{i-1/2} \le x \le x_{i+1/2}$:
+\item but we can ``reconstruct'' a linear function $\tilde q(t_n,x)$ on each cell:
     $$\tilde q(t_n,x) = Q_i^n + \sigma_i^n (x - x_i)$$
 
     \begin{itemize}
-    \item[$\circ$] $\sigma_i^n$ is the \emph{slope} in the cell
+    \item[$\circ$] $\sigma_i^n$ is the \emph{slope} in the cell $[x_{i-\frac{1}{2}}, x_{i+\frac{1}{2}}]$
     \item[$\circ$] the average remains as $Q_i^n$
     \end{itemize}
+
+\medskip
 \item possibilities for slope ($a>0$):
 \begin{align*}
 &\text{zero:}     & \sigma_i &= 0 \hspace{75mm} \\
@@ -1015,7 +1019,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
         $$\minmod\{a,b\} = \begin{cases} 0, & ab \le 0 \\
                                          a, & ab>0 \text{ and } |a| \le |b| \\
                                          b, & ab>0 \text{ and } |a| > |b| \end{cases}$$
-    \item[$\circ$] in words: $\minmod\{a,b\}$ is closest of $a$ or $b$ to zero unless they differ in sign; then it is zero
+    \item[$\circ$] in words: $\minmod\{a,b\}$ is closest to zero of $a$ and $b$ unless they differ in sign; then it is zero
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1033,7 +1037,11 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{center}
 
 \hspace{15mm} $\minmod$ limiter \hfill MC limiter \hspace{15mm} \phantom{x}
-\item can you draw-in the downwind (i.e.~Lax-Wendroff) case in your head?  it has overshoots
+
+\medskip
+    \begin{itemize}
+    \item[$\circ$] can you draw-in the downwind slopes (Lax-Wendroff)?  \dots get overshoot
+    \end{itemize}
 \item theory of \emph{total variation diminishing} (TVD) schemes, circa 1990s, arises from these pictures
 \end{itemize}
 \end{frame}
@@ -1051,19 +1059,18 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{MOL slope limiting and Riemann solvers}
+\begin{frame}{MOL: slope limiting and Riemann solvers}
 
 \begin{itemize}
-\item one detail \dots
-\item suppose we want to use limited slopes \emph{and} build Riemann solvers, \emph{in the method-of-lines (MOL) framework}
-\item then we first apply the slope-limiter as usual, \dots
-\item and then compute the flux $\bF_{i-1/2}$ in terms of this picture:
+\item Q. one detail \dots suppose we want to use limited slopes and Riemann solvers \emph{in the method-of-lines (MOL) framework} \dots how to do this?
+\item A. apply the slope calculation and slope-limiter as usual and then compute the flux $F_{i-1/2}$ in terms of this picture:
 
 \medskip
 \begin{center}
 \includegraphics[width=0.6\textwidth]{figs/leveque10p2}
 \end{center}
-\item the left and right values at the face, $\bQ_{i-1}^R$ and $\bQ_i^L$, are the ones seen by (used in) the Riemann solver to compute the solution value at the face forward in time, and thus the flux $\bF_{i-1/2}(t)$ for $t>t_n$
+\item the left and right values at the face, $Q_{i-1}^R$ and $Q_i^L$, are the ones used in the Riemann solver to compute the solution value at the face for $t>t_n$
+\item thereby get the flux $F_{i-1/2}(t)$ for $t>t_n$
 \end{itemize}
 \end{frame}
 
@@ -1097,10 +1104,9 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{nonlinear conservation laws: system examples}
 
 \begin{itemize}
-\setlength{\itemindent}{11mm}
-\item[example:] \emph{shallow water equations} with height $h(t,x)$ and velocity $u(t,x)$:
+\item \emph{shallow water equations} with height $h(t,x)$ and velocity $u(t,x)$:
         $$\bq = \begin{bmatrix} h \\ hu \end{bmatrix}, \, \bbf(\bq) = \begin{bmatrix} hu \\ h u^2 + \frac{g}{2} h^2 \end{bmatrix} \quad \implies \quad \begin{matrix} h_t + (hu)_x = 0 \\ (hu)_t + \Big(h u^2 + \frac{g}{2} h^2\Big)_x = 0 \end{matrix}$$
-\item[example:] \emph{Euler equations for an ideal gas}:
+\item \emph{Euler equations for an ideal gas}:
         $$\bq = \begin{bmatrix} \rho \\ \rho u \\ E \end{bmatrix}, \, \bbf(\bq) = \begin{bmatrix} \rho u \\ \rho u^2 + p \\ (E+p) u \end{bmatrix} \quad \implies \quad \begin{matrix} \rho_t + (\rho u)_x = 0 \\ (\rho u)_t + \Big(\rho u^2 + p\Big)_x = 0 \\ E_t + \Big((E+p) u\Big)_x = 0 \end{matrix}$$
     \begin{itemize}
     \item[$\circ$] variables are density $\rho(t,x)$, velocity $u(t,x)$, and energy density $E(t,x)$
@@ -1360,8 +1366,8 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{itemize}
 \item for hyperbolic conservation-law systems $\bq_t + \bbf(\bq)_x = 0$
     \begin{itemize}
-    \item[$\circ$] linear: acoustics, elasticity, Maxwell's equations
-    \item[$\circ$] nonlinear: shallow water, compressible gas equations
+    \item[$\circ$] linear examples: acoustics, elasticity, Maxwell
+    \item[$\circ$] nonlinear examples: shallow water, compressible gas
     \end{itemize}
 a preferred numerical approach since the 1990s is a
 \begin{center}
@@ -1380,18 +1386,19 @@ a preferred numerical approach since the 1990s is a
         \item a ``Riemann problem'' considers different cell values on each side of a face
         \item a Riemann solver determines the local wave structure (rarefaction, shock)
             \begin{description}[abc]
-            \item[$\diamond$] computes the flux on the face
-            \item[$\diamond$] for a system, uses eigen-expansion of $A = \bbf'(\bq)$
             \item[$\diamond$] provided by the user; exact or approximate (e.g.~Roe)
+            \item[$\diamond$] for a system, uses eigen-expansion of $A = \bbf'(\bq)$
+            \item[$\diamond$] computes the flux on the face
             \end{description}
         \end{itemize}
-    \item[\alert{3.}] \alert{slope limiters}
+    \item[\alert{3.}] \alert{slope (or flux) limiters}
         \begin{itemize}
-        \item first-order upwinding: solution is constant in a cell (``classical Godunov'')
-        \item for higher-order without oscillations:
+        \item based on first-order upwinding (donor-cell; ``classical Godunov'')
+        \item to achieve higher-order without oscillations:
             \begin{description}[abc]
             \item[$\diamond$] solution is ``reconstructed'' with slope in each cell
             \item[$\diamond$] slope is (nonlinearly) limited
+            \item[$\diamond$] reverts to first-order at extrema
             \end{description}
         \end{itemize}
     \end{itemize}
@@ -1404,18 +1411,7 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D}
 
 \begin{itemize}
-\item how does finite volumes (FV) work in 2D?
-\item language: ``finite volumes'' $=$ ``cells''
-    \begin{itemize}
-    \item[$\circ$] 1D cells are just intervals
-    \item[$\circ$] 2D cells are polygons (e.g.~triangles or rectangles, etc.)
-    \item[$\circ$] 3D cells are polyhedra (e.g.~tetrahedra or cubes, etc.)
-    \end{itemize}
-\item the domain on which you solve the PDE is cut into finitely-many cells
-\item there is one equation per cell (as on next slides)
-
-\bigskip
-\item for remaining slides, the problem is a scalar conservation law:
+\item for this section, the problem is a scalar conservation law in 2D:
     $$q_t + \Div \bF(q) = 0$$
 
     \begin{itemize}
@@ -1424,6 +1420,26 @@ a preferred numerical approach since the 1990s is a
     \item[$\circ$] \emph{advection} is when $\bF(q) = \ba q$, where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is velocity:
     $$q_t + (u q)_x + (v q)_y = 0$$
     \end{itemize}
+\item we want the solution a region $\Omega\subset \RR^2$, and for some times $0\le t \le T$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{finite volumes in 2D}
+
+\begin{itemize}
+\item how does the finite volumes (FV) method work in 2D?
+    \begin{itemize}
+    \item[$\circ$] the domain on which you solve the PDE is cut into finitely-many cells
+	    \begin{itemize}
+	    \item[$\diamond$] 1D cells are just intervals
+	    \item[$\diamond$] 2D cells are polygons (e.g.~triangles or rectangles, etc.)
+	    \item[$\diamond$] 3D cells are polyhedra (e.g.~tetrahedra or cubes, etc.)
+	    \end{itemize}
+    \item[$\circ$] the method enforces the integrated version of conservation on the cell
+    \item[$\circ$] there is one unknown and one equation per cell
+    \end{itemize}
+\item the FV method always starts with the same manipulations \dots next slide
 \end{itemize}
 \end{frame}
 
@@ -1431,7 +1447,6 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D: integral form}
 
 \begin{itemize}
-\item the FV method always starts with these same manipulations
 \item suppose $V \subset \RR^2$ is a region (cell) in the $x,y$ plane
     \begin{itemize}
     \item[$\circ$] the cell has volume (area) $|V|$
@@ -1450,15 +1465,15 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\begin{frame}{finite volumes in 2D}
+\begin{frame}{structured finite volumes in 2D}
 
 \begin{itemize}
 \item PDE $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
-\item suppose the computational domain is a rectangle: $\Omega = [a,b] \times [c,d]$
+\item suppose region $\Omega$ is a rectangle: \quad $\Omega = [a,b] \times [c,d]$
 \item here, a \emph{structured} FV method cuts $\Omega$ into a grid of indexed cells $V_{ij}$
     \begin{itemize}
-    \item[$\circ$] cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
+    \item[$\circ$] rectangular cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
     \end{itemize}
 \item apply the equation for each cell:
     $$\frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \bF\cdot \bn\,ds = 0 \hspace{50mm}$$
@@ -1534,45 +1549,78 @@ where
 \begin{frame}{higher-resolution schemes in 2D}
 
 \begin{itemize}
+\item recall that the Riemann problem has an initial condition of two values $Q_L$, $Q_R$ on the sides of a face
 \item important principle for most 2D (and 3D) FV schemes:
 
 \hfill \emph{the Riemann problem on each face is treated as 1D, normal to the face}
-\item e.g.~for advection, first-order upwinding looks only at the component of velocity normal to the face
-\item x
+
+    \begin{itemize}
+    \item[$\circ$] thus for advection, first-order upwinding looks only at the component of velocity normal to the face
+    \end{itemize}
+\item there are two essentially-equivalent modern routes to ``high-resolution'' schemes:
+    \begin{itemize}
+    \item[$\circ$] \emph{slope limiters} which regard the solution in each cell as not constant, and then modify the slopes to avoid oscillations
+    \item[$\circ$] \emph{flux limiters} which compute the flux based on first-order upwinding, with an added term based on a higher-order flux, but limited to avoid oscillations
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{flux-limiter higher-resolution schemes}
+\begin{frame}{flux-limiter scheme}
 
 \begin{itemize}
-\item x
+\item recall that at the $N$ face of cell $V_{ij}$, first-order (donor-cell) upwinding was
+    $$\int_N \left<uq,vq\right> \cdot \bn \,ds \approx h_x\, \alert{v(N) \tilde Q} \quad \text{where} \quad \tilde Q = \begin{cases} Q_{i,j}   & v(N) \ge 0 \\
+                               Q_{i,j+1} & v(N) < 0 \end{cases}$$
+\item normal flux at the center of $N$ face is: \quad $f_N = v(N) \tilde Q$
+\item with a flux-limiter $\psi$ we instead have
+    $$f_N = v(N) \begin{cases} Q_{i,j} + \psi(\theta_j) (Q_{i,j+1}-Q_{i,j})   & v(N) \ge 0 \\
+                               Q_{i,j+1} + \psi(1/\theta_{j+1}) (Q_{i,j}-Q_{i,j+1}) \hspace{5mm} & v(N) < 0 \end{cases}$$
+where $\ds \theta_j = \frac{Q_{i,j}-Q_{i,j-1}}{Q_{i,j+1}-Q_{i,j}}$
+
+and $\psi(\theta)$ is a curve
+
+in the shaded region
+    \begin{itemize}
+    \item[$\circ$] dashed: Koren (1993)
+    \item[$\circ$] solid: van Leer (1974)
+    \end{itemize}
+\item similar at $S,W,E$ faces
+\item see Sweby (1984)
 \end{itemize}
+
+\vspace{-33mm}
+\hfill \includegraphics[width=0.6\textwidth]{figs/bueler11p6}
 \end{frame}
 
 
-\begin{frame}{flux-limiters in 2D}
+\begin{frame}{flux-limiters in 2D: decision schematic}
 
 \begin{itemize}
-\item x
+\item compare the decision made with first-order upwinding (left) versus the flux-limiter case using ``downwind'' (\textbf{\texttt{dn}}) and ``far'' points (right)
 \end{itemize}
 
-\begin{center}
-\includegraphics[width=0.7\textwidth]{figs/bueler11p8}
-\end{center}
+\bigskip
+\quad \mbox{\includegraphics[width=0.38\textwidth]{figs/bueler11p8upwind} \hspace{15mm} \includegraphics[width=0.42\textwidth]{figs/bueler11p8fluxlimited}}
 \end{frame}
 
 
 \begin{frame}{results}
 
 \begin{itemize}
-\item domain is square $\Omega = (-1,1) \times (-1,1)$
-\item $q_t + \Div \bF(q) = 0$ where $\bF(q) = \ba q$ and $\ba$ is pure rotation:
+\item suppose domain is square $\Omega = (-1,1) \times (-1,1)$ and equation $q_t + \Div \bF(q) = 0$ is advection ($\bF(q) = \ba q$) with a rotation velocity field:
     $$\ba(x,y) = \left<y,-x\right>$$
-\item x
-\end{itemize}
+\item solving for $0\le t \le 2\pi$ should rotate initial condition back to itself
+\item results on a $40\times 40$ grid with the Koren flux limiter and a Runge-Kutta ODE solver similar to \texttt{ode23}:
 
+\bigskip
 \hfill \includegraphics[width=0.75\textwidth]{figs/bueler11p7}
+
+\medskip
+    \begin{itemize}
+    \item[$\circ$] good results like this would require \emph{much} finer grid using Lax-Wendroff ($1000\times 1000$?)
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 
@@ -1582,12 +1630,12 @@ where
 \begin{itemize}
 \item see \texttt{c/ch11/advect.c} at \href{https://github.com/bueler/p4pdes}{\texttt{github.com/bueler/p4pdes}}
     \begin{itemize}
-    \item[$\circ$] to compile and run do \, \texttt{make advect}
+    \item[$\circ$] uses C and PETSc and MPI
     \end{itemize}
-\item command line using MPI parallel run with 4 processors, Koren limiter, and SSP time-stepping:
+\item parallel run with 4 processors, Koren limiter, and SSP time-stepping:
 \begin{Verbatim}[fontsize=\small]
-$ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 4 \
-    -ts_max_time 3.1416 -ts_monitor_solution draw \
+$ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 3 \
+    -ts_max_time 6.283185 -ts_monitor_solution draw \
     -ts_type ssp -adv_limiter koren
 \end{Verbatim}
 %$
@@ -1597,13 +1645,14 @@ $ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 4 \
 
 \vspace{10mm}
     \begin{itemize}
-    \item[$\circ$] compare \texttt{-adv\_limiter none}
-    \item[$\circ$] compare \texttt{-adv\_limiter centered}
+    \item[$\circ$] compare \texttt{-adv\_limiter none|centered}
     \item[$\circ$] compare \texttt{-ts\_type rk}
+    \item[$\circ$] time (without graphics)
+    \item[$\circ$] time with \texttt{-da\_refine 5} and $P=1,4$ proc
     \end{itemize}
 \end{itemize}
 
-\vspace{-35mm}
+\vspace{-40mm}
 \hfill \includegraphics[width=0.3\textwidth]{figs/buelerfourproc}
 \end{frame}
 
