@@ -1,4 +1,4 @@
-% Copyright 2020  Ed Bueler
+% Copyright 2020, 2021  Ed Bueler
 
 \documentclass[10pt,hyperref,dvipsnames]{beamer}
 
@@ -88,13 +88,14 @@
 
 \title[Finite volume methods]{Finite volume methods for \\ advection equations and hyperbolic systems}
 
-\subtitle{version 2}
+\subtitle{version 3}
 
 \author{Ed Bueler}
 
 \institute[UAF]{University of Alaska Fairbanks}
 
-\date{June 2020}
+\date{April 2021}
+%version 2: \date{June 2020}
 
 % this nonsense needed to start section counter at 0; see
 % https://tex.stackexchange.com/questions/170222/change-the-numbering-in-beamers-table-of-content
@@ -169,7 +170,7 @@
 \bigskip
 \item K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
 \item W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003
-\item E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020?
+\item E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020
 \end{itemize}
 \end{frame}
 
@@ -208,7 +209,6 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \begin{itemize}
 \item was it clear what the movie showed?
-\item compare when we have the exact solution:
 \end{itemize}
 
 \bigskip
@@ -520,18 +520,16 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \end{frame}
 
 
-\begin{frame}{a \Matlab code to play with}
-
-\begin{itemize}
-\item mostly I have been playing with PETSc, but \dots
-\item here is a simple \Matlab code:
-
-\begin{center}
-\href{http://bueler.github.io/programs/adcompare.m}{\texttt{bueler.github.io/programs/adcompare.m}}
-\end{center}
-\item it implements upwind and Lax-Wendroff for scalar advection
-\end{itemize}
-\end{frame}
+%\begin{frame}{a \Matlab code to play with}
+%\begin{itemize}
+%\item mostly I have been playing with PETSc, but \dots
+%\item here is a simple \Matlab code:
+%\begin{center}
+%\href{http://bueler.github.io/programs/adcompare.m}{\texttt{bueler.github.io/programs/adcompare.m}}
+%\end{center}
+%\item it implements upwind and Lax-Wendroff for scalar advection
+%\end{itemize}
+%\end{frame}
 
 
 \begin{frame}{the finite volume (FV) idea}
