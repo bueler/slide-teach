@@ -1,6 +1,8 @@
 % Copyright 2020, 2021  Ed Bueler
 
-\documentclass[10pt,hyperref,dvipsnames]{beamer}
+\documentclass[10pt,dvipsnames,usepdftitle=false,
+hyperref={pdftitle = {Finite volume methods},
+    pdfauthor = {Ed Bueler}}]{beamer}
 
 \mode<presentation>{
   \usetheme{Madrid}
@@ -26,7 +28,8 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
 
-\usepackage{hyperref}
+%\usepackage{hyperref}
+
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -88,14 +91,16 @@
 
 \title[Finite volume methods]{Finite volume methods for \\ advection equations and hyperbolic systems}
 
-\subtitle{version 3}
-
-\author{Ed Bueler}
-
-\institute[UAF]{University of Alaska Fairbanks}
-
-\date{April 2021}
+\subtitle{version 3, April 2021}
 %version 2: \date{June 2020}
+
+\author{Ed Bueler, UAF}
+
+\date{}
+
+\titlegraphic{\vspace{-10mm} \includegraphics[width=0.5\textwidth]{figs/leveque13p4}}
+
+%\institute[UAF]{University of Alaska Fairbanks}
 
 % this nonsense needed to start section counter at 0; see
 % https://tex.stackexchange.com/questions/170222/change-the-numbering-in-beamers-table-of-content
@@ -154,10 +159,6 @@
    (linearsystem.south) edge node {} (generalsystem);
 \end{tikzpicture}
 
-\bigskip
-    \begin{itemize}
-    \item[$\circ$] ``hyperbolic'' (defined in part \mynum{2}) implies finite speed of influence
-    \end{itemize}
 \end{center}
 \end{itemize}
 \end{frame}
@@ -168,17 +169,23 @@
 \item {\large \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}}
 
 \bigskip
-\item K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
+%\item K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
 \item W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003
 \item E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020
 \end{itemize}
+
+\bigskip
+
+\begin{center}
+\includegraphics[height=35mm]{figs/covers/leveque} \qquad \includegraphics[height=30mm]{figs/covers/hv} \qquad \includegraphics[height=30mm]{figs/covers/bueler}
+\end{center}
 \end{frame}
 
 
-\begin{frame}{visual example 1: numerical solution}
+\begin{frame}{visual example 1: merely a numerical solution}
 
 \begin{itemize}
-\item before getting to numerical solutions, some show-and-tell \dots two movies
+\item before getting to numerical solutions, two show-and-tell movies
 \item consider advection equation for scalar density $q(t,x)$:
     $$q_t + a \, q_x = 0$$
 with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary conditions on $0\le x \le 1$
@@ -194,7 +201,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \end{center}
 \vspace{10mm}
 
-% cd p4pdes-next/riemann/
+% cd p4pdes-next/c/riemann/
 % make riemann
 % ./riemann -problem advection -da_grid_x 200 -limiter minmod -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
 % make petscPyScripts
@@ -209,6 +216,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \begin{itemize}
 \item was it clear what the movie showed?
+\item figures below are better: they show numerical and exact solutions
 \end{itemize}
 
 \bigskip
@@ -226,13 +234,20 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \hspace{60mm} h_t + (hu)_x &= 0 \\
 (hu)_t + \left(h u^2 + \frac{g}{2} h^2\right)_x &= 0
 \end{align*}
-\item suppose initial condition is a ``hump'' on $x\in[-5,5]$
+
+\vspace{-5mm}
     \begin{itemize}
-    \item[$\circ$] $h(0,x)=a e^{-bx^2}$, $u(0,x)=0$, thus
-    \item[$\circ$] vertical displacement in the center of the domain
-    \item[$\circ$] simplest model for a tsunami generated in middle of ocean?
+    \item[$\circ$] coupled
+    \item[$\circ$] hyperbolic
+    \item[$\circ$] nonlinear
     \end{itemize}
-\item movie of numerical solution for $0 \le t \le 18$
+\item suppose initial condition is a ``hump'' on $x \in [-5,5]$
+    \begin{itemize}
+    \item[$\circ$] $h(0,x)=a e^{-bx^2}$, $u(0,x)=0$
+    \item[$\circ$] vertical displacement in the center of the domain
+    \item[$\circ$] simplest model for a tsunami generated in middle of ocean
+    \end{itemize}
+\item movie of numerical solution for $0 \le t \le 3$
 
 \vspace{10mm}
 \begin{center}
@@ -243,36 +258,47 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 % ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
 % mkdir swater
-% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot swater/bar
+% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot swater/height
+% ./plotTS.py -mx 1000 -ylabel "hu (flux)" -ax -5.0 -bx 5.0 -dof 2 -c 1 -cellcentered t.dat q.dat -oroot swater/flux
 % cd swater
-% eog bar*.png
+% eog height*.png
+% eog flux*.png
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{roles for exact solutions}
+\begin{frame}{multiple roles for exact solutions}
 
 \begin{itemize}
-\item exact solutions are needed for \emph{verifying} simulations
-    \begin{itemize}
-    \item[$\circ$] i.e.~measure norm of difference between exact and numerical solutions
-    \item[$\circ$] precise tools for ``mathematical engineering'' of numerical solvers
-    \end{itemize}
-\item numerical solvers for hyperbolic systems use a ``Riemann solver'' 
-    \begin{itemize}
-    \item[$\circ$] essentially an exact solution for a discontinuous initial condition
-    \item[$\circ$] explaining this is a main goal of my talk
-    \end{itemize}
 \item generally, exact solutions are rare but valuable
+\item in these slides they have two roles:
+  \begin{enumerate}
+  \item for \emph{verifying} simulations
+      \begin{itemize}
+      \item[$\circ$] measure norm of difference between exact and numerical solutions
+      \item[$\circ$] precise ``mathematical engineering'' of numerical solvers
+      \end{itemize}
+  \item a ``Riemann solver'' for a hyperbolic system uses an exact solution
+      \begin{itemize}
+      \item[$\circ$] for a discontinuous initial condition
+      \item[$\circ$] explaining this is a major purpose of my talk
+      \end{itemize}
+  \end{enumerate}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{high performance and parallel}
+\begin{frame}[fragile]
+
+\frametitle{my context: high performance PDEs}
 
 \begin{itemize}
-\item I am interested in high performance and parallel solutions of PDEs
-\item movies in these slides were generated by C programs which call PETSc, the Portable Extensible Toolkit for Scientific computing:
+\item I am interested in high performance solutions of PDEs
+\item all examples in these slides use fast, but less-elegant, C code
+    \begin{itemize}
+    \item[$\circ$] compared to Matlab
+    \end{itemize}
+\item \dots using the Portable Extensible Toolkit for Scientific computing:
 
     \begin{center}
     \href{https://www.mcs.anl.gov/petsc/}{\texttt{www.mcs.anl.gov/petsc/}}
@@ -280,17 +306,17 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
     \begin{itemize}
     \item[$\circ$] a mathematical library for high-performance computing
-    \item[$\circ$] PETSc is brought to you by the same people who brought you MPI
+    \item[$\circ$] by DOE's Argonne National Lab \dots who also brought you MPI
     \end{itemize}
-\item speed and parallelizability are \emph{critical} for 2D and 3D
+\item run which generated previous shallow water movie, with $1000\times 361$ (space$\times$time) grid, completed in 0.3 seconds
+% using linux-c-opt:
+% timer ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod
+
+\item speed is more critical for 2D and 3D space
+    \begin{itemize}
+    \item[$\circ$] and parallelizability
+    \end{itemize}
 \end{itemize}
-
-\vspace{10mm}
-\begin{center}
-\alert{SHOW COMPUTATION OF SHALLOW WATER MOVIE}
-\end{center}
-
-% ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
 \end{frame}
 
 
@@ -303,11 +329,12 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
     \end{itemize}
 \item \alert{PLEASE} ask lots of questions, about any topic at all
     \begin{itemize}
-    \item[$\circ$] slowing me down is a \emph{good} thing!
+    \item[$\circ$] slowing me down is a \emph{good}\, thing!
     \end{itemize}
-\item also email \quad \texttt{elbueler\@@alaska.edu} \quad after the talk, at any time
+\item feel free to email after the talk, or regarding future projects
     \begin{itemize}
-    \item[$\circ$] I might be able to help with numerical questions
+    \item[$\circ$] \texttt{elbueler\@@alaska.edu}
+    %\item[$\circ$] I might be able to help with numerical questions (but not 615 homework)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -326,21 +353,20 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \begin{frame}{one-way advection}
 
 \begin{itemize}
-\item the \emph{scalar advection equation (PDE)} for $q(t,x) \in \RR$:
+\item next few slides should be an easy review
+\item consider the \emph{scalar advection PDE} for $q(t,x)$:
     $$q_t + a q_x=0$$
 
-    \begin{itemize}
-    \item[$\circ$] $a\in\RR$ is constant (on this slide)
-    \end{itemize}
-\item if we have a smooth initial condition $q(t,0)=f(x)$ then the solution is
+\item if $a$ is constant and we have a smooth initial condition $q(t,0)=f(x)$ then the solution is
     $$q(t,x) = f(x-at),$$
 \emph{because}, by the chain rule
-    $$q_t(t,x) = f'(x-at) (-a) \quad \text{ and } \quad q_x(t,x) = f'(x-at)$$
-so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
+\begin{gather*}
+q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0
+\end{gather*}
 \item the solution $q(t,x)=f(x-at)$ is a ``movie'': the graph of $f(x)$ is translated distance by $at$, to the right, in time $t$
     \begin{itemize}
     \item[$\circ$] even if $a$ and/or $t$ are negative
-    \item[$\circ$] note $a$ is the speed of the motion
+    \item[$\circ$] $a$ is the speed of the motion
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -349,7 +375,7 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
 \begin{frame}{solution by characteristics}
 
 \begin{itemize}
-\item but what about the scalar PDE with variable speed $a(t,x)$?:
+\item but what about with variable speed $a(t,x)$?
     $$q_t + a(t,x) q_x=0, \qquad q(0,x) = f(x)$$
 \item we need the idea of a \emph{characteristic curve} (ODE):
     $$\ds \frac{d\xi}{ds} = a(s,\xi(s)) \hspace{50mm}$$
@@ -365,7 +391,7 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
                           &= q_t(s,\xi(s)) + q_x(s,\xi(s)) a(s,\xi(s)) \\
                           &= 0,
 \end{align*}
-\item thus $q(t,\xi(t)) = q(0,\xi(0))$
+\item conclude: $q(t,\xi(t)) = q(0,\xi(0))$
 \item \emph{solution by characteristics}: $q(t,x)$ has the same value as $f(x_0)$ if $\xi(s)$ is a characteristic curve that ends at $(t,x)$ and starts at $(0,x_0)$
 \end{itemize}
 \end{frame}
@@ -374,16 +400,16 @@ so $q_t + a q_x = -a f'(x-at) + a f'(x-at) = 0$
 \begin{frame}{solution by characteristics 2}
 
 \begin{itemize}
-\item the method can be extended to the possibly-nonlinear equation
+\item the method can be extended to the nonlinear equation
      $$q_t + a(t,x) q_x = g(t,x,q), \qquad q(0,x) = f(x)$$
 
     \begin{itemize}
     \item[$\circ$] $a$ is the speed of the characteristic curve
     \item[$\circ$] $g$ is the \emph{source term}
-    \item[$\circ$] solution $q$ changes at rate $g$ along the characteristic
+    \item[$\circ$] \emph{idea}: the solution $q$ changes at rate $g$ along the characteristic
     \item[$\circ$] if $g=0$ then $q$ is constant along the characteristic
     \end{itemize}
-\item now a pair of ODEs to solve:
+\item now we have a pair of ODEs to solve:
 \begin{align*}
 \xi'(s) &= a(s,\xi(s)) \\
 \omega'(s) &= g(s,\xi(s),\omega(s))
@@ -406,7 +432,7 @@ information travels along the characteristics
 \begin{frame}{upwind scheme for one-way advection}
 
 \begin{itemize}
-\item apply \emph{upwind} scheme to $q_t + aq_x=0$ in case $a>0$:
+\item we may apply the \emph{upwind} scheme to $q_t + aq_x=0$ (case $a>0$):
     $$\frac{Q_i^{n+1} - Q_i^n}{\Delta t} + a \frac{Q_i^n - Q_{i-1}^n}{\Delta x} = 0$$
 \item equivalently, solve for the new value at $t_{n+1}$:
 \begin{align*}
@@ -450,19 +476,16 @@ Q_i^{n+1} &= \tfrac{1}{2} \nu (1+\nu) Q_{i-1}^n + \left(1 - \nu^2\right) Q_i^n +
 \begin{frame}{stability}
 
 \begin{itemize}
-\item \emph{BUT} we still need CFL so that these upwind and Lax-Wendroff formulas are \emph{interpolations} not \emph{extrapolations}:
-    $$|\nu| = \frac{|a|\Delta t}{\Delta x} \le 1 \qquad \iff \qquad \Delta t \le \frac{\Delta x}{|a|}$$
+\item a very early paper Courant, Friedrichs, and Lewy (1928) gave a criterion for stability of numerical methods on hyperbolic PDEs
+\item \alert{CFL criterion:} the characteristic through the new location $(t_{n+1},x_i)$ must be in the numerical domain of dependence of the scheme at $t_n$
+    $$\nu_{CFL} = \frac{|a|\Delta t}{\Delta x} \le 1 \qquad \iff \qquad \Delta t \le \frac{\Delta x}{|a|}$$
 
+\item we need CFL so that upwind and Lax-Wendroff formulas are \emph{interpolations} not \emph{extrapolations}
     \begin{itemize}
-    \item[$\circ$] the errors from extrapolation are known to propagate forward, time step by time step, as exponential growth, i.e.~\emph{unstably}
+    \item[$\circ$] the errors from extrapolation would propagate forward as exponential growth, i.e.~\emph{unstably}
     \end{itemize}
-\item essentially the same can be said for any finite difference, finite volume, or finite element scheme for hyperbolic PDEs:
-
-\begin{center}
-a CFL condition is \emph{necessary} for stability (and thus for convergence)
-\end{center}
-
-\item \alert{main idea of CFL:} the characteristic(s) through the new location $(t_{n+1},x_i)$ must pass through the numerical ``domain of dependence'' of the scheme at the old time $t_n$
+\item CFL is a \emph{necessary} condition for stability (and thus for convergence)
+\item CFL applies to any finite difference, finite volume, or finite element scheme for a hyperbolic PDE
 \end{itemize}
 \end{frame}
 
@@ -483,7 +506,7 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 
 {\footnotesize oversmoothing}
 
-{\footnotesize oscillation}
+{\footnotesize spurious oscillation}
 
 {\footnotesize loss of original bounds}}
 \end{itemize}
@@ -496,7 +519,7 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \item the results above suffer from three diseases:
     \begin{itemize}
     \item[$\circ$] \alert{oversmoothing} (upwind)
-    \item[$\circ$] \alert{oscillation} (Lax-Wendroff)
+    \item[$\circ$] \alert{spurious oscillation} (Lax-Wendroff)
     \item[$\circ$] \alert{loss of original solution bounds} (Lax-Wendroff)
     \end{itemize}
 
@@ -505,16 +528,13 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \hfill \includegraphics[width=0.3\textwidth]{figs/leveque6p1lw}
 
 \bigskip
-\item upwind and Lax-Wendroff were clear to everyone by $\sim$1960
-    \begin{itemize}
-    \item[$\circ$] upwind and Lax-Wendroff were regarded as \emph{finite difference} methods
-    \end{itemize}
+\item upwind and Lax-Wendroff methods were clear to everyone by $\sim$1960
 \item in 1970--90s these diseases were mostly fixed \dots how?:
     \begin{itemize}
-    \item[$\circ$] ``finite volume'' thinking
-    \item[$\circ$] ``Riemann solver'' interpretation of the upwind method
-    \item[$\circ$] ``slope-limiting'' or ``flux-limiting'' to avoid oscillations
-    \item[$\circ$] this talk: make sense of these new buzzwords!
+    \item[$\circ$] new ``finite volume'' thinking
+    \item[$\circ$] new ``Riemann solver'' interpretation of the upwind method
+    \item[$\circ$] new ``slope-limiting'' or ``flux-limiting'' to avoid oscillations
+    \item[$\circ$] this talk: make sense of these buzzwords!
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -539,28 +559,39 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
     $$q_t + f(q)_x = 0$$
 
     \begin{itemize}
-    \item[$\circ$] $f(q) = aq$ in scalar advection $q_t + a q_x = 0$
+    \item[$\circ$] $f(q) = aq$ for scalar advection $q_t + a q_x = 0$
     \end{itemize}
-\item put a grid on $x$: suppose $x_i$ is center of a \emph{cell}, and integrate over the cell:
+\item put on a grid $\{x_i\}$ with spacing $\Delta x$
+
+\vspace{-8mm}
+\hfill \includegraphics[width=0.35\textwidth]{figs/fvsketch}
+\vspace{-4mm}
+\item \emph{cell} $=$ \emph{finite volume}
+\item suppose $x_i$ is the center of a cell, and integrate over it:
 \begin{gather*}
 \int_\ximhalf^\xiphalf q_t + f(q)_x \,dx = 0 \hspace{20mm}  \\
 \frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0
 \end{gather*}
-
-\vspace{-4mm}
-\hfill \includegraphics[width=0.27\textwidth]{figs/fvsketch}
-
-\vspace{-20mm}
-\item interpret: $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$
-    \begin{itemize}
-    \item[$\circ$] versus in a finite difference scheme: $Q_i^n \approx q(t_n,x_i)$
-    \end{itemize}
-\item also, $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$ is flux at \emph{cell face}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{the FV idea 2}
+
+\hfill \includegraphics[width=0.4\textwidth]{figs/fvsketch}
+
+\begin{itemize}
+\item let $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$
+    \begin{itemize}
+    \item[$\circ$] versus in a finite difference scheme: $Q_i^n \approx q(t_n,x_i)$
+    \end{itemize}
+\item let $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$ is flux at \emph{cell face}
+\item these interpretations are important!
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the FV idea 3}
 
 \begin{itemize}
 \item suppose we put a grid on $t$ and use forward Euler in time
@@ -638,7 +669,7 @@ the basic FV scheme
 \end{frame}
 
 
-\section{linear systems}
+\section{linear systems and Riemann solvers}
 
 \begin{frame}{linear systems: examples}
 
@@ -925,7 +956,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\section{high-resolution methods}
+\section{high-resolution methods (slope-limiters)}
 
 \begin{frame}{Godunov's barrier theorem}
 
@@ -1404,7 +1435,7 @@ a preferred numerical approach since the 1990s is a
 \end{frame}
 
 
-\section{advection in two spatial dimensions (2D)}
+\section{advection again, but 2D spatial}
 
 \begin{frame}{scalar conservation laws in 2D}
 
