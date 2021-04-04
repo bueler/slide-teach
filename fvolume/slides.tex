@@ -28,8 +28,7 @@ hyperref={pdftitle = {Finite volume methods},
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows.meta,decorations.markings,decorations.pathreplacing,fadings,positioning}
 
-%\usepackage{hyperref}
-
+\usepackage{cancel}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -168,7 +167,7 @@ hyperref={pdftitle = {Finite volume methods},
 \begin{itemize}
 \item {\large \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}}
 
-\bigskip
+\medskip
 %\item K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
 \item W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003
 \item E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020
@@ -177,7 +176,7 @@ hyperref={pdftitle = {Finite volume methods},
 \bigskip
 
 \begin{center}
-\includegraphics[height=35mm]{figs/covers/leveque} \qquad \includegraphics[height=30mm]{figs/covers/hv} \qquad \includegraphics[height=30mm]{figs/covers/bueler}
+\includegraphics[height=36mm]{figs/covers/leveque} \qquad \includegraphics[height=26mm]{figs/covers/hv} \qquad \includegraphics[height=26mm]{figs/covers/bueler}
 \end{center}
 \end{frame}
 
@@ -271,17 +270,18 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \begin{itemize}
 \item generally, exact solutions are rare but valuable
-\item in these slides they have two roles:
+\item in these slides, exact solutions have two roles:
   \begin{enumerate}
   \item for \emph{verifying} simulations
       \begin{itemize}
       \item[$\circ$] measure norm of difference between exact and numerical solutions
       \item[$\circ$] precise ``mathematical engineering'' of numerical solvers
       \end{itemize}
-  \item a ``Riemann solver'' for a hyperbolic system uses an exact solution
+  \item as \emph{``Riemann solvers''} for hyperbolic systems
       \begin{itemize}
-      \item[$\circ$] for a discontinuous initial condition
-      \item[$\circ$] explaining this is a major purpose of my talk
+      \item[$\circ$] used locally in constructing the numerical scheme
+      \item[$\circ$] solutions for discontinuous initial conditions
+      \item[$\circ$] explaining this mystery is a major purpose of my talk!
       \end{itemize}
   \end{enumerate}
 \end{itemize}
@@ -298,7 +298,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
     \begin{itemize}
     \item[$\circ$] compared to Matlab
     \end{itemize}
-\item \dots using the Portable Extensible Toolkit for Scientific computing:
+\item \dots calling the Portable Extensible Toolkit for Scientific computing:
 
     \begin{center}
     \href{https://www.mcs.anl.gov/petsc/}{\texttt{www.mcs.anl.gov/petsc/}}
@@ -314,7 +314,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \item speed is more critical for 2D and 3D space
     \begin{itemize}
-    \item[$\circ$] and parallelizability
+    \item[$\circ$] parallelizability also important for 2D and 3D space
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -327,11 +327,12 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
     \begin{itemize}
     \item[$\circ$] but with many figures to explain concepts
     \end{itemize}
-\item \alert{PLEASE} ask lots of questions, about any topic at all
+\item \alert{PLEASE} ask lots of questions, about any topic here at all
     \begin{itemize}
     \item[$\circ$] slowing me down is a \emph{good}\, thing!
+    \item[$\circ$] I'll try to watch the zoom chat, too
     \end{itemize}
-\item feel free to email after the talk, or regarding future projects
+\item feel free to email after the talk, or into the indefinite future:
     \begin{itemize}
     \item[$\circ$] \texttt{elbueler\@@alaska.edu}
     %\item[$\circ$] I might be able to help with numerical questions (but not 615 homework)
@@ -513,10 +514,11 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \end{frame}
 
 
-\begin{frame}{how to do better? \dots the historical picture}
+\begin{frame}{how to do better? \dots the history}
 
 \begin{itemize}
-\item the results above suffer from three diseases:
+\item upwind and Lax-Wendroff methods were obvious technology by $\sim$1960
+\item but the results suffered from three diseases:
     \begin{itemize}
     \item[$\circ$] \alert{oversmoothing} (upwind)
     \item[$\circ$] \alert{spurious oscillation} (Lax-Wendroff)
@@ -528,7 +530,6 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \hfill \includegraphics[width=0.3\textwidth]{figs/leveque6p1lw}
 
 \bigskip
-\item upwind and Lax-Wendroff methods were clear to everyone by $\sim$1960
 \item in 1970--90s these diseases were mostly fixed \dots how?:
     \begin{itemize}
     \item[$\circ$] new ``finite volume'' thinking
@@ -576,26 +577,37 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \end{frame}
 
 
-\begin{frame}{the FV idea 2}
-
-\hfill \includegraphics[width=0.4\textwidth]{figs/fvsketch}
+\begin{frame}{numerical quantities in an FV method}
 
 \begin{itemize}
-\item let $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$
+\item define: \qquad $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$
     \begin{itemize}
-    \item[$\circ$] versus in a finite difference scheme: $Q_i^n \approx q(t_n,x_i)$
+    \item[$\circ$] $Q_i(t)$ represents a cell average, not a point value
+    \item[$\circ$] versus in a finite difference scheme: $Q_i(t) \approx q(t,x_i)$
+    \item[$\circ$] make sure to distinguish $q(t,x_i)$ (exact) and $Q_i(t)$ (numerical)
     \end{itemize}
-\item let $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$ is flux at \emph{cell face}
-\item these interpretations are important!
+\item let $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$ be the flux at \emph{cell face}
+\item so exact statement from last slide,
+$$\frac{d}{dt} \int_\ximhalf^\xiphalf q(t,x) \,dx + f\left(q(t,\xiphalf)\right) - f\left(q(t,\ximhalf)\right) = 0, \hspace{50mm}$$
+becomes a numerical scheme:
+$$\Delta x \frac{dQ_i}{dt} + \Fiphalf - \Fimhalf = 0 \hspace{50mm}$$
+    \begin{itemize}
+    \item[$\circ$] this is only a spatial discretization
+    \end{itemize}
+
+\vspace{-25mm}
+\hfill \includegraphics[width=0.3\textwidth]{figs/fvsketch}
+
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{the FV idea 3}
+\begin{frame}{an almost-complete FV scheme}
 
 \begin{itemize}
-\item suppose we put a grid on $t$ and use forward Euler in time
-\item now we have this sequence of equations:
+\item also put a grid on $t$
+\item use forward Euler in time
+\item we have this sequence of equations:
 \small
 \begin{gather*}
 q_t + f(q)_x = 0 \hspace{50mm} \\
@@ -611,8 +623,7 @@ q_t + f(q)_x = 0 \hspace{50mm} \\
 
 \normalsize
 \medskip
-\item the \alert{last equation} is a computable numerical scheme \emph{if} we have a scheme for approximating the face fluxes $\Fiphalfn$
-\item note we distinguish $q(t_n,x_i)$ and $Q_i^n$ \quad \dots you should too!
+\item the \alert{red equation} is a computable numerical scheme \emph{if} we have a scheme for approximating the face fluxes $\Fiphalfn$
 \end{itemize}
 \end{frame}
 
@@ -621,33 +632,29 @@ q_t + f(q)_x = 0 \hspace{50mm} \\
 
 \begin{itemize}
 \item \emph{but} we should not commit to forward Euler so soon!
-\item suppose again: $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$ and $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$
-\item then integrating $q_t + f(q)_x = 0$
+\item remember: $\ds Q_i(t) \approx \frac{1}{\Delta x} \int_\ximhalf^\xiphalf q(t,x)\,dx$ and $\Fiphalf(t) \approx f\left(q(t,\xiphalf)\right)$
+\item  our basic FV scheme is an ODE system in time:
+    $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0 \hspace{60mm}$$
 
-over the cell gives
-    $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0, \hspace{60mm}$$
-
-the basic FV scheme
-
-\vspace{-24mm}
-\hfill \includegraphics[width=0.42\textwidth]{figs/molsketch}
+\vspace{-15mm}
+\hfill \includegraphics[width=0.3\textwidth]{figs/molsketch}
 
 \vspace{-21mm}
-\item this is a system of ODEs in time
+\item write as:
     $$\frac{d\bQ}{dt} = \bG(t,\bQ), \quad \bQ(t) = \begin{bmatrix} Q_1(t) \\ \vdots \\ Q_J(t) \end{bmatrix}   \hspace{60mm}$$
 
-\item why? because good black-box ODE solvers are already available
+\item why? because good black-box ODE solvers are available
     \begin{itemize}
-    \item[$\circ$] \texttt{ode23}, etc. \qquad \dots it is not 1970 anymore, people!
+    \item[$\circ$] \dots it is not 1970 anymore, people!
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{upwind again, as ``donor cell'' method}
+\begin{frame}{upwind as the ``donor cell'' method}
 
 \begin{itemize}
-\item the classic upwind method for $q_t + a q_x = 0$, when regarded in FV terms, amounts to three things:
+\item in FV language, upwind for $q_t + a q_x = 0$ is 3 steps:
     \begin{itemize}
     \item[i)] integrate over the spatial cell (FV MOL):
         $$\frac{dQ_i}{dt} + \frac{\Fiphalf-\Fiphalf}{\Delta x} = 0 \hspace{50mm}$$
@@ -664,7 +671,10 @@ the basic FV scheme
 
 \vspace{12mm}
 \item for ii) we will do better (``high-resolution'' methods; ``slope-limiters'')
-\item for iii) we can already do better (e.g.~Runge-Kutta methods; \texttt{ode23})
+    \begin{itemize}
+    \item[$\circ$] but how to interpret ``donor cell'' for hyperbolic systems?
+    \end{itemize}
+\item for iii) we can already do better (Runge-Kutta; Matlab ODE solvers)
 \end{itemize}
 \end{frame}
 
@@ -674,16 +684,20 @@ the basic FV scheme
 \begin{frame}{linear systems: examples}
 
 \begin{itemize}
-\item linear, constant-coefficient system for $\bq(t,x) \in \RR^d$ with $A\in\RR^{d\times d}$:
+\item consider a \emph{linear, constant-coefficient, homogeneous system}:
   $$\bq_t + A\, \bq_x=0$$
 
+    \begin{itemize}
+    \item[$\circ$] $\bq(t,x) \in \RR^d$ vector-valued solution
+    \item[$\circ$] $A\in\RR^{d\times d}$ square matrix
+    \end{itemize}
+ 
+\bigskip
 \setlength{\itemindent}{11mm}
-\item[example:] \emph{acoustics} (and classic wave equation)
+\item[example:] \emph{acoustics} ($=$ classical 2nd-order wave equation)
         $$\bq = \begin{bmatrix} p \\ u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & K_0 \\ \frac{1}{\rho_0} & 0 \end{bmatrix} \quad \implies \quad \begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
 \item[example:] \underline{linearized} \emph{shallow water equations}
         $$\bq = \begin{bmatrix} h \\ h u \end{bmatrix}, \,\, A = \begin{bmatrix} 0 & 1 \\ -u_0^2+gh_0 & 2 u_0 \end{bmatrix} \, \implies \, {\footnotesize \begin{matrix} {\large \strut} h_t + (hu)_x = 0 \\ {\large \strut} (h u)_t + (-u_0^2+gh_0) h_x + 2u_0 (h u)_x = 0 \end{matrix} }$$
-\item[example:] boringly decoupled
-        $$\bq = \begin{bmatrix} u \\ v \\ w \end{bmatrix}, \,\, A = \begin{bmatrix} a & 0 & 0 \\ 0 & b & 0 \\ 0 & 0 & c \end{bmatrix} \, \implies \begin{matrix} u_t + a u_x = 0 \\ v_t + b v_x = 0 \\ w_t + c w_x = 0 \end{matrix}$$
 \end{itemize}
 \end{frame}
 
@@ -712,6 +726,23 @@ u_{tt} &= c^2 u_{xx}
 \end{frame}
 
 
+\begin{frame}{linear system we can already handle}
+
+\begin{itemize}
+\item consider boring decoupled system:
+        $$\bq = \begin{bmatrix} u \\ v \\ w \end{bmatrix}, \,\, A = \begin{bmatrix} a & 0 & 0 \\ 0 & b & 0 \\ 0 & 0 & c \end{bmatrix} \, \implies \begin{matrix} u_t + a u_x = 0 \\ v_t + b v_x = 0 \\ w_t + c w_x = 0 \end{matrix}$$
+\item \emph{method}: upwind on each equation independently
+\item \emph{claim}: changing a basis can put us in this boring situation
+
+\bigskip
+\item note I'll use bold for column vectors, e.g.~$\bu\in\RR^d$
+    \begin{itemize}
+    \item[$\circ$] inner product: \quad $\bu^\top \bv = \ip{\bu}{\bv}$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{hyperbolic systems}
 
 \begin{definition} a first-order system $\bq_t + A\, \bq_x=0$ is \emph{hyperbolic} if $A$ is diagonalizable and all of the eigenvalues of $A$ are real
@@ -726,13 +757,8 @@ u_{tt} &= c^2 u_{xx}
     \begin{itemize}
     \item[$\circ$] $\lambda_k$ are \emph{eigenvalues}, real numbers if the system is hyperbolic
     \item[$\circ$] $\bw_k$ are column vectors so $\bw_k^\top$ are row vectors
-    \item[$\circ$] $\bw_k$ are right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bw_k$
-    \item[$\circ$] note that the left/right eigenvalues are the same
-    \end{itemize}
-
-\item I'll use bold for column vectors, e.g.~$\bu\in\RR^d$
-    \begin{itemize}
-    \item[$\circ$] note inner product: \quad $\bu^\top \bv = \ip{\bu}{\bv}$
+    \item[$\circ$] $\bw_k$ are also right eigenvectors of $A^\top$: \qquad $A^\top \bw_k = \lambda_k \bw_k$
+    \item[$\circ$] the left/right eigen\emph{values} are the same
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -753,24 +779,26 @@ u_{tt} &= c^2 u_{xx}
    $$(v_k)_t + \lambda_k (v_k)_x = 0$$
 \item solve these one-way advection problems by characteristics:
    $$v_k(t,x) = v_k(0,x-\lambda_k t)$$
-\item matrix $A$ must be constant for this calculation
+\item \emph{note}: \alert{matrix $A$ must be constant for this calculation}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{eigenvectors decouple hyperbolic systems 2}
+\begin{frame}{eigenvectors decouple hyperbolic systems $=$ Riemann invariants}
 
 \begin{itemize}
-\item the functions $v_k(t,x)$ are called \emph{Riemann invariants}:
+\item the functions $v_k(t,x)$ are called the \emph{Riemann invariants}:
     $$v_k(t,x) = \bw_k^\top \bq(t,x) = v_k(0,x-\lambda_k t) = \bw_k^\top \bq(0,x-\lambda_k t)$$
-\item how to write the solution for $\bq(t,x)$ if we have $v_k(t,x)$?
-\item we may expand in basis $\bw_k$, with scalar coefficients $c_k(t,x)$:
+
+    \begin{itemize}
+    \item[$\circ$] but how to write $\bq(t,x)$ if we have $v_k(t,x)$?
+    \item[$\circ$] expand in basis $\bw_k$, with scalar coefficients $c_k(t,x)$:
     $$\alert{\bq(t,x) = \sum_{k=1}^d c_k(t,x) \bw_k}$$
-\item thus: \qquad $\ds \bw_\ell^\top \bq(t,x) = \sum_{k=1}^d c_k(t,x) \bw_\ell^\top \bw_k$
-\item solve using (invertible) matrix $B\in \RR^{d\times d}$ with entries \alert{$B_{lk} = \bw_\ell^\top \bw_k$}:
-    $$B \bc = \bv \qquad \iff \qquad \alert{\sum_{k=1}^d B_{lk} c_k(t,x) = \bw_\ell^\top \bq(0,x-\lambda_\ell t)}$$
+    \item[$\circ$] note \qquad $\ds v_\ell(t,x) = \bw_\ell^\top \bq(t,x) = \sum_{k=1}^d c_k(t,x) \bw_\ell^\top \bw_k$
+    \end{itemize}
+\item solve using (invertible) matrix $B\in \RR^{d\times d}$ with entries \alert{$B_{\ell k} = \bw_\ell^\top \bw_k$}:
+    $$B \bc = \bv \qquad \iff \qquad \alert{\sum_{k=1}^d B_{\ell k} c_k(t,x) = \bw_\ell^\top \bq(0,x-\lambda_\ell t)}$$
 \item \alert{red equations} combine into a solution
-\item in fact we can do most examples by hand without forming $B$
 \end{itemize}
 \end{frame}
 
@@ -794,7 +822,7 @@ u_{tt} &= c^2 u_{xx}
 \begin{frame}{Riemann solver}
 
 \begin{itemize}
-\item in a FV scheme at some time $t_n$ we will have two different values on either side of the cell face at $x_{i+1/2}$:
+\item key idea: in a FV scheme, at $t_n$ we have \alert{two different values on either side of the cell face} at $x_{i+1/2}$:
     $$\bQ_{i} = \bQ_L, \quad \bQ_{i+1} = \bQ_R \hspace{50mm}$$
 
 \vspace{-12mm}
@@ -962,12 +990,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item can we do better than Lax-Wendroff, even for scalar advection?
-\item can we have high accuracy without oscillations? recall:
+\item can we have high accuracy without oscillations?
     \begin{itemize}
-    \item[$\circ$] upwinding is only first-order accurate,\footnote{$O(\Delta t + \Delta x)$ local truncation error as $\Delta t\to 0$ and $\Delta x \to 0$; LW has $O(\Delta t^2 + \Delta x^2)$} but it avoids oscillations
+    \item[$\circ$] upwinding is only first-order accurate, but it avoids oscillations
     \item[$\circ$] Lax-Wendroff is second-order but it generates oscillations beyond the range of the initial condition
     \end{itemize}
-\item rough answer: \alert{NO}
+\item rough answer: \only<1>{\alert{NO}}\only<2>{\cancel{NO} \alert{yes}}
 
 \medskip
 \begin{theorem}[\emph{Godunov, 1959}]  A monotonicity-preserving \alert<2>{linear} scheme for $q_t + a q_x=0$ cannot have second-order (or higher) local truncation error in $x$.\end{theorem}
@@ -982,19 +1010,20 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{frame}
 
 
-\begin{frame}{the reconstruct-evolve-average view of schemes}
+\begin{frame}{the reconstruct-evolve-average view of FV schemes}
 
 \begin{itemize}
 \item if we want to kill oscillation then another view is helpful
-\item consider: $q_t + a q_x=0$ for $a>0$, where values $\{Q_i^n\}$ are on two levels, and Euler step from $t_n$ (left) to $t_{n+1}$ (right) w.~1st-order upwinding:
+\item consider: $q_t + a q_x=0$ for $a>0$, with cell values $\{Q_i^n\}$
+\item apply 1st-order upwinding Euler step from $t_n$ (left) to $t_{n+1}$ (right):
 
 \begin{center}
 \quad \includegraphics[width=0.3\textwidth]{figs/upreconstructleft} \qquad \includegraphics[width=0.3\textwidth]{figs/upreconstructright}
 \end{center}
 
     \begin{itemize}
-    \item[$\circ$] upwinding uses constant values (zero slope) in cells
-    \item[$\circ$] dots on right show new cell averages
+    \item[$\circ$] right figure: new cell averages (dots) after evolving exact solution (lines)
+    \item[$\circ$] upwinding uses constant values in cells (\emph{see next slide})
     \end{itemize}
 \item versus Lax-Wendroff, which uses downwind slope:
 
@@ -1012,17 +1041,17 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{slope reconstruction}
 
 \begin{itemize}
-\item at time $t_n$ we only know the discrete unknowns $\{Q_j^n\}$
+\item at time $t_n$ we only have the discrete unknowns $\{Q_j^n\}$
 \item but we can ``reconstruct'' a linear function $\tilde q(t_n,x)$ on each cell:
     $$\tilde q(t_n,x) = Q_i^n + \sigma_i^n (x - x_i)$$
 
     \begin{itemize}
     \item[$\circ$] $\sigma_i^n$ is the \emph{slope} in the cell $[x_{i-\frac{1}{2}}, x_{i+\frac{1}{2}}]$
-    \item[$\circ$] the average remains as $Q_i^n$
+    \item[$\circ$] for any $\sigma_i^n$, the cell average is $Q_i^n$
     \end{itemize}
 
 \medskip
-\item possibilities for slope ($a>0$):
+\item possibilities for slope when $a>0$:
 \begin{align*}
 &\text{zero:}     & \sigma_i &= 0 \hspace{75mm} \\
 &\text{{\color{red} downwind:}} & \sigma_i &= \frac{Q_{i+1}-Q_i}{\Delta x} \\
@@ -1039,8 +1068,8 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{slope limiter idea}
 
 \begin{itemize}
-\item the slope limiter idea is to use one of these slopes to get higher accuracy \emph{except} if using that slope puts the reconstruction out of range of the values $\{Q_{i-1},Q_i,Q_{i+1}\}$
-\item \alert{$\minmod$ \emph{slope limiter}:}
+\item the slope limiter idea is to use one of these slopes to get higher accuracy \emph{except} if using that slope puts the reconstruction out of range of the three values $\{Q_{i-1},Q_i,Q_{i+1}\}$
+\item for example, the \alert{$\minmod$ \emph{slope limiter}:}
     $$\sigma_i = \minmod\left\{\frac{Q_i-Q_{i-1}}{\Delta x},\frac{Q_{i+1}-Q_i}{\Delta x}\right\}$$
 
     \begin{itemize}
@@ -1049,6 +1078,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
                                          a, & ab>0 \text{ and } |a| \le |b| \\
                                          b, & ab>0 \text{ and } |a| > |b| \end{cases}$$
     \item[$\circ$] in words: $\minmod\{a,b\}$ is closest to zero of $a$ and $b$ unless they differ in sign; then it is zero
+    \item[$\circ$] if $Q_i$ is the extrema of the three values then $\sigma_i = 0$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1057,7 +1087,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{slope limiter idea 2}
 
 \begin{itemize}
-\item another, recommended, alternative is the \alert{\emph{MC slope limiter}:}
+\item an alternative is the \alert{\emph{MC slope limiter}:}
     $$\sigma_i = \minmod\left\{\frac{Q_{i+1}-Q_{i-1}}{2\Delta x},2\minmod\Big\{\frac{Q_i-Q_{i-1}}{\Delta x},\frac{Q_{i+1}-Q_i}{\Delta x}\Big\}\right\}$$
 \item in pictures:
 
@@ -1071,7 +1101,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     \begin{itemize}
     \item[$\circ$] can you draw-in the downwind slopes (Lax-Wendroff)?  \dots get overshoot
     \end{itemize}
-\item theory of \emph{total variation diminishing} (TVD) schemes, circa 1990s, arises from these pictures
+\item throw-away comment: the theory of \emph{total variation diminishing} (TVD) schemes, circa 1990s, arises from these pictures
 \end{itemize}
 \end{frame}
 
@@ -1091,8 +1121,8 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{MOL: slope limiting and Riemann solvers}
 
 \begin{itemize}
-\item Q. one detail \dots suppose we want to use limited slopes and Riemann solvers \emph{in the method-of-lines (MOL) framework} \dots how to do this?
-\item A. apply the slope calculation and slope-limiter as usual and then compute the flux $F_{i-1/2}$ in terms of this picture:
+\item suppose we want to use limited slopes and Riemann solvers in a method-of-lines (MOL) framework \dots how to do this?
+\item \emph{answer}: apply the slope calculation and slope-limiter as usual and then compute the flux $F_{i-1/2}$ in terms of this picture:
 
 \medskip
 \begin{center}
@@ -1109,21 +1139,19 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{conservation laws}
 
 \begin{itemize}
-\item a \emph{conservation law} is a first-order PDE system, for $\bq(t,x) \in \RR^d$, with a given \emph{flux function} $\bbf:\RR^d\to \RR^d$:
-  $$\bq_t + \bbf(\bq)_x=0$$
+\item a \emph{conservation law} is a first-order PDE system, for $\bq(t,x) \in \RR^d$, with a given \emph{flux function} $\bbf$ and \emph{source function} $\bg$:
+  $$\bq_t + \bbf(t,x,\bq)_x=\bg(t,x,\bq)$$
     \begin{itemize}
-    \item[$\circ$] $\bbf$ could also depend on $t$ or $x$: \qquad $\bq_t + \bbf(t,x,\bq)_x=0$
-    \item[$\circ$] there could be a right-hand side: \qquad $\bq_t + \bbf(t,x,\bq)_x=\bg(t,x,\bq)$
     \item[$\circ$] linear conservation law: \qquad $\bbf(\bq) = A\bq$
-    \item[$\circ$] if $\bbf$ depends on $\grad \bq$ \dots e.g.~heat equation \dots then the system is not hyperbolic
+    \item[$\circ$] if $\bbf$ depends on $\grad \bq$ (e.g.~heat equation) then the system is \emph{not} hyperbolic
     \end{itemize}
 
 \bigskip
-\item two scalar, nonlinear examples:
+\item scalar, nonlinear, and hyperbolic examples:
     \begin{itemize}
-    \item[$\circ$] \emph{Burger's equation} with $f(q)=\frac{1}{2} q^2$:
+    \item[$\circ$] \emph{Burger's equation} with $f(q)=\frac{1}{2} q^2$ and $g=0$:
         $$q_t + \left(\tfrac{1}{2} q^2\right)_x = 0 \qquad \iff \qquad q_t + q q_x = 0$$
-    \item[$\circ$] \emph{nonlinear traffic model} with $f(q)=u_{\max} (1-q) q$:
+    \item[$\circ$] \emph{nonlinear traffic model} with $f(q)=u_{\max} (1-q) q$ and $g=0$:
         $$q_t + \left(u_{\max} (1-q) q\right)_x = 0$$
     \end{itemize}
 \end{itemize}
@@ -1393,9 +1421,9 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{summary}
 
 \begin{itemize}
-\item for hyperbolic conservation-law systems $\bq_t + \bbf(\bq)_x = 0$
+\item for hyperbolic conservation-law systems $\bq_t + \bbf(\bq)_x = \bg$
     \begin{itemize}
-    \item[$\circ$] linear examples: acoustics, elasticity, Maxwell
+    \item[$\circ$] linear examples $\bbf(\bq)=A\bq$: acoustics, elasticity, Maxwell's equations
     \item[$\circ$] nonlinear examples: shallow water, compressible gas
     \end{itemize}
 a preferred numerical approach since the 1990s is a
@@ -1412,22 +1440,22 @@ a preferred numerical approach since the 1990s is a
         \end{itemize}
     \item[\alert{2.}] \alert{Riemann solvers}
         \begin{itemize}
-        \item a ``Riemann problem'' considers different cell values on each side of a face
+        \item the ``Riemann problem'' considers different cell values on each side of a face
         \item a Riemann solver determines the local wave structure (rarefaction, shock)
             \begin{description}[abc]
             \item[$\diamond$] provided by the user; exact or approximate (e.g.~Roe)
             \item[$\diamond$] for a system, uses eigen-expansion of $A = \bbf'(\bq)$
-            \item[$\diamond$] computes the flux on the face
+            \item[$\diamond$] compute the flux on the face forward in time
             \end{description}
         \end{itemize}
     \item[\alert{3.}] \alert{slope (or flux) limiters}
         \begin{itemize}
-        \item based on first-order upwinding (donor-cell; ``classical Godunov'')
+        \item based on first-order upwinding ($=$ donor-cell $=$ ``classical Godunov'')
         \item to achieve higher-order without oscillations:
             \begin{description}[abc]
             \item[$\diamond$] solution is ``reconstructed'' with slope in each cell
             \item[$\diamond$] slope is (nonlinearly) limited
-            \item[$\diamond$] reverts to first-order at extrema
+            \item[$\diamond$] the method reverts to first-order upwinding at extrema
             \end{description}
         \end{itemize}
     \end{itemize}
@@ -1449,7 +1477,7 @@ a preferred numerical approach since the 1990s is a
     \item[$\circ$] \emph{advection} is when $\bF(q) = \ba q$, where $\ba(x,y) = \left<u(x,y), v(x,y)\right>$ is velocity:
     $$q_t + (u q)_x + (v q)_y = 0$$
     \end{itemize}
-\item we want the solution a region $\Omega\subset \RR^2$, and for some times $0\le t \le T$
+\item we want the solution in a region $\Omega\subset \RR^2$, for some times $0\le t \le T$
 \end{itemize}
 \end{frame}
 
@@ -1468,7 +1496,6 @@ a preferred numerical approach since the 1990s is a
     \item[$\circ$] the method enforces the integrated version of conservation on the cell
     \item[$\circ$] there is one unknown and one equation per cell
     \end{itemize}
-\item the FV method always starts with the same manipulations \dots next slide
 \end{itemize}
 \end{frame}
 
@@ -1476,7 +1503,8 @@ a preferred numerical approach since the 1990s is a
 \begin{frame}{scalar conservation laws in 2D: integral form}
 
 \begin{itemize}
-\item suppose $V \subset \RR^2$ is a region (cell) in the $x,y$ plane
+\item the FV method always starts with the same manipulations \dots
+\item suppose $V \subset \RR^2$ is a \emph{finite volume} (cell) in the $x,y$ plane
     \begin{itemize}
     \item[$\circ$] the cell has volume (area) $|V|$
     \end{itemize}
@@ -1488,7 +1516,7 @@ a preferred numerical approach since the 1990s is a
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
 
     \begin{itemize}
-    \item[$\circ$] $\partial V$ is the boundary of $V$
+    \item[$\circ$] $\partial V = \text{boundary of } V$
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -1500,13 +1528,13 @@ a preferred numerical approach since the 1990s is a
 \item PDE $q_t + \Div \bF(q) = 0$ has become an ODE for $Q_V$:
     $$\frac{dQ_V}{dt} + \frac{1}{|V|} \int_{\partial V} \bF\cdot \bn\,ds = 0$$
 \item suppose region $\Omega$ is a rectangle: \quad $\Omega = [a,b] \times [c,d]$
-\item here, a \emph{structured} FV method cuts $\Omega$ into a grid of indexed cells $V_{ij}$
+\item a \emph{structured} FV method cuts $\Omega$ into a grid of indexed cells $V_{ij}$
     \begin{itemize}
     \item[$\circ$] rectangular cells have dimensions $h_x,h_y$ and area $|V_{ij}| = h_x h_y$
     \end{itemize}
 \item apply the equation for each cell:
     $$\frac{dQ_{ij}}{dt} + \frac{1}{h_x h_y} \int_{\partial V_{ij}} \bF\cdot \bn\,ds = 0 \hspace{50mm}$$
-\item i.e.~a system of ODEs: $\ds \frac{d\bQ}{dt} = \bG(t,\bQ)$
+\item get a system of ODEs: $\ds \frac{d\bQ}{dt} = \bG(t,\bQ)$
 \item to actually construct $\bG$ for this system
 
 we need a method for computing the
@@ -1579,23 +1607,29 @@ where
 
 \begin{itemize}
 \item recall that the Riemann problem has an initial condition of two values $Q_L$, $Q_R$ on the sides of a face
-\item important principle for most 2D (and 3D) FV schemes:
+\item important principle for 2D and 3D FV schemes:
 
-\hfill \emph{the Riemann problem on each face is treated as 1D, normal to the face}
+\bigskip
+\hfill \alert{the Riemann problem on each face is treated as 1D, normal to the face}
 
+\bigskip
     \begin{itemize}
-    \item[$\circ$] thus for advection, first-order upwinding looks only at the component of velocity normal to the face
+    \item[$\circ$] e.g.~for advection, first-order upwinding looks only at the component of velocity normal to the face
     \end{itemize}
-\item there are two essentially-equivalent modern routes to ``high-resolution'' schemes:
+\item two flavors of ``high-resolution'' schemes:
+    \begin{enumerate}
+    \item \emph{slope limiters} regard the solution in each cell as not constant, and then modify the slopes to avoid oscillations
+    \item \emph{flux limiters} compute the flux based on first-order upwinding, with an added term based on a higher-order flux, but limited to avoid oscillations
+    \end{enumerate}
     \begin{itemize}
-    \item[$\circ$] \emph{slope limiters} which regard the solution in each cell as not constant, and then modify the slopes to avoid oscillations
-    \item[$\circ$] \emph{flux limiters} which compute the flux based on first-order upwinding, with an added term based on a higher-order flux, but limited to avoid oscillations
+    \item[$\circ$] these 2 modern routes are (essentially) equivalent in 1D
+    \item[$\circ$] flux limiters may be more natural in 2D and 3D?
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{flux-limiter scheme}
+\begin{frame}{a flux-limiter scheme}
 
 \begin{itemize}
 \item recall that at the $N$ face of cell $V_{ij}$, first-order (donor-cell) upwinding was
@@ -1607,30 +1641,33 @@ where
                                Q_{i,j+1} + \psi(1/\theta_{j+1}) (Q_{i,j}-Q_{i,j+1}) \hspace{5mm} & v(N) < 0 \end{cases}$$
 where $\ds \theta_j = \frac{Q_{i,j}-Q_{i,j-1}}{Q_{i,j+1}-Q_{i,j}}$
 
-and $\psi(\theta)$ is a curve
+\small
+\item $\psi(\theta)$ is a curve in the famous
 
-in the shaded region
+Sweby (1984) shaded region
     \begin{itemize}
-    \item[$\circ$] dashed: Koren (1993)
     \item[$\circ$] solid: van Leer (1974)
+    \item[$\circ$] dashed: Koren (1993)
     \end{itemize}
-\item similar at $S,W,E$ faces
-\item see Sweby (1984)
 \end{itemize}
 
-\vspace{-33mm}
-\hfill \includegraphics[width=0.6\textwidth]{figs/bueler11p6}
+\vspace{-26mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/bueler11p6}
 \end{frame}
 
 
 \begin{frame}{flux-limiters in 2D: decision schematic}
 
 \begin{itemize}
-\item compare the decision made with first-order upwinding (left) versus the flux-limiter case using ``downwind'' (\textbf{\texttt{dn}}) and ``far'' points (right)
+\item make decisions at $N,E$ faces \dots this suffices
+\item compare: first-order upwinding (left) versus the flux-limiter case (right) using ``downwind'' (\textbf{\texttt{dn}}) and ``far'' points (\textbf{\texttt{far}})
+    \begin{itemize}
+    \item[$\circ$] a flux- or slope-limiter is \emph{stencil expanding}
+    \end{itemize}
 \end{itemize}
 
 \bigskip
-\quad \mbox{\includegraphics[width=0.38\textwidth]{figs/bueler11p8upwind} \hspace{15mm} \includegraphics[width=0.42\textwidth]{figs/bueler11p8fluxlimited}}
+\quad \mbox{\includegraphics[width=0.34\textwidth]{figs/bueler11p8upwind} \hspace{15mm} \includegraphics[width=0.38\textwidth]{figs/bueler11p8fluxlimited}}
 \end{frame}
 
 
@@ -1640,7 +1677,7 @@ in the shaded region
 \item suppose domain is square $\Omega = (-1,1) \times (-1,1)$ and equation $q_t + \Div \bF(q) = 0$ is advection ($\bF(q) = \ba q$) with a rotation velocity field:
     $$\ba(x,y) = \left<y,-x\right>$$
 \item solving for $0\le t \le 2\pi$ should rotate initial condition back to itself
-\item results on a $40\times 40$ grid with the Koren flux limiter and a Runge-Kutta ODE solver similar to \texttt{ode23}:
+\item results on a $40\times 40$ grid with the Koren flux limiter and an adaptive, 2nd-order Runge-Kutta ODE solver ($\approx$ \texttt{ode23}):
 
 \bigskip
 \hfill \includegraphics[width=0.75\textwidth]{figs/bueler11p7}
@@ -1661,28 +1698,37 @@ in the shaded region
     \begin{itemize}
     \item[$\circ$] uses C and PETSc and MPI
     \end{itemize}
-\item parallel run with 4 processors, Koren limiter, and SSP time-stepping:
-\begin{Verbatim}[fontsize=\small]
-$ mpiexec -n 4 ./advect -adv_problem rotation -da_refine 3 \
-    -ts_max_time 6.283185 -ts_monitor_solution draw \
+\item runs here use Koren flux-limiter and SSP time-stepping
+    \begin{itemize}
+    \item[$\circ$] \emph{strong stability-preserving} (SSP) is better than RK
+    \end{itemize}
+\item movie from parallel run with 4 processors:
+\begin{Verbatim}[fontsize=\footnotesize]
+$ tmpg -n 4 ./advect -adv_problem rotation \
+    -da_refine 3 -ts_max_time 6.283185 \
+    -ts_monitor_solution draw \
     -ts_type ssp -adv_limiter koren
 \end{Verbatim}
 %$
 
-\vspace{10mm}
-\hspace{15mm} \alert{SHOW 2D ADVECTION MOVIE}
+\vspace{-20mm}
+\hfill \includegraphics[width=0.22\textwidth]{figs/buelerfourproc}
 
-\vspace{10mm}
+\vspace{-1mm}
+\item parallel run with 12 processes in 90 seconds:
     \begin{itemize}
-    \item[$\circ$] compare \texttt{-adv\_limiter none|centered}
-    \item[$\circ$] compare \texttt{-ts\_type rk}
-    \item[$\circ$] time (without graphics)
-    \item[$\circ$] time with \texttt{-da\_refine 5} and $P=1,4$ proc
+    \item[$\circ$] $N=640\times 640 \times 4022 = 1.6 \times 10^9$ \dots billion-point space-time grid
     \end{itemize}
-\end{itemize}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ tmpg -n 12 ./advect -adv_problem rotation -da_refine 7 \
+    -ts_max_time 6.283185 -ts_type ssp -adv_limiter koren \
+    -ts_view_solution draw -draw_pause -1
+\end{Verbatim}
+%$
 
-\vspace{-40mm}
-\hfill \includegraphics[width=0.3\textwidth]{figs/buelerfourproc}
+\bigskip
+\hspace{15mm} \alert{SHOW}
+\end{itemize}
 \end{frame}
 
 \end{document}
