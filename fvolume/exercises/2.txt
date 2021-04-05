@@ -1,0 +1,11 @@
+Consider the scalar advection equation  q_t + a q_x = 0  on [0,1] with periodic
+boundary conditions and a = 1.  Recall that the basic FV derivation gives an
+MOL equation
+   dQ_i / dt + (F_{i+1/2} - F_{i-1/2}) / Delta x = 0
+where F(q) = a q.
+
+(a) Implement the upwind method this way, that is, as a donor-cell calculation of the cell-face fluxes F_{i+1/2} plus forward Euler.  (See the "upwind as the donor-cell method" slide.)  Choose a piecewise-linear but continuous initial condition.  Observe that the exact solution at an integer time is the same as the initial condition, and generate a figure.  Measure the numerical error in some suitable norm at t=1 and t=5.
+
+(b) Now implement the minmod slope limiter.  See the "from reconstruction to flux" and "slope limiter idea" slides.  Apply this idea, which will give a slightly-modified formula for the face fluxes, compared to part (a).  Redo the results in part (a).
+
+(c) Finally, keep the minmod slope limiter but generalize to the MOL form and apply a better ODE method.  Redo the results in part (a) and (b).

@@ -1,0 +1,9 @@
+Consider the linear hyperbolic system
+   q_t + A q_x = 0
+where q(t,x) is in R^2 and A = [0 1; 2 1].  Do the following steps. The "eigenvectors decouple hyperbolic systems" and "Riemann solver for the acoustics problem" slides should be a helpful reference.
+
+(a) Check from the definition that this system is in fact hyperbolic.
+
+(b) Suppose we denote q in components as q = [a; b].  Compute the Riemann invariants v_1(t,x) and v_2(t,x).
+
+(c) Write down a formula for the face flux F_{i+1/2}(t) in terms of , and then state a MOL scheme.
