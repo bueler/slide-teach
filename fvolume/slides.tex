@@ -622,6 +622,29 @@ $$\Delta x \frac{dQ_i}{dt} + \Fiphalf - \Fimhalf = 0 \hspace{50mm}$$
 \end{frame}
 
 
+\begin{frame}{just an illustration: FV in 2D}
+
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+\item the name ``finite volumes'' makes more sense in 2D or 3D
+    \begin{itemize}
+    \item[$\circ$] figure shows a structured 2D FV grid
+    \end{itemize}
+\item the ``grid'' in an FV scheme is often \emph{shown} as cell centers (dots)
+\item \dots the solution is actually represented by an \emph{average value $Q_{ij}$ per cell}
+\item each cell $V_{ij}$ is a domain of integration
+\item the scheme relates the cell average to the fluxes $F$ on faces (dashed lines)
+\item conservation holds because each cell face has one flux value
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\hfill \includegraphics[width=0.9\textwidth]{figs/bueler11p1}
+\end{column}
+\end{columns}
+\end{frame}
+
+
 \begin{frame}{an almost-complete FV scheme}
 
 \begin{itemize}
@@ -968,10 +991,11 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{frame}{demonstration of acoustics solver}
 
 \begin{itemize}
-\item I used all these ideas in a C$+$PETSc program for the acoustics problem
+\item I used all these ideas in a C$+$PETSc program for the acoustics problem:
+    $$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
 \item see \texttt{riemann} at
 \begin{center}
-\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
+\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/c/p4pdes-next}}
 \end{center}
 
 \vspace{3mm}
@@ -982,10 +1006,12 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 % ./riemann -da_grid_x 500 -ts_max_time 5 -limiter mc -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
 % make petscPyScripts
-% mkdir acoustic
-% ./plotTS.py -mx 500 -dof 2 -c 0 -ylabel "p (pressure)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustic/bar t.dat q.dat
-% cd acoustic/
-% eog bar*.png
+% mkdir acoustics
+% ./plotTS.py -mx 500 -dof 2 -c 0 -ylabel "p (pressure)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustics/pressure t.dat q.dat
+% ./plotTS.py -mx 500 -dof 2 -c 1 -ylabel "u (velocity)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustics/velocity t.dat q.dat
+% cd acoustics/
+% eog pressure*.png
+% eog velocity*.png
 \end{frame}
 
 
@@ -1343,7 +1369,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \end{center}
 \end{itemize}
 
-% cd p4pdes-next/riemann
+% cd p4pdes-next/riemann/c
 % make riemann
 % make petscPyScripts
 % ./riemann -problem traffic -da_grid_x 1000 -limiter mc -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
@@ -1457,11 +1483,10 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item put together the above tools \dots
-\item if you do it in C and PETSc and you use PETSc' ODE solvers then \dots you get my program \texttt{riemann} at
+\item if you use C and PETSc then \dots you get my program \texttt{riemann} at
     \begin{center}
     \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
     \end{center}
-\item if you do it in \Matlab and you use \texttt{ode23} then \dots you get Denys Dutykh's program
 \end{itemize}
 
 \vspace{10mm}
