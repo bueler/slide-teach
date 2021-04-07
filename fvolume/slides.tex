@@ -846,6 +846,22 @@ u_{tt} &= c^2 u_{xx}
 \end{itemize}
 \end{frame}
 
+\begin{comment}
+EMAIL SEND 4/7/21:
+
+David and Math 615 class --
+
+There was a question of why the "B" appearing on slide 33 in my talk was invertible.  It is a good question.  Here are two proofs, the first from Wesley and the second sponsored by the singular value decomposition (SVD).
+
+Suppose w_1, ... , w_d are linearly-independent vectors in R^d.  Let B be the d x d matrix with entries B_ij = w_i^T w_j.  Then B is invertible.
+
+Proof 1.  We will show B is one-to-one, thus invertible.  Form the square matrix W with columns w_1, ... , w_d.  It is easy to check that B = W^T W.  Note that W has full column rank so that W u = 0 implies u = 0.  Let u be any vector and suppose B u = 0 so W^T W u = 0.  Let z = W u, so W^T z = 0 and thus w_1^T z = 0, ..., w_d^T z = 0.  Writing z = sum_i a_i w_i, it follows that |z|^2 = z^T z = sum_i a_i w_i^T z = 0, so z = 0.  But then W u = 0 so u = 0.  That is, B is one-to-one.
+
+Proof 2.  Form the square matrix W with columns w_1, ... , w_d.  Note that W has full column rank so if W = U Sigma V^T is an SVD then the diagonal matrix Sigma is invertible.  Recall U, V are unitary.  It is easy to check that B = W^T W, and then   B = W^T W = V Sigma^T U^T U Sigma V^T = V Sigma^2 V^T.Each factor is invertible so B is invertible.
+Note that the SVD will be a key topic and tool in Math 614 Numerical Linear Algebra, offered in the fall.
+
+Ed
+\end{comment}
 
 \begin{frame}[fragile]
 \frametitle{left eigenvectors, transposes, and \Matlab}
