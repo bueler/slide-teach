@@ -1381,7 +1381,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW SHOCK MOVIE}
+\alert{SHOW TRAFFIC SHOCK MOVIE}
 \end{center}
 \end{itemize}
 
@@ -1499,7 +1499,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item put together the above tools \dots
-\item if you use C and PETSc then \dots you get my program \texttt{riemann} at
+\item if you use C and PETSc then you have my program \texttt{riemann} at
     \begin{center}
     \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
     \end{center}
@@ -1509,8 +1509,18 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{center}
 \alert{SHOW SHALLOW WATER ``DAM'' MOVIE}
 
+% ./riemann -problem swater -initial dam -da_grid_x 1000 -limiter mc -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
+% mkdir dam
+% ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot dam/height
+% ./plotTS.py -mx 1000 -ylabel "hu (flux)" -ax -5.0 -bx 5.0 -dof 2 -c 1 -cellcentered t.dat q.dat -oroot dam/flux
+% cd dam
+% eog height*.png
+% eog flux*.png
+
 \bigskip
-\alert{SHOW SHALLOW WATER ``HUMP'' MOVIE}
+\alert{(OR SHALLOW WATER ``HUMP'' MOVIE)}
+
+% LOOK IN swater/
 \end{center}
 \end{frame}
 
@@ -1803,7 +1813,7 @@ Sweby (1984) shaded region
 \begin{Verbatim}[fontsize=\footnotesize]
 $ tmpg -n 4 ./advect -adv_problem rotation \
     -da_refine 3 -ts_max_time 6.283185 \
-    -ts_monitor_solution draw \
+    -ts_monitor_solution draw -draw_size 600,600 \
     -ts_type ssp -adv_limiter koren
 \end{Verbatim}
 %$
@@ -1819,7 +1829,7 @@ $ tmpg -n 4 ./advect -adv_problem rotation \
 \begin{Verbatim}[fontsize=\footnotesize]
 $ tmpg -n 12 ./advect -adv_problem rotation -da_refine 7 \
     -ts_max_time 6.283185 -ts_type ssp -adv_limiter koren \
-    -ts_view_solution draw -draw_pause -1
+    -ts_view_solution draw -draw_size 600,600 -draw_pause -1
 \end{Verbatim}
 %$
 
