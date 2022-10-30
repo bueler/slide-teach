@@ -97,7 +97,7 @@
 \begin{frame}{steepest descent for unconstrained optimization}
 
 \begin{itemize}
-\item these slides are a brief introduction to a well-known topic in unconstrained optimization, namely \dots
+\item these slides are a brief introduction to a well-known topic in unconstrained optimization
 \item \alert{steepest descent}
     \begin{itemize}
     \item[$\circ$] a.k.a.~gradient descent
@@ -127,7 +127,7 @@
 \item for hard problems it may be the only thing you can implement
         \begin{itemize}
         \item[$\circ$] e.g.~big machine learning problems, big nonlinear inverse problems, \dots
-        \item[$\circ$] e.g.~\emph{stochastic gradient descent} is a nice, popular buzzword
+        \item[$\circ$] sometimes as \emph{stochastic gradient descent} (popular buzzword!)
             \begin{itemize}
             \item it's even slower (worse?) than ordinary steepest descent
             \end{itemize}
@@ -170,12 +170,6 @@
 \begin{frame}{steepest descent is obvious}
 
 \begin{itemize}
-\item \emph{any} choice of steepest descent length, i.e.~$p_k = - c \grad f(x_k)$ and $c>0$, generates a (feasible) descent direction at $x_k$
-    \begin{itemize}
-    \item[$\circ$] recall: $p$ is a \emph{descent direction at} $x$ if $p^\top \grad f(x)<0$
-    \end{itemize}
-
-\medskip
 \item steepest descent is an obvious interpretation of ```General Optimization Algorithm II'' in \S 2.4
     \begin{itemize}
     \item[$\circ$] direction is chosen as ``go straight downhill''
@@ -185,6 +179,12 @@
     \item[$\circ$] \alert{but we don't know how to use the length of $\grad f(x_k)$}
     \item[$\circ$] so we \emph{must} make a nontrivial step-length choice for $\alpha_k$
     \item[$\circ$] also we need a stopping criterion
+    \end{itemize}
+
+\medskip
+\item \emph{any} choice of steepest descent length, i.e.~$p_k = - c \grad f(x_k)$ and $c>0$, generates a (feasible) descent direction at $x_k$
+    \begin{itemize}
+    \item[$\circ$] recall: $p$ is a \emph{descent direction at} $x$ if $p^\top \grad f(x)<0$
     \end{itemize}
 
 \medskip
@@ -198,8 +198,11 @@
 
 \begin{itemize}
 \item we will see in section 11.5 that we can prove convergence of many unconstrained optimization algorithms as long as the step-size $\alpha_k$ is chosen to satisfy certain conditions
+    \begin{itemize}
+    \item[$\circ$] this is the \alert{line search} idea
+    \end{itemize}
 \item for now I just need \emph{some} reasonable way to choose $\alpha_k$
-\item the standard way to satisfy these conditions is called ``back-tracking''
+\item the most common way to satisfy these conditions is ``back-tracking''
     \begin{itemize}
     \item[$\circ$] page 378 of the textbook
     \item[$\circ$] an implementation:
@@ -215,10 +218,10 @@
         alpha = rho * alpha;
     end
 \end{Verbatim}
+    \end{itemize}
 
 \medskip
-    \item[$\circ$] we will return to this topic
-    \end{itemize}
+\item \alert{we will return to this topic}, and prove remarkable Theorem 11.7
 \end{itemize}
 \end{frame}
 
@@ -299,7 +302,7 @@ end
 \begin{frame}{quadratic functions}
 
 \begin{itemize}
-\item consider steepest descent for quadratic functions in $\RR^n$
+\item consider general quadratic functions in $\RR^n$
 \item such functions can always be written
     $$f(x) = \frac{1}{2} x^\top Q\, x - c^\top x + d$$
     \begin{itemize}
@@ -307,7 +310,7 @@ end
     \item[$\circ$] $Q$ is a symmetric square matrix, $c$ is a column vector, $d\in \RR$
     \item[$\circ$] recall that
         $$\grad f(x) = Q\, x - c$$
-    \item[$\circ$] example 1 above: $c=0$ and $\displaystyle Q = \begin{bmatrix} 5 & 0 \\ 0 & 1/2 \end{bmatrix}$
+    \item[$\circ$] example I above: $c=0$ and $\displaystyle Q = \begin{bmatrix} 5 & 0 \\ 0 & 1/2 \end{bmatrix}$
     \end{itemize}
 \item if $Q$ is positive definite then
             \begin{itemize}
@@ -343,20 +346,23 @@ end
 \begin{frame}{steepest descent is the wrong direction}
 
 \begin{itemize}
-\item in fact, \dots
 \item for quadratic objective functions $f(x)=\frac{1}{2} x^\top Q x - c^\top x$,
 
 \centerline{\alert{the Newton iteration converges to $x^*=Q^{-1}c$ in one step}}
+
+\bigskip
 \item Newton uses this direction:
     $$p_k = - \left(\grad f(x_k)^\top\right)^{-1} \grad f(x_k)$$
 \item steepest descent uses:
     $$p_k = - I^{-1} \grad f(x_k)$$
 \item \alert{the identity $I$ is the wrong matrix; it should be the Hessian of $f$ at $x_k$}
-\item unconstrained optimization needs the information in the Hessian, which turns the steepest descent direction $-\grad f(x_k)$ toward the minimum
+
+\bigskip
+\item unconstrained optimization \alert{needs the information in the Hessian}, which rotates and scales the steepest descent vector $-\grad f(x_k)$ to be an accurate step toward the minimum
     \begin{itemize}
-    \item[$\circ$] that's why we will care about the rest of Chapters 11, 12, and 13
+    \item[$\circ$] that's why it is worth reading Chapters 11, 12, and 13!
     \item[$\circ$] especially ``quasi-Newton'' methods
-    \item[$\circ$] but computing the Hessian is expensive, and inverting it is even more expensive
+    \item[$\circ$] however, computing and inverting the Hessian is expensive!
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -369,19 +375,21 @@ end
 \item determining the step size $\alpha_k$ is nontrivial
     \begin{itemize}
     \item[$\circ$] line search (section 11.5) or trust region (11.6) is needed
-    \item[$\circ$] for general functions, back-tracking is recommended
+    \item[$\circ$] for general functions, back-tracking is reasonable
     \item[$\circ$] for quadratic functions we can use the optimal step size
     \end{itemize}
 \item even with good line search, steepest descent sucks
     \begin{itemize}
     \item[$\circ$] steepest descent is slow when contour lines (level sets) are highly curved
+
+    \smallskip
     \item[$\circ$] going down the gradient is generally \alert{the wrong direction}:
         \begin{itemize}
         \item $p_k = - I^{-1} \grad f(x_k)$ is wrong, while
         \item $p_k = - (\grad^2f(x_k))^{-1} \grad f(x_k)$ is perfect for quadratic optimization
         \end{itemize}
     \end{itemize}
-\item however, general functions like Rosenbrock are difficult even for Newton
+\item unfortunately, functions like Rosenbrock remain difficult even for Newton
 \end{itemize}
 \end{frame}
 
