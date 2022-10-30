@@ -1,4 +1,4 @@
-% Copyright 2018-2022  Ed Bueler
+% Copyright 2018  Ed Bueler
 
 \documentclass[10pt,hyperref]{beamer}
 
@@ -78,13 +78,13 @@
 
 \title{Steepest descent}
 
-\subtitle{needs help}
+\subtitle{is not great}
 
 \author{Ed Bueler}
 
 \institute[MATH 661]{MATH 661 Optimization}
 
-\date{Fall 2022}
+\date[Fall 2018]{1 October 2018}
 
 \begin{document}
 \beamertemplatenavigationsymbolsempty
@@ -97,14 +97,15 @@
 \begin{frame}{steepest descent for unconstrained optimization}
 
 \begin{itemize}
+\item for the day I am away, here is a distraction from linear programming
 \item these slides are a brief introduction to a well-known topic in unconstrained optimization, namely \dots
 \item \alert{steepest descent}
     \begin{itemize}
     \item[$\circ$] a.k.a.~gradient descent
     \end{itemize}
-\item please read sections 12.1 and 12.2 of the textbook\footnote{Griva, Nash \& Sofer, \emph{Linear and Nonlinear Optimization}, 2nd ed., SIAM Press 2009}
+\item the textbook\footnote{Griva, Nash \& Sofer, \emph{Linear and Nonlinear Optimization}, 2nd ed., SIAM Press 2009} puts it off till later but you should be aware of it now
     \begin{itemize}
-    \item[$\circ$] ignore the Lemmas for now
+    \item[$\circ$] please read sections 12.1 and 12.2, but ignore the Lemmas for now
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -113,7 +114,7 @@
 \begin{frame}{why you should know about steepest descent}
 
 \begin{itemize}
-\item widely used for optimization in the ``real world''
+\item if you deal with optimization in the real world you will see it as a proposed algorithm for stuff
 \item for easy problems it is the lazy-person's algorithm
         \begin{itemize}
         \item[$\circ$] ``easy'' roughly means:
@@ -122,16 +123,17 @@
             \item dimension $< 10^6$ (or so)
             \item unconstrained
             \end{itemize}
-        \item[$\circ$] \alert{I don't recommend steepest descent}, but I acknowledge it might minimize total programmer time
+        \item[$\circ$] \alert{I don't recommend steepest descent}
+        \item[$\circ$] \dots but it might minimize total programmer time
         \end{itemize}
 \item for hard problems it may be the only thing you can implement
         \begin{itemize}
         \item[$\circ$] e.g.~big machine learning problems, big nonlinear inverse problems, \dots
+        \item[$\circ$] a version of steepest descent may be the standard in your industry
         \item[$\circ$] e.g.~\emph{stochastic gradient descent} is a nice, popular buzzword
             \begin{itemize}
-            \item it's even slower (worse?) than ordinary steepest descent
+            \item it's even slower than ordinary steepest descent
             \end{itemize}
-        \item[$\circ$] a version of steepest descent may be the standard in your industry
         \end{itemize}
 \end{itemize}
 \end{frame}
@@ -143,19 +145,15 @@
 \item assume $f:\RR^n \to \RR$ has (at least) one continuous derivative
 \item we want to solve the unconstrained problem:
     $$\min_{\RR^n} f(x)$$
-\item the \alert{steepest descent algorithm}:
+\item the algorithm:
 
 \medskip
 \mbox{\parbox{\textwidth}{%
 \begin{itemize}
 \item[1.] User supplies $x_0$.
-
-\medskip
 \item[2.] For $k=0,1,2,\dots$
     \begin{itemize}
     \item[(i)] If $x_k$ is optimal then stop.
-
-    \medskip
     \item[(ii)] Search direction is
        $$p_k = - \grad f(x_k)$$
     \item[(iii)] Determine step length $\alpha_k>0$.  Let $x_{k+1}=x_k+\alpha_k p_k$.
@@ -170,25 +168,25 @@
 \begin{frame}{steepest descent is obvious}
 
 \begin{itemize}
+\item it is an \emph{obvious} interpretation of general optimization algorithm II in \S 2.4
+    \begin{itemize}
+    \item[$\circ$] direction is chosen as ``go straight downhill''
+        \begin{itemize}
+        \item recall from calculus: the gradient points straight uphill
+        \end{itemize}
+    \item[$\circ$] but we don't know how to use the length of $\grad f(x_k)$
+    \item[$\circ$] \dots so we \emph{must} make a choice for $\alpha_k$
+    \item[$\circ$] also we need a stopping criterion
+    \end{itemize}
+
+\medskip
 \item \emph{any} choice of steepest descent length, i.e.~$p_k = - c \grad f(x_k)$ and $c>0$, generates a (feasible) descent direction at $x_k$
     \begin{itemize}
     \item[$\circ$] recall: $p$ is a \emph{descent direction at} $x$ if $p^\top \grad f(x)<0$
     \end{itemize}
 
 \medskip
-\item steepest descent is an obvious interpretation of ```General Optimization Algorithm II'' in \S 2.4
-    \begin{itemize}
-    \item[$\circ$] direction is chosen as ``go straight downhill''
-        \begin{itemize}
-        \item the gradient points straight uphill
-        \end{itemize}
-    \item[$\circ$] \alert{but we don't know how to use the length of $\grad f(x_k)$}
-    \item[$\circ$] so we \emph{must} make a nontrivial step-length choice for $\alpha_k$
-    \item[$\circ$] also we need a stopping criterion
-    \end{itemize}
-
-\medskip
-\item \emph{fun fact:} the direction of $p_k = - \grad f(x_k)$ solves this optimization problem
+\item choosing $p_k = - \grad f(x_k)$ uses the direction which solves this directional-derivative optimization problem
     $$\min_{\|q\|=1} q^\top \grad f(x_k)$$
 \end{itemize}
 \end{frame}
@@ -223,10 +221,10 @@
 \end{frame}
 
 
-\begin{frame}[fragile]{steepest-descent with back-tracking code}
+\begin{frame}[fragile]{steepest-descent-back-tracking code}
 
 \begin{itemize}
-\item here is a basic implementation of \emph{steepest-descent} with \emph{back-tracking}
+\item here is a basic implementation of \emph{steepest-descent-with-back-tracking}
     \begin{itemize}
     \item[$=$] SDBT
     \end{itemize}
@@ -238,7 +236,7 @@ xk = x0;
 for k = 1:maxiters
     [fxk, dfxk] = f(xk);
     if norm(dfxk) < tol
-        break                   % and report success
+        break
     end
     pk = - dfxk;                % steepest descent
     alpha = bt(xk,pk,dfxk,f);   % back-tracking
@@ -247,7 +245,7 @@ end
 \end{Verbatim}
 
 \medskip
-\item set \texttt{maxiters} to $10^4$ or so to avoid long waits for failure
+\item you can set \texttt{maxiters} to $10^4$ or so to avoid long waits for failure
 \end{itemize}
 \end{frame}
 
@@ -275,7 +273,7 @@ end
     $$f(x) = 100 (x_2 - x_1^2)^2 + (1 - x_1)^2$$
     \begin{itemize}
     \vspace{-4mm}
-    \item[$\circ$] a quartic polynomial in 2 variables
+    \item[$\circ$] is a \emph{quartic} polynomial in 2 variables
     \item[$\circ$] has a single global minimum at $x^*=(1,1)^\top$
     \item[$\circ$] has steep ``banana'' shaped contours (bottom left)
     \end{itemize}
@@ -299,21 +297,22 @@ end
 \begin{frame}{quadratic functions}
 
 \begin{itemize}
-\item consider steepest descent for quadratic functions in $\RR^n$
+\item now we consider steepest descent for quadratic functions in $\RR^n$
 \item such functions can always be written
     $$f(x) = \frac{1}{2} x^\top Q\, x - c^\top x + d$$
     \begin{itemize}
     \vspace{-3mm}
     \item[$\circ$] $Q$ is a symmetric square matrix, $c$ is a column vector, $d\in \RR$
-    \item[$\circ$] recall that
+    \item[$\circ$] exercise \textbf{P9} on A5: check that
         $$\grad f(x) = Q\, x - c$$
-    \item[$\circ$] example 1 above: $c=0$ and $\displaystyle Q = \begin{bmatrix} 5 & 0 \\ 0 & 1/2 \end{bmatrix}$
-    \end{itemize}
-\item if $Q$ is positive definite then
+    \item[$\circ$] \emph{assume} $Q$ is positive definite
             \begin{itemize}
-            \item $f$ is strictly convex, and
-            \item there is unique global minimizer where $\grad f=0$: \qquad $x^* = Q^{-1} c$
+            \item then $f$ is strictly convex
+            \item and there is unique global (and local) minimizer where $\grad f=0$: \hfill $x^* = Q^{-1} c$
             \end{itemize}
+    \item[$\circ$] the additive constant $d$ can be ignored in optimization problems because it neither affects $\grad f(x)$ nor the location of $x^*$
+    \item[$\circ$] example 1: $c=0$; $Q$ is a diagonal $2\times 2$ matrix with $5$,$1/2$ on diagonal
+    \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -324,7 +323,7 @@ end
 \item given any descent direction $p_k$ at $x_k$, the \emph{optimal} step size is
     $$\alpha_k = \frac{-p_k^\top \grad f(x_k)}{p_k^\top Q p_k} = \frac{p_k^\top (c - Q x_k)}{p_k^\top Q p_k}$$
     \begin{itemize}
-    \item[$\circ$] Exercise \textbf{P13} on Assignment \# 7
+    \item[$\circ$] showing this is in exercise \textbf{P9} on A5
     \end{itemize}
 \item this $\alpha_k$ minimizes $g(\alpha) = f(x_k + \alpha p_k)$ over $\alpha>0$
 \item thus back-tracking is \emph{not} needed for quadratic functions
@@ -332,8 +331,9 @@ end
 \bigskip
 \item \alert{but} steepest descent is still slow
     \begin{itemize}
-    \item[$\circ$] Exercise \textbf{P14} asks you to reproduce Example 12.1 in section 12.2 of the textbook, in which steepest descent with optimal step size uses a totally-unnecessary 216 steps to get modest accuracy
-    \item[$\circ$] fundamentally, \alert{the steepest descent direction is wrong}
+    \item[$\circ$] exercise \textbf{P10} on A5 asks you to reproduce Example 12.1 in section 12.2 of the textbook
+    \item[$\circ$] steepest descent with optimal step size uses a totally-unnecessary 216 steps to get modest accuracy
+    \item[$\circ$] since we have the optimal step size $\alpha_k$, the problem in steepest descent \alert{must be that the steepest descent direction is wrong}
     \end{itemize}
 
 \end{itemize}
@@ -343,26 +343,21 @@ end
 \begin{frame}{steepest descent is the wrong direction}
 
 \begin{itemize}
-\item in fact, \dots
-\item for quadratic objective functions $f(x)=\frac{1}{2} x^\top Q x - c^\top x$,
-
-\centerline{\alert{the Newton iteration converges to $x^*=Q^{-1}c$ in one step}}
+\item for quadratic objective functions $f(x)=\frac{1}{2} x^\top Q x - c^\top x$, where the gradient is a linear function, the \alert{Newton iteration converges to $x^*=Q^{-1}c$ in one step}
 \item Newton uses this direction:
     $$p_k = - \left(\grad f(x_k)^\top\right)^{-1} \grad f(x_k)$$
 \item steepest descent uses:
-    $$p_k = - I^{-1} \grad f(x_k)$$
-\item \alert{the identity $I$ is the wrong matrix; it should be the Hessian of $f$ at $x_k$}
-\item unconstrained optimization needs the information in the Hessian, which turns the steepest descent direction $-\grad f(x_k)$ toward the minimum
+    $$p_k = - \grad f(x_k) = - (I)^{-1} \grad f(x_k)$$
+\item unconstrained optimization usually benefits a lot from using the information in the Hessian to turn away from the steepest descent direction $-\grad f(x_k)$
     \begin{itemize}
     \item[$\circ$] that's why we will care about the rest of Chapters 11, 12, and 13
     \item[$\circ$] especially ``quasi-Newton'' methods
-    \item[$\circ$] but computing the Hessian is expensive, and inverting it is even more expensive
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{summary}
+\begin{frame}{summary slide}
 
 \begin{itemize}
 \item steepest descent simply uses search direction $p_k = -\grad f(x_k)$
@@ -375,13 +370,10 @@ end
 \item even with good line search, steepest descent sucks
     \begin{itemize}
     \item[$\circ$] steepest descent is slow when contour lines (level sets) are highly curved
-    \item[$\circ$] going down the gradient is generally \alert{the wrong direction}:
-        \begin{itemize}
-        \item $p_k = - I^{-1} \grad f(x_k)$ is wrong, while
-        \item $p_k = - (\grad^2f(x_k))^{-1} \grad f(x_k)$ is perfect for quadratic optimization
-        \end{itemize}
+    \item[$\circ$] going down the gradient is generally \alert{the wrong direction}
     \end{itemize}
-\item however, general functions like Rosenbrock are difficult even for Newton
+\item for quadratic functions Newton is clearly better: one step convergence
+\item hard functions like Rosenbrock are hard even for Newton
 \end{itemize}
 \end{frame}
 
