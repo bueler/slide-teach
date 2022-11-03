@@ -352,13 +352,13 @@ end
 
 \bigskip
 \item Newton uses this direction:
-    $$p_k = - \left(\grad f(x_k)^\top\right)^{-1} \grad f(x_k)$$
+    $$p_k = - \left(\grad^2 f(x_k)\right)^{-1} \grad f(x_k)$$
 \item steepest descent uses:
     $$p_k = - I^{-1} \grad f(x_k)$$
 \item \alert{the identity $I$ is the wrong matrix; it should be the Hessian of $f$ at $x_k$}
 
 \bigskip
-\item unconstrained optimization \alert{needs the information in the Hessian}, which rotates and scales the steepest descent vector $-\grad f(x_k)$ to be an accurate step toward the minimum
+\item unconstrained optimization \alert{needs the information in the Hessian $\grad^2 f(x_k)$}, which rotates and scales the steepest descent vector $-\grad f(x_k)$ to be an accurate step toward the minimum
     \begin{itemize}
     \item[$\circ$] that's why it is worth reading Chapters 11, 12, and 13!
     \item[$\circ$] especially ``quasi-Newton'' methods
@@ -372,7 +372,7 @@ end
 
 \begin{itemize}
 \item steepest descent simply uses search direction $p_k = -\grad f(x_k)$
-\item determining the step size $\alpha_k$ is nontrivial
+\item determining the step size $\alpha_k$, when actually taking the step $x_{k+1}=x_k + \alpha_k p_k$, is nontrivial
     \begin{itemize}
     \item[$\circ$] line search (section 11.5) or trust region (11.6) is needed
     \item[$\circ$] for general functions, back-tracking is reasonable
@@ -385,9 +385,10 @@ end
     \smallskip
     \item[$\circ$] going down the gradient is generally \alert{the wrong direction}:
         \begin{itemize}
-        \item $p_k = - I^{-1} \grad f(x_k)$ is wrong, while
-        \item $p_k = - (\grad^2f(x_k))^{-1} \grad f(x_k)$ is perfect for quadratic optimization
+        \item steepest descent direction $p_k = - I^{-1} \grad f(x_k)$ is wrong, while
+        \item Newton step direction $p_k = - (\grad^2f(x_k))^{-1} \grad f(x_k)$ is perfect for quadratic optimization
         \end{itemize}
+    \item[$\circ$] the steepest-descent vector $p_k = -\grad f(x_k)$ has a length which depends on the scaling of $f(x)$, which is bad; the Newton step does not have this flaw
     \end{itemize}
 \item unfortunately, functions like Rosenbrock remain difficult even for Newton
 \end{itemize}
