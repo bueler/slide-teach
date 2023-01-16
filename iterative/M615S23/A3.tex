@@ -8,7 +8,7 @@
 
 \renewcommand{\baselinestretch}{1.05}
 
-\usepackage{verbatim,fancyvrb}
+\usepackage{verbatim,fancyvrb,bm}
 
 \usepackage{palatino}
 
@@ -18,19 +18,7 @@
 \newtheorem*{problem}{Problem}
 \newtheorem*{remark}{Remark}
 
-\newcommand{\mtt}{\texttt}
-\usepackage{alltt,xspace}
-\newcommand{\mfile}[1]
-{\medskip\begin{quote}\scriptsize \begin{alltt}\input{#1.m}\end{alltt} \normalsize\end{quote}\medskip}
-
-\usepackage[final]{graphicx}
-\newcommand{\mfigure}[1]{\includegraphics[height=2.5in,
-width=3.5in]{#1.eps}}
-\newcommand{\regfigure}[2]{\includegraphics[height=#2in,
-keepaspectratio=true]{#1.eps}}
-\newcommand{\widefigure}[3]{\includegraphics[height=#2in,
-width=#3in]{#1.eps}}
-
+\usepackage{xspace}
 \usepackage{amssymb}
 
 \usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
@@ -38,10 +26,14 @@ width=#3in]{#1.eps}}
 % macros
 
 \newcommand{\bb}{\mathbf{b}}
+\newcommand{\bbf}{\mathbf{f}}
 \newcommand{\br}{\mathbf{r}}
+\newcommand{\bs}{\mathbf{s}}
 \newcommand{\bv}{\mathbf{v}}
 \newcommand{\bx}{\mathbf{x}}
 \newcommand{\by}{\mathbf{y}}
+
+\newcommand{\bzero}{\bm{0}}
 
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\RR}{\mathbb{R}}
@@ -89,13 +81,13 @@ frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
 \thispagestyle{empty}
 
 \bigskip
-There will be no lectures on 8 \& 10 February, Wednesday and Friday.  Instead I would like you to carefully go through the following slides:
+There will be no lectures on 8 \& 10 February (Wednesday \& Friday).  Instead, please carefully go through the following slides:
 
 \medskip
 \centerline{\href{http://bueler.github.io/nade/assets/slides/iterative.pdf}{\texttt{bueler.github.io/nade/assets/slides/iterative.pdf}}}
 
 \medskip
-\noindent  This Assignment is designed to be done based on these slides.  However, reading sections 4.1, 4.2, and 2.16 in the textbook will complement this material.
+\noindent  This Assignment is designed to be done based on these slides, but sections 4.1, 4.2, and 2.16 in the textbook complements this material.
 
 \medskip
 
@@ -107,7 +99,7 @@ There will be no lectures on 8 \& 10 February, Wednesday and Friday.  Instead I 
 \bigskip
 \noindent It should return the $N$th iterate $\bx_N$ as \texttt{z}.  Confirm that it works by showing you get the same $\bx_3$ as on page 4 of the slides.
 
-\epart{b}  How many iterations are needed to get 8 digit accuracy for LS1 with $\bx_0=0$ and using the preferred value of $\omega$?  How many iterations for $\omega = 0.1$ and $\omega = 0.5$?
+\epart{b}  How many iterations are needed to get 8 digit accuracy for LS1 with $\bx_0=0$ and using the preferred value of $\omega$?  (\emph{Clearly state how you interpret ``8 digit accuracy''.})  How many iterations for $\omega = 0.1$ and $\omega = 0.5$?
 
 
 \prob{P13}  \ppart{a}  Write \Matlab functions which do $N$ iterations of the Jacobi and Gauss-Seidel (GS) methods:
@@ -118,26 +110,24 @@ There will be no lectures on 8 \& 10 February, Wednesday and Friday.  Instead I 
 \centerline{\texttt{function z = gs(A,b,x0,N)}}
 
 \medskip
-\noindent For each one use the entries of $A$ directly.  That is, for \texttt{jacobi()}, implement formula (5) from the slides, and for \texttt{gs()} implement formula (7).  Your implementation of GS should use less memory than Jacobi; make sure this is clear.  (\emph{Do not split $A=D-L-U$ and store those parts; this is a waste of memory and misses the point.  You may, however, check your implementation by such splitting.}) 
+\noindent For each one use the entries of $A$ directly.  That is, for \texttt{jacobi()}, implement formula (5) from the slides, and for \texttt{gs()} implement formula (7).  (\emph{Do not split $A=D-L-U$ and store those parts; this is a waste of memory and misses the point.})  Your implementation of GS should use less memory than Jacobi; make sure this is clear. 
 
 \epart{b}  For each method, how many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?  (\emph{Clearly state how you interpret ``8 digit accuracy''.})  After demonstrating that GS fails on LS2, compute an explanatory spectral radius.
 
 
-\prob{P14}  For $N$ iterations on an $m\times m$ matrix $A$, how many floating-point operations (additions, subtractions, multiplications, divisions) does Jacobi iteration require?  Use formula (5) to answer.  Next answer the same question for GS, using formula (7).  (\emph{Your answers will be in terms of $N$ and $m$.})
+%\prob{PX}  For $N$ iterations on an $m\times m$ matrix $A$, how many floating-point operations (additions, subtractions, multiplications, divisions) does Jacobi iteration require?  Use formula (5) to answer.  Next answer the same question for GS, using formula (7).  (\emph{Your answers will be in terms of $N$ and $m$.})
+
+\prob{P14}  Show that Jacobi iteration converges if $A$ is strictly diagonally-dominant.  (\emph{Hints:  Jacobi iteration converges if and only if $\rho(M) < 1$ for $M = - D^{-1}(L+U)$.  So suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Show then that $M\bv=\lambda\bv$, and the assumption of strict diagonal dominance, shows $|\lambda v_i| < |v_i|$ which shows $|\lambda|<1$.})
 
 
-\clearpage\newpage
-\prob{P15}  Show that Jacobi iteration converges if $A$ is strictly diagonally-dominant.  (\emph{Hints:  Jacobi iteration converges if and only if $\rho(M) < 1$ for $M = - D^{-1}(L+U)$.  So suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Show then that $M\bv=\lambda\bv$, and the assumption of strict diagonal dominance, shows $|\lambda v_i| < |v_i|$ which shows $|\lambda|<1$.})
-
-
-\prob{P16}  \ppart{a}  Implement the finite difference method in problem \textbf{P10} on Assignment \#2, for this boundary value problem:
+\prob{P15}  \ppart{a}  Consider this boundary value problem from \textbf{P10} on Assignment \#2:
 \begin{equation*}
 u''(x) + q\, u(x) = f(x), \quad u(x_L) = \alpha, \quad u(x_R) = \beta. \end{equation*}
-Your code should have the signature
+Implement the centered finite difference method for this problem.  Your code should have the signature
 
-\centerline{\texttt{function u = bvpq(m,xL,xR,q,f,alpha,beta)}}
+\centerline{\texttt{function [x,u] = bvpq(m,xL,xR,q,f,alpha,beta)}}
 
-\noindent where $f$ is a function but the other parameters are integers or real numbers.  In this initial implementation, your code should use \Matlab's backslash command, or similar built-in solver, to solve the linear system.  Include this code in what you turn in.
+\noindent where input \texttt{f} is the function $f(x)$, but the other inputs are integers or real numbers.  The outputs are the grid vector \texttt{x} and the (approximate) solution vector \texttt{u}.  In this initial implementation, your code should use \Matlab's backslash command, or similar built-in solver, to solve the linear system.  Include this code in what you turn in.
 
 \epart{b}  Check correctness of \texttt{bvpq} by solving the problem
 \begin{equation*}
@@ -147,9 +137,13 @@ exactly, using the solution $u_{\text{ex}}(x)=1 - \sin(\pi x/4)$.  That is, star
 
 \epart{c}  Your part \textbf{(a)} code sets up and solves a linear system $AU=F$.  For what $q$ values is $A$ strictly diagonally-dominant (SDD)?
 
-\epart{d}  Duplicate the code from part \textbf{(a)}, give it a new name \texttt{bvpqgs}, and implement Gauss-Seidel (GS) to solve the linear system, instead of the built-in linear solver.  (Include this code in what you turn in.)  Let $x_L=0$ and $x_R=2$ as in part \textbf{(b)}.  For each of $m=5$ and $m=50$ find \emph{nonzero} values $q$ where Gauss-Seidel does converge and does not converge.  (\emph{That is, find 4 values of $q$ with these properties.  The particular values of $f(x),\alpha,\beta$ will not matter in this numerical experiment.})  When convergence happens, state the number of iterations needed to get 8 digit accuracy.
+\epart{d}  Duplicate the code from part \textbf{(a)}, give it a new name \texttt{bvpqgs}, and implement Gauss-Seidel (GS) to solve the linear system, instead of the built-in linear solver.  (Include this code in what you turn in.)  Let $x_L=0$ and $x_R=2$ as in part \textbf{(b)}.  For each of $m=5$ and $m=50$ find nonzero values $q$ where Gauss-Seidel does converge and does not converge.  (\emph{That is, find 4 values of $q$ with these properties.  The particular values of $f(x),\alpha,\beta$ will not matter in this numerical experiment.})  When convergence happens, state the number of iterations needed to get 8 digit accuracy.
 
 
-\prob{P16}  FIXME Newton's method problem
+\prob{P16}  \ppart{a}  Consider these 3 equations, chosen for visualizability:
+  $$x^2+y^2+z^2 = 4, \quad x = \cos(\pi y), \quad z = y^2$$
+Sketch each equation individually as a surface in $\RR^3$.  (\emph{Do this by hand or by computer, the goal being a clear mental image of intersecting surfaces.  Accuracy is not important.})  Describe informally why there are two solutions of this system of three equations, that is, two points $(x,y,z)\in\RR^3$ at which all three equations are satisfied.  Explain why both solutions are inside the box $-1\le x \le 1, -2\le y \le 2, 0\le z \le 2$.
+
+\epart{b}  The slides describe Newton's method for nonlinear systems.  Implement it in \Matlab/etc.~to solve the above nonlinear system.  Show your script and generate at least five iterations.  Use $\bx_0=(-1,1,1)$ as an initial iterate to find one solution, and also find the other solution using a different initial iterate.  Note that \, \texttt{format long} \, is appropriate here.
 
 \end{document}

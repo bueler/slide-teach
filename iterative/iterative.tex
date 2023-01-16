@@ -23,23 +23,8 @@
 % Or whatever. Note that the encoding and the font should match. If T1
 % does not look nice, try deleting the line with the fontenc.
 
-\usepackage{empheq}
-\usepackage{animate}
-\usepackage{xspace}
-\usepackage{fancyvrb}
+\usepackage{empheq,bm,xspace,fancyvrb}
 \usepackage{hyperref}
-
-
-
-\title{Classical iterative methods \\ for linear and nonlinear systems}
-
-\author{Ed Bueler}
-
-\institute[MATH 615 NADE]{MATH 615 Numerical Analysis of Differential Equations}
-
-\date{Spring 2023}
-
-
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -47,12 +32,16 @@
 
 \newcommand{\bb}{\mathbf{b}}
 \newcommand{\bc}{\mathbf{c}}
+\newcommand{\bbf}{\mathbf{f}}
 \newcommand{\br}{\mathbf{r}}
+\newcommand{\bs}{\mathbf{s}}
 \newcommand{\bx}{\mathbf{x}}
 \newcommand{\by}{\mathbf{y}}
 \newcommand{\bv}{\mathbf{v}}
 \newcommand{\bu}{\mathbf{u}}
 \newcommand{\bw}{\mathbf{w}}
+
+\newcommand{\bzero}{\bm{0}}
 
 \newcommand{\CC}{\mathbb{C}}
 \newcommand{\RR}{\mathbb{R}}
@@ -66,10 +55,6 @@
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
-\newcommand{\MS}{\alert{MAKE SURE}\xspace}
-
-\newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
-
 \newcommand{\mfile}[1]{
 \VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
 }
@@ -78,6 +63,14 @@
 \VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
 }
 
+
+\title[Classical iterative methods]{Classical iterative methods \\ for linear and nonlinear systems}
+
+\author{Ed Bueler}
+
+\institute[MATH 615 NADE]{MATH 615 Numerical Analysis of Differential Equations}
+
+\date{Spring 2023}
 
 \AtBeginSection[]
 {
@@ -101,7 +94,8 @@
 \begin{equation}
 A \bx = \bb \label{introsystem}
 \end{equation}
-where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
+where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$
+\item the goal is to find $\bx\in \RR^m$
 \item  throughout these notes we use 2 linear system examples:
   \begin{itemize}
   \item[LS1] 
@@ -124,8 +118,8 @@ where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
 \begin{bmatrix} 7 \\ 1 \\ 1 \\ 3 \end{bmatrix}
 \end{equation*}
   \end{itemize}
-\item it is trivial to find solutions of LS1, LS2 using the ``$\bx = A\backslash \bb$'' black box in \Matlab (or similar)
-\item these small examples stand-in for the large linear systems we get from applying finite difference (FD) schemes to ODE and PDE problems
+\item it is trivial to find solutions of LS1, LS2 using the ``\texttt{x=A$\backslash$b}'' black box in \Matlab (or similar)
+\item LS1 and LS2 stand-in for the large linear systems we get from applying finite difference (FD) schemes to ODE and PDE problems
 \end{itemize}
 \end{frame}
 
@@ -144,32 +138,48 @@ where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
   \item[$\circ$] requires $O(m^2)$ operations at worst
   \item[$\circ$] by comparison, applying Gauss elimination to solve linear system \eqref{introsystem} is an $O(m^3)$ operation in general
   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{sparse matrices}
+
+\begin{itemize}
 \item \emph{definition.}  a matrix with enough zeros to allow exploitation of that fact is called \emph{sparse}
   \begin{itemize}
-  \item[$\circ$] even if $A$ is sparse, $A^{-1}$ is generally \emph{dense}, i.e.~most entries are nonzero
-  \item[$\circ$] FD schemes for differential equations generate matrices $A$ for which the majority, often $99\%$ or more, of the entries are zero
+  \item[$\circ$] the figure shows \texttt{spy} plots of 3 matrices; nonzero entries are in black
+  \item[$\circ$] numerical schemes for differential equations generate matrices $A$ for which the majority, often $99\%$ or more, of the entries are zero
+  \end{itemize}
+\item a non-sparse matrix is called \emph{dense}, e.g.~when most entries are nonzero
+  \begin{itemize}
+  \item[$\circ$] even if $A$ is sparse, $A^{-1}$ is generally dense
   \end{itemize}
 \item evaluating the residual of a sparse matrix with at most $z$ nonzero entries per row requires $O(m)$ operations
   \begin{itemize}
-  \item[$\circ$] specifically, at most $2zm+1$ operations
+  \item[$\circ$] specifically, at most $(2z+1)m$ operations
   \end{itemize}
 \end{itemize}
+
+\bigskip
+\begin{center}
+\includegraphics[width=0.7\textwidth]{sparsities.png}
+\end{center}
 \end{frame}
 
 
 \begin{frame}{Richardson iteration}
 
 \begin{itemize}
-\item \emph{iterative methods} for linear system \eqref{introsystem} attempt to solve it based only on operations like computing the residual, or applying $A$ to a vector
+\item \emph{iterative methods} for the linear system $A\bx=\bb$ attempt to solve it based only on computing the residual or applying $A$ to a vector
   \begin{itemize}
   \item[$\circ$] one wants the sequence of approximations, the iterates, to \emph{converge} to the solution $\bx = A^{-1} \bb$
   \item[$\circ$] Iterative methods always require an initial iterate $\bx_0$
   \end{itemize}
-\item \emph{Richardson iteration} adds a multiple $\omega$ of the last residual at each step:
+\item for example, \emph{Richardson iteration} adds a multiple $\omega$ of the last residual at each step:
 \begin{equation}
 \bx_{k+1} = \bx_k + \omega (\bb - A \bx_k)  \label{richardson}
 \end{equation}
-\item for system LS1, using initial iterate $\bx_0=0$ and $\omega=1/5$, \eqref{richardson} gives:\small
+\item for system LS1, using initial iterate $\bx_0=0$ and $\omega=1/5$, Richardson gives:\small
 \begin{align*}
 \bx_0 &= \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}, \,
 \bx_1 = \begin{bmatrix} 0.4 \\ 0.2 \\ 0.8 \end{bmatrix}, \,
@@ -178,7 +188,8 @@ where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
 \bx_{10} = \begin{bmatrix} 0.998 \\ -0.017 \\ 1.01 \end{bmatrix},
 \dots
 \end{align*}
-these iterates seem to be converging to $\bx = [1 \,\, 0 \,\, 1]^\top$, which is the solution to LS1
+these iterates seem to be converging to $\bx = [1 \,\, 0 \,\, 1]^\top$, the solution to LS1
+\item when does Richardson iteration work?
 \end{itemize}
 \end{frame}
 
@@ -223,7 +234,7 @@ whether an iterative method for solving a linear system $A\bx = \bb$ converges, 
 \medskip
 \item the right-hand side $\bb$ in the linear system $A\bx = \bb$, and the initial iterate $\bx_0$, generally \emph{do not} determine whether an iteration converges
   \begin{itemize}
-  \item[$\circ$] a good choice of $\bx_0$ \emph{can} speed up convergence
+  \item[$\circ$] a good choice of $\bx_0$ \emph{can} speed up convergence when it happens
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -239,11 +250,12 @@ whether an iterative method for solving a linear system $A\bx = \bb$ converges, 
   \begin{itemize}
   \item[$\circ$] confirm this!
   \end{itemize}
-\item the lemma on the next slide shows that the Richardson iteration converges if and only if all the eigenvalues of the matrix $I-\omega A$ are inside the unit circle:
-    $$\text{Richardson converges if and only if } \rho(I-\omega A) < 1$$
+\item Richardson iteration converges if and only if all the eigenvalues of the matrix $I-\omega A$ are inside the unit circle:
 
-\vspace{-2mm}
+$$\text{Richardson converges if and only if } \rho(I-\omega A) < 1$$
+
   \begin{itemize}
+  \item[$\circ$] see the lemma on the next slide
   \item[$\circ$] note $\rho(I-\omega A) < 1$ means $(I - \omega A) \bx_k$ is smaller in magnitude than $\bx_k$
   \item[$\circ$] fact: \emph{if} $\|I-\omega A\| < 1$ \emph{then} Richardson converges
   \end{itemize}
@@ -264,10 +276,9 @@ converges to the solution of $\by = M \by + \bc$ for all initial $\by_0$ if and 
 Iterate.  That is, write out a few cases:
 \begin{align*}
    \by_2 &= M (M \by_0 + \bc) + \bc = M^2 \by_0 + (I + M) \bc, \\
-   \by_3 &= M (M^2 \by_0 + (I + M) \bc) + \bc = M^3 \by_0 + (I + M + M^2) \bc, \\
-   &\vdots
+   \by_3 &= M (M^2 \by_0 + (I + M) \bc) + \bc = M^3 \by_0 + (I + M + M^2) \bc,
 \end{align*}
-By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2 + \dots + x^{k-1}$.  But $p_k(x) \to 1/(1-x)$ as $k\to\infty$ iff $x\in(-1,1)$; it is a convergent Maclaurin series on that open interval.  Also, $\rho(M)<1$ iff $M^k \to 0$.  Thus $\by_k \to (I-M)^{-1} \bc$ iff $\rho(M) < 1$.
+and so on.  By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2 + \dots$ $+ x^{k-1}$.  But $p_k(x) \to 1/(1-x)$ as $k\to\infty$ iff $x\in(-1,1)$; it is a convergent Maclaurin series on that open interval.  Also, $\rho(M)<1$ iff $M^k \to 0$.  Thus $\by_k \to (I-M)^{-1} \bc$ iff $\rho(M) < 1$.
 \end{proof}
 \end{frame}
 
@@ -322,8 +333,11 @@ By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2
 \begin{frame}{matrix splitting}
 
 \begin{itemize}
-\item unlike Richardson, most classical iteration methods ``split'' the matrix $A$ before iterating
-\item the best known, and simplest, iteration based on splitting is \emph{Jacobi iteration}, which extracts the diagonal of $A$ (and inverts it)
+\item several classical iteration methods ``split'' the matrix $A$ before iterating
+  \begin{itemize}
+  \item[$\circ$] Richardson iteration is an exception
+  \end{itemize}
+\item the best known, and simplest, iteration based on splitting is \emph{Jacobi iteration}, which extracts and inverts the diagonal of $A$
 \item the splitting we consider is
     $$A = D - L - U \vspace{-3mm}$$
 where
@@ -366,8 +380,8 @@ where $x_j^{(k)}$ denotes the $j$th entry of the $k$th iterate $\bx_k$
 \begin{frame}{Gauss-Seidel iteration}
 
 \begin{itemize}
-\item \emph{Gauss-Seidel iteration} extracts the non-strict lower-triangular part of $A$ (and inverts it)
-\item again if $A = D - L - U$ then it is
+\item \emph{Gauss-Seidel iteration} instead extracts and inverts the non-strict lower-triangular part of $A$
+\item if $A = D - L - U$ then Gauss-Seidel is
 \begin{equation}
 (D - L) \bx_{k+1} = b + U \bx_k  \label{gaussseidel}
 \end{equation}
@@ -402,34 +416,29 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 \begin{frame}{diagonally-dominant matrices}
 
 \begin{itemize}
-\item \emph{definition}.  $A$ is \emph{strictly diagonally-dominant} if $|a_{ii}| > \sum_{j\ne i} |a_{ij}|$
+\item \emph{definition}.  $A$ is \emph{strictly diagonally-dominant} (SDD) if $|a_{ii}| > \sum_{j\ne i} |a_{ij}|$
   \begin{itemize}
-  \item[$\circ$] LS1 is strictly diagonally-dominant
-  \item[$\circ$] LS2 is not
+  \item[$\circ$] $A$ in LS1 is SDD
+  \item[$\circ$] $A$ in LS2 is not
+  \item[$\circ$] SDD is a common, but not universal, property of the matrices coming from FD schemes on ODEs and PDEs
   \end{itemize}
 
 \item facts:\footnote{section 11.2 of Golub and van Loan, \emph{Matrix Computations}, 4th edition 2013}
   \begin{itemize}
-  \item[$\circ$] if $A$ is strictly diagonally-dominant then both the Jacobi and Gauss-Seidel iterations converge; see problem \textbf{P15} 
+  \item[$\circ$] if $A$ is strictly diagonally-dominant then both the Jacobi and Gauss-Seidel iterations converge; see problem \textbf{P14} 
   \item[$\circ$] if $A$ is symmetric positive definite then Gauss-Seidel iteration converges
-  \end{itemize}
-\item unlike the ``$\rho(\dots) < 1$'' conditions on the last slide:
-  \begin{itemize}
-  \item[$\circ$] it is easy to check diagonal-dominance
-  \item[$\circ$] it is a common, but not universal, property of the matrices coming from FD schemes on ODEs and PDEs
   \item[$\circ$] these are only \emph{sufficient} conditions, e.g.~there are nonsymmetric $A$, which are \emph{not} diagonally-dominant, for which the iterations converge
   \end{itemize}
+\item unlike the ``$\rho(\dots) < 1$'' conditions on the last slide, it is easy to check SDD
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{\emph{interlude:} past, recent past, and future}
+\begin{frame}{\emph{interlude:} past and future}
 
 \begin{itemize}
 \item the Jacobi and Gauss-Seidel iterations are from the 19th century
-  \begin{itemize}
-  \item[$\circ$] Richardson iteration first appears in a 1910 publication
-  \end{itemize}
+\item Richardson iteration first appears in a 1910 publication
 \item the early history of numerical partial differential equations, e.g.~in the 1920 to 1970 period, heavily used these classical iterations
   \begin{itemize}
   \item[$\circ$] a generalization of Gauss-Seidel iteration called \emph{successive over-relaxation}, was a particular favorite around 1970;  see section 4.2 of the textbook
@@ -439,9 +448,9 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
   \begin{itemize}
   \item[$\circ$] among the best known are CG = \emph{conjugate gradients} ($\sim$1950) and GMRES = \emph{generalized minimum residuals} (Saad and Schultz, 1986)
   \item[$\circ$] GMRES works (i.e.~converges at some rate) on LS2
-  \item[$\circ$] \emph{but} there can be no ``good iteration'' with a universally-fast convergence rate\footnote{a remarkable 1992 theorem by Nachtigal, Reddy, and Trefethen}
+  \item[$\circ$] \emph{but} there is no ``good iteration'' with a universally-fast convergence rate for all matrices\footnote{a remarkable 1992 theorem by Nachtigal, Reddy, and Trefethen}
   \end{itemize}
-\item iterations to solve linear systems are the future:
+\item iterative methods for solving linear systems will dominate the future:
   \begin{itemize}
   \item[$\circ$] they are obligatory on sufficiently-big systems
   \item[$\circ$] they work better in parallel than direct methods like Gauss elimination
@@ -455,7 +464,7 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 
 \begin{itemize}
 \small
-\item Gauss (1777--1855) did lots of big stuff:
+\item of course, Gauss (1777--1855) did lots of big stuff:
 
     \centerline{\href{https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss}{\texttt{en.wikipedia.org/wiki/Carl\_Friedrich\_Gauss}}}
 
@@ -470,7 +479,7 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
     \centerline{\href{https://en.wikipedia.org/wiki/Philipp_Ludwig_von_Seidel}{\texttt{en.wikipedia.org/wiki/Philipp\_Ludwig\_von\_Seidel}}}
 
 \medskip
-\item Richardson (1881--1953) is the most interesting.  He invented numerical weather forecasting, doing it by-hand for fun during WWI.  Later, as a pacifist and quaker, he quit the subject when he found his meteorological work was being used by chemical weapons engineers and the British Air Force:
+\item Richardson (1881--1953) is the most interesting.  He invented numerical weather forecasting, doing it by-hand for fun during WWI.  Later, as a pacifist and quaker, he quit the subject when he found his meteorological work was being used by chemical weapons engineers and the military:
 
     \centerline{\href{https://en.wikipedia.org/wiki/Lewis_Fry_Richardson}{\texttt{en.wikipedia.org/wiki/Lewis\_Fry\_Richardson}}}
 \end{itemize}
@@ -479,14 +488,61 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 
 \begin{frame}{nonlinear systems}
 \begin{itemize}
-\item FIXME
+\item generally, systems of equations are not linear so they cannot be written in the form $A \bx = \bb$
+\item instead, we can write any square system of equations using a function $\bbf:\RR^n\to \RR^n$:
+    $$\bbf(\bx)=\bzero$$
+
+  \begin{itemize}
+  \item[$\circ$] ``square'' simply means the number of unknowns (inputs to $\bbf$) equals the number of equations (outputs from $\bbf$)
+  \end{itemize}
+\item if $\bbf$ is smooth then its first derivative is a matrix-valued function called the \emph{Jacobian} of $\bbf$:
+	$$J_{ij} = \frac{\partial f_i}{\partial x_j}$$
+
+  \begin{itemize}
+  \item[$\circ$] for each $\bx$, $J(\bx) \in\RR^{n\times n}$ is an $n\times n$ matrix
+  \end{itemize}
+\item \emph{example}: a function and its Jacobian:
+    $$\bbf(\bx) = \begin{bmatrix} \frac{1}{2} e^{2x_1} - x_2 \\ \\ x_1^2 + x_2^2 - 1 \end{bmatrix}, \qquad
+    J(\bx) = \begin{bmatrix} e^{2x_1} & -1 \\ \\
+                             2 x_1 & 2 x_2 \end{bmatrix}$$
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{example of a nonlinear system}
+
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+\item find where the circle of radius 1 intersects the graph of an exponential:
+\begin{align*}
+x^2+y^2 = 1 \\
+y = \frac{1}{2} e^{2x}
+\end{align*}
+\item renaming $x=x_1,y=x_2$ allows us to write this as $\bbf(\bx)=\bzero$, same as on previous slide
+  $$\bbf(\bx) = \begin{bmatrix} \frac{1}{2} e^{2x_1} - x_2 \\ \\ x_1^2 + x_2^2 - 1 \end{bmatrix}$$
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\includegraphics[width=\textwidth]{newtonexample.png}
+\end{column}
+\end{columns}
 \end{frame}
 
 
 \begin{frame}{Newton's method}
 \begin{itemize}
-\item FIXME
+\item Newton's method for a system of nonlinear equations is an iterative, approximate, and sometimes very fast, method for solving systems like the one above.
+\item Newton's method itself is
+\begin{gather}
+J(\bx_n)\, \bs = - \bbf(\bx_n), \label{stepeqn} \\
+\bx_{n+1} = \bx_n + \bs \label{updateeqn}
+\end{gather}
+where $\bs=(s_1,s_2,s_3)$ is the \emph{step} and $\bx_0$ is an initial iterate
+\item equation \eqref{stepeqn} is a system of linear equations which determines $\bs$
+\item equation \eqref{updateeqn} moves to the next iterate
+
+\item FIXME SHOW EXAMPLE
 \end{itemize}
 \end{frame}
 
