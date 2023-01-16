@@ -33,6 +33,7 @@
 \newcommand{\bb}{\mathbf{b}}
 \newcommand{\bc}{\mathbf{c}}
 \newcommand{\bbf}{\mathbf{f}}
+\newcommand{\bl}{\bm{\ell}}
 \newcommand{\br}{\mathbf{r}}
 \newcommand{\bs}{\mathbf{s}}
 \newcommand{\bx}{\mathbf{x}}
@@ -54,6 +55,9 @@
 %\newcommand{\MO}{\Matlab/\Octave}
 \newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
+
+\newcommand{\twovect}[4]{\ensuremath{{#1}_{#2} =
+                            \begin{bmatrix} #3 \\ #4 \end{bmatrix}}}
 
 \newcommand{\mfile}[1]{
 \VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
@@ -488,7 +492,7 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 
 \begin{frame}{nonlinear systems}
 \begin{itemize}
-\item generally, systems of equations are not linear so they cannot be written in the form $A \bx = \bb$
+\item generally, systems of equations are \emph{not} linear, so they cannot be written in the form $A \bx = \bb$
 \item instead, we can write any square system of equations using a function $\bbf:\RR^n\to \RR^n$:
     $$\bbf(\bx)=\bzero$$
 
@@ -499,7 +503,7 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 	$$J_{ij} = \frac{\partial f_i}{\partial x_j}$$
 
   \begin{itemize}
-  \item[$\circ$] for each $\bx$, $J(\bx) \in\RR^{n\times n}$ is an $n\times n$ matrix
+  \item[$\circ$] for each $\bx$, $J(\bx)$ is an $n\times n$ matrix
   \end{itemize}
 \item \emph{example}: a function and its Jacobian:
     $$\bbf(\bx) = \begin{bmatrix} \frac{1}{2} e^{2x_1} - x_2 \\ \\ x_1^2 + x_2^2 - 1 \end{bmatrix}, \qquad
@@ -514,17 +518,27 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
 \begin{columns}
 \begin{column}{0.55\textwidth}
 \begin{itemize}
+\item here is an example of a nonlinear system with $\bbf:\RR^2\to\RR^2$
 \item find where the circle of radius 1 intersects the graph of an exponential:
 \begin{align*}
 x^2+y^2 = 1 \\
-y = \frac{1}{2} e^{2x}
+y = \tfrac{1}{2} e^{2x}
 \end{align*}
-\item renaming $x=x_1,y=x_2$ allows us to write this as $\bbf(\bx)=\bzero$, same as on previous slide
+
+  \begin{itemize}
+  \item[$\circ$] note there are two intersection points
+  \item[$\circ$] I \emph{don't} know how to find them by hand
+  \end{itemize}
+\item renaming $x=x_1,y=x_2$ allows us to write this as $\bbf(\bx)=\bzero$:
   $$\bbf(\bx) = \begin{bmatrix} \frac{1}{2} e^{2x_1} - x_2 \\ \\ x_1^2 + x_2^2 - 1 \end{bmatrix}$$
+
+  \begin{itemize}
+  \item[$\circ$] the same example as on the last slide
+  \end{itemize}
 \end{itemize}
 \end{column}
 \begin{column}{0.45\textwidth}
-\includegraphics[width=\textwidth]{newtonexample.png}
+\includegraphics[width=\textwidth]{nonlinexample.png}
 \end{column}
 \end{columns}
 \end{frame}
@@ -532,18 +546,72 @@ y = \frac{1}{2} e^{2x}
 
 \begin{frame}{Newton's method}
 \begin{itemize}
-\item Newton's method for a system of nonlinear equations is an iterative, approximate, and sometimes very fast, method for solving systems like the one above.
-\item Newton's method itself is
-\begin{gather}
-J(\bx_n)\, \bs = - \bbf(\bx_n), \label{stepeqn} \\
-\bx_{n+1} = \bx_n + \bs \label{updateeqn}
-\end{gather}
-where $\bs=(s_1,s_2,s_3)$ is the \emph{step} and $\bx_0$ is an initial iterate
-\item equation \eqref{stepeqn} is a system of linear equations which determines $\bs$
-\item equation \eqref{updateeqn} moves to the next iterate
+\item our classical linear iterations generated sequences $\bx_k$ which solved $\br(\bx) = \bb - A \bx = 0$, that is, so that $\br(\bx_k) \to \bzero$
+\item similarly, \emph{Newton's method} for a system of nonlinear equations generates a sequence $\bx_k$ so that $\bbf(\bx_k) \to \bzero$
 
-\item FIXME SHOW EXAMPLE
+  \begin{itemize}
+  \item[$\circ$] as usual, an initial iterate $\bx_0$ is needed
+  \end{itemize}
+\item it repeatedly linearizes $\bbf(\bx)=0$; one needs to solve a linear system to get each new iterate $\bx_k$
+\item it is often surprisingly fast!
+\item Newton's method:
+\begin{gather}
+J(\bx_k)\, \bs = - \bbf(\bx_k), \label{stepeqn} \\
+\bx_{k+1} = \bx_k + \bs \label{updateeqn}
+\end{gather}
+
+  \begin{itemize}
+  \item[$\circ$] eqn \eqref{stepeqn} is a system of linear equations which determines the \emph{step} $\bs$
+  \item[$\circ$] eqn \eqref{updateeqn} takes the step to the next iterate
+  \end{itemize}
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{explanation of Newton's method}
+\begin{itemize}
+\item suppose $\bx_k$ is a current estimate of the solution $\bbf(\bx)=\bzero$
+\item now linearize $\bbf$ around $\bx_k$ using Taylor's theorem with remainder:
+    $$\bbf(\bx) = \bbf(\bx_k) + J(\bx_k) (\bx - \bx_k) + O(h^2)$$
+where $h=\|\bx-\bx_k\|$ is the distance between the basepoint $\bx_k$ and another value $\bx$
+\item the linearization of $\bbf$ comes from dropping the $O(h^2)$ term:
+    $$\bl(\bx) = \bbf(\bx_k) + J(\bx_k) (\bx - \bx_k)$$
+\item now define the next iterate $\bx_{k+1}$ as the zero of the linearization $\bl$:
+    $$\bzero = \bbf(\bx_k) + J(\bx_k) (\bx_{k+1} - \bx_k)$$
+\item denote the difference $\bx_{k+1} - \bx_k$ by $\bs$, and thus get the previous form:
+\begin{gather*}
+J(\bx_k)\, \bs = - \bbf(\bx_k), \\
+\bx_{k+1} = \bx_k + \bs
+\end{gather*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{example}
+\begin{columns}
+\begin{column}{0.65\textwidth}
+\begin{itemize}
+\item recall the example, where a circle intersects an exponential: $x^2+y^2 = 1, \, y = \tfrac{1}{2} e^{2x}$
+\item this nonlinear residual function and Jacobian:
+{\small
+    $$\bbf(\bx) = \begin{bmatrix} \frac{1}{2} e^{2x_1} - x_2 \\ \\ x_1^2 + x_2^2 - 1 \end{bmatrix}, \,
+    J(\bx) = \begin{bmatrix} e^{2x_1} & -1 \\ \\
+                             2 x_1 & 2 x_2 \end{bmatrix}$$
+}
+\item for example, run Newton's method starting from $\bx_0 = (1,1)$:
+{\small
+\begin{gather*}
+\twovect{\bx}{0}{1}{1}, \, \twovect{\bx}{1}{0.619203}{0.880797}, \, \twovect{\bx}{2}{0.394157}{0.948623},\\
+\twovect{\bx}{3}{0.325199}{0.948157}, \, \twovect{\bx}{4}{0.319665}{0.947547}\dots
+\end{gather*}
+}
+\item $\bx_3$ is already at the intersection visually; note $\|\bbf(x_4)\|_2 = \text{\texttt{7e-5}}$ and $\|\bbf(x_5)\|_2 = \text{\texttt{2e-9}}$; we have solved accurately
+\end{itemize}
+\end{column}
+\begin{column}{0.35\textwidth}
+\includegraphics[width=\textwidth]{newtonexample.png}
+\end{column}
+\end{columns}
 \end{frame}
 
 \end{document}

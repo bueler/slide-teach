@@ -87,9 +87,7 @@ There will be no lectures on 8 \& 10 February (Wednesday \& Friday).  Instead, p
 \centerline{\href{http://bueler.github.io/nade/assets/slides/iterative.pdf}{\texttt{bueler.github.io/nade/assets/slides/iterative.pdf}}}
 
 \medskip
-\noindent  This Assignment is designed to be done based on these slides, but sections 4.1, 4.2, and 2.16 in the textbook complements this material.
-
-\medskip
+\noindent  This Assignment is based on these slides, and previous material.  However, sections 4.1, 4.2, and 2.16 in the textbook complement this material.
 
 \prob{P12}  \ppart{a} Write a \Matlab/etc.~function for Richardson iteration, with signature
 
@@ -112,7 +110,9 @@ There will be no lectures on 8 \& 10 February (Wednesday \& Friday).  Instead, p
 \medskip
 \noindent For each one use the entries of $A$ directly.  That is, for \texttt{jacobi()}, implement formula (5) from the slides, and for \texttt{gs()} implement formula (7).  (\emph{Do not split $A=D-L-U$ and store those parts; this is a waste of memory and misses the point.})  Your implementation of GS should use less memory than Jacobi; make sure this is clear. 
 
-\epart{b}  For each method, how many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?  (\emph{Clearly state how you interpret ``8 digit accuracy''.})  After demonstrating that GS fails on LS2, compute an explanatory spectral radius.
+\epart{b}  For each method, how many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?  (\emph{Clearly state how you interpret ``8 digit accuracy''.})
+
+\epart{c}  Demonstrate that GS fails on LS2.  Now compute an explanatory spectral radius.
 
 
 %\prob{PX}  For $N$ iterations on an $m\times m$ matrix $A$, how many floating-point operations (additions, subtractions, multiplications, divisions) does Jacobi iteration require?  Use formula (5) to answer.  Next answer the same question for GS, using formula (7).  (\emph{Your answers will be in terms of $N$ and $m$.})
@@ -127,7 +127,7 @@ Implement the centered finite difference method for this problem.  Your code sho
 
 \centerline{\texttt{function [x,u] = bvpq(m,xL,xR,q,f,alpha,beta)}}
 
-\noindent where input \texttt{f} is the function $f(x)$, but the other inputs are integers or real numbers.  The outputs are the grid vector \texttt{x} and the (approximate) solution vector \texttt{u}.  In this initial implementation, your code should use \Matlab's backslash command, or similar built-in solver, to solve the linear system.  Include this code in what you turn in.
+\noindent where input \texttt{f} is the function $f(x)$, but the other inputs are integers or real numbers.  The outputs are the grid vector \texttt{x} and the (approximate) solution vector \texttt{u}.  In this initial implementation, your code should use \Matlab's backslash command, or similar built-in solver, to solve the linear system.  (\emph{Include the codes from parts \textbf{(a)} and \textbf{(d)} in what you turn in.})
 
 \epart{b}  Check correctness of \texttt{bvpq} by solving the problem
 \begin{equation*}
@@ -137,10 +137,13 @@ exactly, using the solution $u_{\text{ex}}(x)=1 - \sin(\pi x/4)$.  That is, star
 
 \epart{c}  Your part \textbf{(a)} code sets up and solves a linear system $AU=F$.  For what $q$ values is $A$ strictly diagonally-dominant (SDD)?
 
-\epart{d}  Duplicate the code from part \textbf{(a)}, give it a new name \texttt{bvpqgs}, and implement Gauss-Seidel (GS) to solve the linear system, instead of the built-in linear solver.  (Include this code in what you turn in.)  Let $x_L=0$ and $x_R=2$ as in part \textbf{(b)}.  For each of $m=5$ and $m=50$ find nonzero values $q$ where Gauss-Seidel does converge and does not converge.  (\emph{That is, find 4 values of $q$ with these properties.  The particular values of $f(x),\alpha,\beta$ will not matter in this numerical experiment.})  When convergence happens, state the number of iterations needed to get 8 digit accuracy.
+\epart{d}  Duplicate the code from part \textbf{(a)}, give it a new name \texttt{bvpqgs}, and implement Gauss-Seidel (GS) to solve the linear system, instead of calling the built-in linear solver.  Let $x_L,x_R,f(x),\alpha,\beta$ all be as in part \textbf{(b)}.  For each of $m=5$ and $m=50$ find nonzero values $q$ where Gauss-Seidel does converge and does not converge.  (\emph{That is, find 4 values of $q$ with these properties.})  When convergence happens, how many iterations give 8 digit accuracy?
 
 
-\prob{P16}  \ppart{a}  Consider these 3 equations, chosen for visualizability:
+\prob{P16}  In calculus you probably learned Newton's method as a memorized formula: $x_{k+1} = x_k - f(x_k)/f'(x_k)$.  Rewrite equations Newton's method equations (8), (9) from the slides, in the one-dimensional case ($n=1$), to derive this memorized formula.
+
+
+\prob{P17}  \ppart{a}  Consider these 3 equations, chosen for visualizability:
   $$x^2+y^2+z^2 = 4, \quad x = \cos(\pi y), \quad z = y^2$$
 Sketch each equation individually as a surface in $\RR^3$.  (\emph{Do this by hand or by computer, the goal being a clear mental image of intersecting surfaces.  Accuracy is not important.})  Describe informally why there are two solutions of this system of three equations, that is, two points $(x,y,z)\in\RR^3$ at which all three equations are satisfied.  Explain why both solutions are inside the box $-1\le x \le 1, -2\le y \le 2, 0\le z \le 2$.
 
