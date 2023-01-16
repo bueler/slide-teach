@@ -1,4 +1,4 @@
-% Copyright 2015--2023  Ed Bueler
+% Copyright 2015--2017  Ed Bueler
 
 \documentclass[10pt,hyperref]{beamer}
 
@@ -31,13 +31,13 @@
 
 
 
-\title{Classical iterative methods \\ for linear and nonlinear systems}
+\title{Classical iterative methods for linear systems}
 
 \author{Ed Bueler}
 
-\institute[MATH 615 NADE]{MATH 615 Numerical Analysis of Differential Equations}
+\institute[MATH 615 NADEs]{MATH 615 Numerical Analysis of Differential Equations}
 
-\date{Spring 2023}
+\date[Spring 2017]{27 February--1 March, 2017}
 
 
 
@@ -102,7 +102,7 @@
 A \bx = \bb \label{introsystem}
 \end{equation}
 where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
-\item  throughout these notes we use 2 linear system examples:
+\item  throughout these notes we use just two examples:
   \begin{itemize}
   \item[LS1] 
 \begin{equation*}
@@ -124,8 +124,8 @@ where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
 \begin{bmatrix} 7 \\ 1 \\ 1 \\ 3 \end{bmatrix}
 \end{equation*}
   \end{itemize}
-\item it is trivial to find solutions of LS1, LS2 using the ``$\bx = A\backslash \bb$'' black box in \Matlab (or similar)
-\item these small examples stand-in for the large linear systems we get from applying finite difference (FD) schemes to ODE and PDE problems
+\item on \textbf{P17} (Assignment \#5) you will check that these are well-conditioned linear systems
+\item it is trivial to find solutions of LS1, LS2 using a ``$\bx = A\backslash \bb$'' black box, but these examples stand-in for the large linear systems we get from applying FD schemes to ODE and PDE problems
 \end{itemize}
 \end{frame}
 
@@ -144,14 +144,11 @@ where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$, to find $\bx\in \RR^m$.
   \item[$\circ$] requires $O(m^2)$ operations at worst
   \item[$\circ$] by comparison, applying Gauss elimination to solve linear system \eqref{introsystem} is an $O(m^3)$ operation in general
   \end{itemize}
-\item \emph{definition.}  a matrix with enough zeros to allow exploitation of that fact is called \emph{sparse}
+\item FD schemes for DEs generate matrices $A$ for which the majority, often $99\%$ or more, of the entries are zero
   \begin{itemize}
+  \item[$\circ$] a matrix with enough zeros to allow exploitation of that fact is called \emph{sparse}
+  \item[$\circ$] evaluating the residual of a sparse matrix typically requires $O(m)$ operations
   \item[$\circ$] even if $A$ is sparse, $A^{-1}$ is generally \emph{dense}, i.e.~most entries are nonzero
-  \item[$\circ$] FD schemes for differential equations generate matrices $A$ for which the majority, often $99\%$ or more, of the entries are zero
-  \end{itemize}
-\item evaluating the residual of a sparse matrix with at most $z$ nonzero entries per row requires $O(m)$ operations
-  \begin{itemize}
-  \item[$\circ$] specifically, at most $2zm+1$ operations
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -187,18 +184,10 @@ these iterates seem to be converging to $\bx = [1 \,\, 0 \,\, 1]^\top$, which is
 
 \begin{itemize}
 \item a complex number $\lambda \in \CC$ is an \emph{eigenvalue} of a square matrix $B\in\RR^{m\times m}$ if there is a nonzero vector $\bv\in\CC^m$ so that $B \bv = \lambda \bv$
-  \begin{itemize}
-  \item[$\circ$] $\lambda$ is a root of a polynomial
-  \item[$\circ$] even if $B$ is a real matrix, $\lambda$ may be complex
-  \item[$\circ$] if $\lambda$ is complex and $B$ is real then $\bv$ must be complex
-  \end{itemize}
 \item the set of all eigenvalues of $B$ is the \emph{spectrum} $\sigma(B)$ of $B$
-\item the \emph{spectral radius} $\rho(B)$ is the largest absolute value of an eigenvalue:
+\item the \emph{spectral radius} $\rho(B)$ is the maximum absolute value of an eigenvalue:
     $$\rho(B) = \max_{\lambda\in\sigma(B)}  |\lambda|$$
-
-  \begin{itemize}
-  \item[$\circ$] fact: $\rho(B) \le \|B\|$ in any induced matrix norm
-  \end{itemize}
+\item even if $B$ is real, $\lambda$ may be complex---the roots of a polynomial with real coefficients may be complex---\emph{and} if $\lambda$ is complex and $B$ is real then $\bv$ must be complex
 \end{itemize}
 \end{frame}
 
@@ -206,22 +195,22 @@ these iterates seem to be converging to $\bx = [1 \,\, 0 \,\, 1]^\top$, which is
 \begin{frame}{spectral properties and convergence of iterations}
 
 \begin{itemize}
-\item properties of a matrix $B$ which can be described in terms of eigenvalues are generically called \emph{spectral properties}
+\item properties of a matrix $B$ described in terms of eigenvalues are generically called \emph{spectral properties}
 \item some examples:
   \begin{itemize}
-  \item[$\circ$] the spectral radius $\rho(B)$ itself
-  \item[$\circ$] the 2-norm $\|B\|_2 = \sqrt{\rho(B^\top B)}$
+  \item[$\circ$] $\rho(B)$
+  \item[$\circ$] $\|B\|_2 = \sqrt{\rho(B^\top B)}$
   \item[$\circ$] the 2-norm condition number $\kappa(B)=\|B\|_2 \|B^{-1}\|_2$
   \end{itemize}
 
 \medskip
 \item a general idea:
 \begin{quote}
-whether an iterative method for solving a linear system $A\bx = \bb$ converges, or not, depends on the spectral properties of $A$, or on the spectral properties of matrices built from $A$
+whether an iterative method for solving $A\bx = \bb$ converges, or not, depends on spectral properties of $A$, or on matrices built from $A$
 \end{quote}
 
 \medskip
-\item the right-hand side $\bb$ in the linear system $A\bx = \bb$, and the initial iterate $\bx_0$, generally \emph{do not} determine whether an iteration converges
+\item the right-hand side $\bb$ and the initial iterate $\bx_0$ generally \emph{do not} determine whether an iteration converges
   \begin{itemize}
   \item[$\circ$] a good choice of $\bx_0$ \emph{can} speed up convergence
   \end{itemize}
@@ -232,26 +221,19 @@ whether an iterative method for solving a linear system $A\bx = \bb$ converges, 
 \begin{frame}{convergence of the Richardson iteration}
 
 \begin{itemize}
-\item the Richardson iteration \eqref{richardson} can be rewritten as
+\item rewrite the Richardson iteration \eqref{richardson} as
     $$\bx_{k+1} = (I - \omega A) \bx_k + \omega \bb$$
-
-\vspace{-2mm}
-  \begin{itemize}
-  \item[$\circ$] confirm this!
-  \end{itemize}
 \item the lemma on the next slide shows that the Richardson iteration converges if and only if all the eigenvalues of the matrix $I-\omega A$ are inside the unit circle:
-    $$\text{Richardson converges if and only if } \rho(I-\omega A) < 1$$
-
-\vspace{-2mm}
+    $$\text{\eqref{richardson} converges if and only if } \rho(I-\omega A) < 1$$
   \begin{itemize}
-  \item[$\circ$] note $\rho(I-\omega A) < 1$ means $(I - \omega A) \bx_k$ is smaller in magnitude than $\bx_k$
-  \item[$\circ$] fact: \emph{if} $\|I-\omega A\| < 1$ \emph{then} Richardson converges
+  \item[$\circ$] $\rho(I-\omega A) < 1$ means $(I - \omega A) \bx_k$ is smaller in magnitude than $\bx_k$
+  \item[$\circ$] \emph{if} $\|I-\omega A\| < 1$ \emph{then} \eqref{richardson} converges\footnote{recall $\rho(B) \le \|B\|$ in any induced matrix norm}
   \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{convergence lemma for linear iterations}
+\begin{frame}{convergence lemma}
 
 \begin{lemma}
    $$\by_{k+1} = M \by_k + \bc$$
@@ -261,13 +243,13 @@ converges to the solution of $\by = M \by + \bc$ for all initial $\by_0$ if and 
 
 \small
 \begin{proof}
-Iterate.  That is, write out a few cases:
+Solve the iteration by writing out a few cases:
 \begin{align*}
    \by_2 &= M (M \by_0 + \bc) + \bc = M^2 \by_0 + (I + M) \bc, \\
    \by_3 &= M (M^2 \by_0 + (I + M) \bc) + \bc = M^3 \by_0 + (I + M + M^2) \bc, \\
    &\vdots
 \end{align*}
-By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2 + \dots + x^{k-1}$.  But $p_k(x) \to 1/(1-x)$ as $k\to\infty$ iff $x\in(-1,1)$; it is a convergent Maclaurin series on that open interval.  Also, $\rho(M)<1$ iff $M^k \to 0$.  Thus $\by_k \to (I-M)^{-1} \bc$ iff $\rho(M) < 1$.
+By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2 + \dots + x^{k-1}$.  But $p_k(x) \to 1/(1-x)$ as $k\to\infty$ iff $x\in(-1,1)$.  Also, $\rho(M)<1$ iff $M^k \to 0$.  Thus $\by_k \to (I-M)^{-1} \bc$ iff $\rho(M) < 1$.
 \end{proof}
 \end{frame}
 
@@ -275,7 +257,7 @@ By induction we get $\by_k = M^k \by_0 + p_k(M) \bc$ where $p_k(x) = 1 + x + x^2
 \begin{frame}[fragile]{convergence of the Richardson iteration 2}
 
 \begin{itemize}
-\item since the Richardson iteration converges iff $\rho(I - \omega A)<1$, we should choose $\omega$ based on the principle that
+\item since the Richardson iteration converges iff $\rho(I - \omega A)<1$, we choose $\omega$ based on the principle that
     $$\omega A \text{ should be close to the identity } I$$
 \vspace{-5mm}
   \begin{itemize}
@@ -371,11 +353,7 @@ where $x_j^{(k)}$ denotes the $j$th entry of the $k$th iterate $\bx_k$
 \begin{equation}
 (D - L) \bx_{k+1} = b + U \bx_k  \label{gaussseidel}
 \end{equation}
-
-\vspace{-2mm}
-  \begin{itemize}
-  \item[$\circ$] we could also write it as ``\,$\bx_{k+1} = (D-L)^{-1} \left(b + U \bx_k\right)$\,'', but \emph{don't} \dots that would miss the point!
-  \end{itemize}
+\item we could also write it \quad ``\,$\bx_{k+1} = (D-L)^{-1} \left(b + U \bx_k\right)$\,'' \quad but that would miss the point!
 \item instead we write it as \quad $D \bx_{k+1} = b + U \bx_k + L \bx_{k+1}$ \quad or equivalently:
 \begin{equation}
 x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_{j < i} a_{ij} x_j^{(k+1)}\right)  \label{gaussseidelA}
@@ -408,22 +386,24 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
   \item[$\circ$] LS2 is not
   \end{itemize}
 
-\item facts:\footnote{section 11.2 of Golub and van Loan, \emph{Matrix Computations}, 4th edition 2013}
+\item two relatively-famous theorems\footnote{section 11.2 of Golub and van Loan, \emph{Matrix Computations}, 4th edition 2013} are these:
   \begin{itemize}
-  \item[$\circ$] if $A$ is strictly diagonally-dominant then both the Jacobi and Gauss-Seidel iterations converge; see problem \textbf{P15} 
+  \item[$\circ$] if $A$ is strictly diagonally-dominant then both the Jacobi and Gauss-Seidel iterations converge 
   \item[$\circ$] if $A$ is symmetric positive definite then Gauss-Seidel iteration converges
   \end{itemize}
 \item unlike the ``$\rho(\dots) < 1$'' conditions on the last slide:
   \begin{itemize}
-  \item[$\circ$] it is easy to check diagonal-dominance
-  \item[$\circ$] it is a common, but not universal, property of the matrices coming from FD schemes on ODEs and PDEs
-  \item[$\circ$] these are only \emph{sufficient} conditions, e.g.~there are nonsymmetric $A$, which are \emph{not} diagonally-dominant, for which the iterations converge
+  \item[$\circ$] it is easy to check diagonal-dominance, and it is a common property of the matrices coming from FD schemes on ODEs and PDEs
+  \item[$\circ$] these are only \emph{sufficient} conditions, e.g.~there are nonsymmetric $A$, which are \emph{not} diagonally-dominant, but for which the iterations converge
   \end{itemize}
+
+\medskip
+\item see problems \textbf{P19} and \textbf{P20}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{\emph{interlude:} past, recent past, and future}
+\begin{frame}{past}
 
 \begin{itemize}
 \item the Jacobi and Gauss-Seidel iterations are from the 19th century
@@ -435,27 +415,36 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
   \item[$\circ$] a generalization of Gauss-Seidel iteration called \emph{successive over-relaxation}, was a particular favorite around 1970;  see section 4.2 of the textbook
   \end{itemize}
 \item none of these iterations work on system LS2
-\item there are better iterative ideas; they flourished starting in the 1980-90s
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{recent past and future}
+
+\begin{itemize}
+\item there are better iterative ideas, and they flourished starting in the 1980-90s \dots and far into the future
   \begin{itemize}
-  \item[$\circ$] among the best known are CG = \emph{conjugate gradients} ($\sim$1950) and GMRES = \emph{generalized minimum residuals} (Saad and Schultz, 1986)
+  \item[$\circ$] among the best known are CG = \emph{conjugate gradients} (actually from 1950-60s) and GMRES = \emph{generalized minimum residuals} (from a 1986 paper by Saad and Schultz)
   \item[$\circ$] GMRES works (i.e.~converges at some rate) on LS2
-  \item[$\circ$] \emph{but} there can be no ``good iteration'' with a universally-fast convergence rate\footnote{a remarkable 1992 theorem by Nachtigal, Reddy, and Trefethen}
-  \end{itemize}
-\item iterations to solve linear systems are the future:
+  \item[$\circ$] \emph{but} there can be no ``good iteration'' with a universally-fast convergence rate\footnote{remarkably, there is a 1992 theorem by Nachtigal, Reddy, and Trefethen that says this}
+\end{itemize}
+
+\medskip 
+\item iteration to solve linear systems is the future:
   \begin{itemize}
-  \item[$\circ$] they are obligatory on sufficiently-big systems
-  \item[$\circ$] they work better in parallel than direct methods like Gauss elimination
-  \item[$\circ$] they can exploit partial knowledge of the underlying model/question
+  \item[$\circ$] it is obligatory on sufficiently-big systems
+  \item[$\circ$] it works better in parallel than direct methods like Gauss elimination
+  \item[$\circ$] it can exploit partial knowledge of the underlying model
   \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{\emph{interlude:} biographies}
+\begin{frame}{biographies}
 
 \begin{itemize}
 \small
-\item Gauss (1777--1855) did lots of big stuff:
+\item Gauss (1777--1855) did big stuff, not just the little Gauss-Seidel thing:
 
     \centerline{\href{https://en.wikipedia.org/wiki/Carl_Friedrich_Gauss}{\texttt{en.wikipedia.org/wiki/Carl\_Friedrich\_Gauss}}}
 
@@ -470,23 +459,9 @@ x_i^{(k+1)} = \frac{1}{a_{ii}} \left(b_i - \sum_{j > i} a_{ij} x_j^{(k)} - \sum_
     \centerline{\href{https://en.wikipedia.org/wiki/Philipp_Ludwig_von_Seidel}{\texttt{en.wikipedia.org/wiki/Philipp\_Ludwig\_von\_Seidel}}}
 
 \medskip
-\item Richardson (1881--1953) is the most interesting.  He invented numerical weather forecasting, doing it by-hand for fun during WWI.  Later, as a pacifist and quaker, he quit the subject when he found his meteorological work was being used by chemical weapons engineers and the British Air Force:
+\item Richardson (1881--1953) is the most interesting.  He invented numerical weather forecasting, doing it by-hand for fun during WWI.  Later, as a pacifist and quaker, he quit the subject entirely when he found his meteorological work was of most value to chemical weapons engineers and the British Air Force:
 
     \centerline{\href{https://en.wikipedia.org/wiki/Lewis_Fry_Richardson}{\texttt{en.wikipedia.org/wiki/Lewis\_Fry\_Richardson}}}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{nonlinear systems}
-\begin{itemize}
-\item FIXME
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Newton's method}
-\begin{itemize}
-\item FIXME
 \end{itemize}
 \end{frame}
 

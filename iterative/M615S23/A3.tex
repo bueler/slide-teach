@@ -1,0 +1,155 @@
+\documentclass[12pt]{amsart}
+%prepared in AMSLaTeX, under LaTeX2e
+\addtolength{\oddsidemargin}{-.6in} 
+\addtolength{\evensidemargin}{-.6in}
+\addtolength{\topmargin}{-.4in}
+\addtolength{\textwidth}{1.2in}
+\addtolength{\textheight}{.6in}
+
+\renewcommand{\baselinestretch}{1.05}
+
+\usepackage{verbatim,fancyvrb}
+
+\usepackage{palatino}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{defn}{Definition}
+\newtheorem*{example}{Example}
+\newtheorem*{problem}{Problem}
+\newtheorem*{remark}{Remark}
+
+\newcommand{\mtt}{\texttt}
+\usepackage{alltt,xspace}
+\newcommand{\mfile}[1]
+{\medskip\begin{quote}\scriptsize \begin{alltt}\input{#1.m}\end{alltt} \normalsize\end{quote}\medskip}
+
+\usepackage[final]{graphicx}
+\newcommand{\mfigure}[1]{\includegraphics[height=2.5in,
+width=3.5in]{#1.eps}}
+\newcommand{\regfigure}[2]{\includegraphics[height=#2in,
+keepaspectratio=true]{#1.eps}}
+\newcommand{\widefigure}[3]{\includegraphics[height=#2in,
+width=#3in]{#1.eps}}
+
+\usepackage{amssymb}
+
+\usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=blue, citecolor=red, urlcolor=blue]{hyperref}
+
+% macros
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\grad}{\nabla}
+\newcommand{\lam}{\lambda}
+\newcommand{\lap}{\triangle}
+
+\newcommand{\ip}[2]{\ensuremath{\left<#1,#2\right>}}
+
+%\renewcommand{\det}{\operatorname{det}}
+\newcommand{\onull}{\operatorname{null}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\range}{\operatorname{range}}
+
+\newcommand{\prob}[1]{\bigskip\noindent\textbf{#1.}\quad }
+\newcommand{\exer}[2]{\prob{Exercise #2 in Lecture #1}}
+
+\newcommand{\pts}[1]{(\emph{#1 pts}) }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{(#1)}\quad }
+\newcommand{\ppart}[1]{\,\textbf{(#1)}\quad }
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+
+\DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,
+frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
+
+
+\begin{document}
+\scriptsize \noindent Math 615 NADE (Bueler) \hfill 8 February, 2023
+\normalsize
+
+\medskip\bigskip
+
+\Large\centerline{\textbf{Assignment \#3}}
+\large
+\bigskip
+
+\centerline{\textbf{Due Wednesday, 15 February 2023, at the start of class}}
+\bigskip
+\normalsize
+
+\thispagestyle{empty}
+
+\bigskip
+There will be no lectures on 8 \& 10 February, Wednesday and Friday.  Instead I would like you to carefully go through the following slides:
+
+\medskip
+\centerline{\href{http://bueler.github.io/nade/assets/slides/iterative.pdf}{\texttt{bueler.github.io/nade/assets/slides/iterative.pdf}}}
+
+\medskip
+\noindent  This Assignment is designed to be done based on these slides.  However, reading sections 4.1, 4.2, and 2.16 in the textbook will complement this material.
+
+\medskip
+
+\prob{P12}  \ppart{a} Write a \Matlab/etc.~function for Richardson iteration, with signature
+
+\bigskip
+\centerline{\texttt{function z = richardson(A,b,x0,N,omega)}}
+
+\bigskip
+\noindent It should return the $N$th iterate $\bx_N$ as \texttt{z}.  Confirm that it works by showing you get the same $\bx_3$ as on page 4 of the slides.
+
+\epart{b}  How many iterations are needed to get 8 digit accuracy for LS1 with $\bx_0=0$ and using the preferred value of $\omega$?  How many iterations for $\omega = 0.1$ and $\omega = 0.5$?
+
+
+\prob{P13}  \ppart{a}  Write \Matlab functions which do $N$ iterations of the Jacobi and Gauss-Seidel (GS) methods:
+
+\medskip
+\centerline{\texttt{function z = jacobi(A,b,x0,N)}}
+
+\centerline{\texttt{function z = gs(A,b,x0,N)}}
+
+\medskip
+\noindent For each one use the entries of $A$ directly.  That is, for \texttt{jacobi()}, implement formula (5) from the slides, and for \texttt{gs()} implement formula (7).  Your implementation of GS should use less memory than Jacobi; make sure this is clear.  (\emph{Do not split $A=D-L-U$ and store those parts; this is a waste of memory and misses the point.  You may, however, check your implementation by such splitting.}) 
+
+\epart{b}  For each method, how many iterations are needed to get 8 digit accuracy for LS1 using $\bx_0=0$?  (\emph{Clearly state how you interpret ``8 digit accuracy''.})  After demonstrating that GS fails on LS2, compute an explanatory spectral radius.
+
+
+\prob{P14}  For $N$ iterations on an $m\times m$ matrix $A$, how many floating-point operations (additions, subtractions, multiplications, divisions) does Jacobi iteration require?  Use formula (5) to answer.  Next answer the same question for GS, using formula (7).  (\emph{Your answers will be in terms of $N$ and $m$.})
+
+
+\clearpage\newpage
+\prob{P15}  Show that Jacobi iteration converges if $A$ is strictly diagonally-dominant.  (\emph{Hints:  Jacobi iteration converges if and only if $\rho(M) < 1$ for $M = - D^{-1}(L+U)$.  So suppose $M\bv = \lambda \bv$ for $\bv\ne 0$.  Choose the largest-magnitude entry $v_i$ of $\bv$, so that $|v_i| \ge |v_j|$ for all $j$.  Show then that $M\bv=\lambda\bv$, and the assumption of strict diagonal dominance, shows $|\lambda v_i| < |v_i|$ which shows $|\lambda|<1$.})
+
+
+\prob{P16}  \ppart{a}  Implement the finite difference method in problem \textbf{P10} on Assignment \#2, for this boundary value problem:
+\begin{equation*}
+u''(x) + q\, u(x) = f(x), \quad u(x_L) = \alpha, \quad u(x_R) = \beta. \end{equation*}
+Your code should have the signature
+
+\centerline{\texttt{function u = bvpq(m,xL,xR,q,f,alpha,beta)}}
+
+\noindent where $f$ is a function but the other parameters are integers or real numbers.  In this initial implementation, your code should use \Matlab's backslash command, or similar built-in solver, to solve the linear system.  Include this code in what you turn in.
+
+\epart{b}  Check correctness of \texttt{bvpq} by solving the problem
+\begin{equation*}
+u''(x) - u(x) = f(x), \quad u(0) = 1, \quad u(2) = 0.
+\end{equation*}
+exactly, using the solution $u_{\text{ex}}(x)=1 - \sin(\pi x/4)$.  That is, start by finding the $f(x)$ for which this $u_{\text{ex}}(x)$ is the exact solution.  (\emph{This is using the method of} manufactured solutions.)  Show a figure which confirms that you have a verified code.
+
+\epart{c}  Your part \textbf{(a)} code sets up and solves a linear system $AU=F$.  For what $q$ values is $A$ strictly diagonally-dominant (SDD)?
+
+\epart{d}  Duplicate the code from part \textbf{(a)}, give it a new name \texttt{bvpqgs}, and implement Gauss-Seidel (GS) to solve the linear system, instead of the built-in linear solver.  (Include this code in what you turn in.)  Let $x_L=0$ and $x_R=2$ as in part \textbf{(b)}.  For each of $m=5$ and $m=50$ find \emph{nonzero} values $q$ where Gauss-Seidel does converge and does not converge.  (\emph{That is, find 4 values of $q$ with these properties.  The particular values of $f(x),\alpha,\beta$ will not matter in this numerical experiment.})  When convergence happens, state the number of iterations needed to get 8 digit accuracy.
+
+
+\prob{P16}  FIXME Newton's method problem
+
+\end{document}
