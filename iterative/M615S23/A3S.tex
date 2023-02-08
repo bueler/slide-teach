@@ -1,0 +1,287 @@
+\documentclass[11pt]{amsart}
+%\pagestyle{empty} 
+\setlength{\topmargin}{-0.4in} % usually -0.25in
+\addtolength{\textheight}{1.4in} % usually 1.25in
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.6in}
+\addtolength{\textwidth}{1.4in} %\setlength{\parindent}{0pt}
+
+% macros
+\usepackage{amssymb,xspace,verbatim}
+
+\usepackage[pdftex, colorlinks=true, plainpages=false, linkcolor=black, citecolor=red, urlcolor=red]{hyperref}
+
+\usepackage[final]{graphicx}
+\newcommand{\regfigure}[3]{\includegraphics[height=#2in,width=#3in]{#1.eps}}
+
+\newtheorem*{thm}{Theorem}
+\newtheorem*{lem}{Lemma}
+
+\usepackage{alltt}
+\usepackage{fancyvrb}
+
+\newcommand{\CC}{{\mathbb{C}}}
+\newcommand{\RR}{{\mathbb{R}}}
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\lam}{\lambda}
+
+\newcommand{\ip}[2]{\mathrm{\left<#1,#2\right>}}
+\newcommand{\erf}{\operatorname{erf}}
+
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\range}{\operatorname{range}}
+\newcommand{\Null}{\operatorname{null}}
+
+\newcommand{\cond}{\operatorname{cond}}
+
+\renewcommand{\Re}{\operatorname{Re}}
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\pylab}{\textsc{pylab}\xspace}
+
+\newcommand{\mfile}[2]{
+\bigskip
+\begin{quote}
+\medskip
+\VerbatimInput[frame=single,framesep=3mm,label=\fbox{\normalsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#2}
+\medskip
+\end{quote}
+}
+
+\DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,
+frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
+
+
+\newcommand{\prob}[1]{\bigskip\noindent\large \textbf{#1.} \normalsize}
+\newcommand{\probpts}[2]{\bigskip\noindent\large \textbf{#1} \normalsize \,(\emph{#2})\,}
+\newcommand{\ppart}[1]{\quad \textbf{#1)} }
+\newcommand{\epart}[1]{\medskip\noindent\textbf{#1)}}
+
+
+\begin{document}
+\noindent \scriptsize Math 615 NADE (Bueler) \hfill 15 February 2023
+
+\bigskip
+\Large\textbf{\centerline{Solutions to Assignment \# 3}} \normalsize
+
+\medskip
+\begin{center}
+\emph{The point value of each Problem is given below.  The total was XX points.}
+\end{center}
+
+\thispagestyle{empty}
+
+FIXME COPIED OVER FROM S17 SEMESTER (A5S.tex); ALL IS SUSPECT
+
+\probpts{P12}{5 pts per part}  \ppart{a} Let $A_1 \in \CC^{3\times 3}$ and $A_2 \in \CC^{4\times 4}$ be the matrices in linear systems LS1 and LS2.  The condition numbers are $\cond(A_1)=  2.1$ and $\cond(A_2) = 11.9$.
+
+\epart{b}  I wrote the following code:
+
+\mfile{richardson.m}{../richardson.m}
+
+Running it as follows generated $x_3$ on slide 4 as requested:
+\begin{mVerb}
+>> A = [2 1 0; 0 2 1; 1 0 3];  b = [2 1 4]';  x0 = zeros(3,1);
+>> z = richardson(A,b,x0,3,1/5)
+z =
+  0.72800
+  0.08800
+  1.09600
+\end{mVerb}
+
+\epart{c}  Based on the plot of spectral radii $\rho(I-\omega A)$ on slide 9, for $A_1$ the preferred value for $\omega$ is $0.4$.  And I interpret ``8 digit accuracy'' as $\|x_N-x\|_2 < 10^{-8}$ where $x=[1\,0\,1]^\top$.  I wrote quick loops to stop at the first $N$ satisfying the criterion:
+\begin{mVerb}
+>> x = A \ b;
+>> for N=1:100, if norm(richardson(A,b,x0,N,0.4) - x) < 1.0e-8, N, break, end, end
+N =                   22
+>> for N=1:100, if norm(richardson(A,b,x0,N,0.1) - x) < 1.0e-8, N, break, end, end
+N =                   97
+>> for N=1:100, if norm(richardson(A,b,x0,N,0.5) - x) < 1.0e-8, N, break, end, end
+N =                   61
+\end{mVerb}
+We see that $\omega=0.4$ does indeed give faster convergence than $\omega=0.1,0.5$, and that the figure on slide 9 does a reasonable job of predicting what we see.
+
+(\emph{Other standards for ``8 digit accuracy'' are reasonable, but whatever you did should be briefly mentioned.  By the way, my method is pretty wasteful--is it clear why?.})
+
+
+\probpts{P13}{5 pts per part}  \ppart{a}  I wrote these two codes; the online versions have help comments, but here they are stripped for brevity:
+
+%\mfile{jacobi.m}{jacobi.m.strip}
+
+%\mfile{gs.m}{gs.m.strip}
+
+In both codes, \texttt{noti} is a list of indices not equal to $i$:
+    $$\text{\texttt{noti}} = \{1,2,\dots,i-1,i+1,\dots,m\} = \{j\,\big|\,j\neq i\}.$$
+
+In \texttt{jacobi} we need to compute the whole new iterate $x_{k+1}$ before we can throw away the old vector $x_k$, and thus there must be storage for both \texttt{x} and \texttt{xnew}.  However, \texttt{gs} is strictly simpler: we update entries of $x$ in sequence, immediately using the entries we have just set.  Thus \texttt{gs} is a shorter code than \texttt{jacobi}, and uses less memory.
+
+(\emph{Interestingly, and importantly, Jacobi \emph{parallelizes} better than Gauss-Seidel.  Both algorithms continue to be used, but typically as parts of other algorithms and not stand-alone.})
+
+
+\epart{b}  (\emph{Traditionally only floating-point calculations are counted, not integer indexing ones.})
+
+The inner-most code in \texttt{jacobi} is
+
+\begin{center}
+\verb|xnew(i) = (b(i) - A(i,noti) * x(noti)) / A(i,i);|
+\end{center}
+
+\noindent The multiplication, a vector dot product, requires $m-1$ multiplications and $m-1$ additions.  Then we do one more subtraction and one more division, so the total number of operations for this line is $2(m-1)+2 = 2m$.  This line is executed $Nm$ times.  There is no other arithmetic.  Thus \texttt{jacobi} requires $2Nm^2$ operations.  The operation count for \texttt{gs} is identical, even though the memory allocation is less.
+
+\epart{c}  I get $23$ iterations for Jacobi and $16$ for Gauss-Seidel:
+\begin{mVerb}
+>> for N=1:100, if norm(jacobi(A,b,x0,N) - x) < 1.0e-8, N, break, end, end
+N =                   23
+>> for N=1:100, if norm(gs(A,b,x0,N) - x) < 1.0e-8, N, break, end, end
+N =                   16
+\end{mVerb}
+
+Note that Gauss-Seidel uses fewer iterations than the optimized Richardson iteration above, and it does not require us to ``tune'' a parameter like $\omega$.  Indeed, as a stand-alone solver, Gauss-Seidel would be chosen over Richardson and Jacobi.
+
+On LS2 Gauss-Seidel fails by explosion:
+\begin{mVerb}
+>> A = [1 2 3 0; 2 1 -2 -3; -1 1 1 0; 0 1 1 -1];  b = [7 1 1 3]';  x0 = [0 0 0 0]';
+>> norm(gs(A,b,x0,5))
+ans =    6.3010e+04
+>> norm(gs(A,b,x0,50))
+ans =    2.6132e+42
+>> norm(gs(A,b,x0,500))
+ans = NaN
+\end{mVerb}
+
+The norms grow by almost an order of magnitude per iteration.  To explain the failure we compute the spectral radius $\rho((D-L)^{-1} U)$, because slide 13 says this should be smaller than one for convergence:
+\begin{mVerb}
+>> D = diag(diag(A));  L = -tril(A,-1);  U = -triu(A,+1);
+>> max(abs(eig((D-L)\U)))
+ans =  6.8541
+\end{mVerb}
+The explosion happens, at least asymptotically, as $\|x_k\| = (6.85)^k$.
+
+
+\probpts{P19}{15 pts}  Let $M = D^{-1}(L+U)$ where $A=D-L-U$.  Here $D$ is diagonal, $L$ is strictly lower-triangular, and $U$ is strictly upper-triangular, and the nonzero entries of $D$ are the diagonal entries of $A$, while entries of $L,U$ are the negatives of the sub- and super-diagonal entries of $A$.  In these terms, the Jacobi iteration is $x_{k+1} = M x_k + D^{-1} b$, which has the same form as the iteration on slide 8, with the given formula for $M$ and with constant vector $c=D^{-1} b$.  The convergence Lemma on slide 8 therefore says Jacobi iteration converges if and only if $\rho(M) < 1$.  We use these ideas to prove the following statement:
+
+\medskip
+If $A$ is strictly diagonally-dominant then the Jacobi iteration converges.
+
+\begin{proof} Suppose $M v = \lambda v$ for $v\ne 0$.  We will show $|\lambda|<1$ so that, because $\lambda$ is an arbitrary eigenvalue of $M$, $\rho(M)<1$.
+
+Choose the largest-magnitude entry $v_i$ of $v$, so that $|v_i| \ge |v_j|$ for all $j$.  Note in particular that $|v_i| > 0$ because $v$ is not the zero vector.  Because $A$ is strictly diagonally-dominant, for each $i$ we know that $|a_{ii}| > \sum_{j\ne i} |a_{ij}|$.  Then
+\begin{align*}
+|\lambda| |v_i| &= |(\lambda v)_i| = |(M v)_i| = \left|- a_{ii}^{-1} \left(\sum_{j>i} a_{ij} v_j + \sum_{j<i} a_{ij} v_j\right)\right| \\
+  &\le |a_{ii}|^{-1} \left(\sum_{j>i} |a_{ij}| |v_j| + \sum_{j<i} |a_{ij}| |v_j|\right) \le |a_{ii}|^{-1} \left(\sum_{j>i} |a_{ij}| |v_i| + \sum_{j<i} |a_{ij}| |v_i|\right) \\
+  &= |v_i| |a_{ii}|^{-1} \sum_{j\ne i} |a_{ij}| < |v_i| |a_{ii}|^{-1} |a_{ii}| = |v_i|.
+\end{align*}
+That is, $|\lambda| |v_i| < |v_i|$, and $|v_i|\ne 0$, so $|\lambda|<1$.
+\end{proof}
+
+
+\probpts{P20}{5 pts per part, except \emph{\textbf{(d)}}}  \ppart{a}  I start by writing-down the finite difference scheme both to correctly assemble the matrix, and to answer part \textbf{b)} below.  I used centered differencing for all the derivative terms, and many details are the same as for \textbf{P16}: $U_{ij} \approx u(x_i,y_j)$, $x_i = i h$, $y_j = j h$, and $f_{ij} = f(x_i,y_j)$.  Thus:
+\begin{equation*}
+\frac{U_{i-1,j} + U_{i+1,j} + U_{i,j-1} + U_{i,j+1} - 4 U_{i,j}}{h^2} + p \frac{U_{i+1,j} - U_{i-1,j}}{2h} + q U_{ij} = f_{ij}.
+\end{equation*}
+Factoring-out $1/h^2$ and rearranging makes the appearance similar to a row of the matrix $A$:
+\begin{equation}
+\frac{1}{h^2} \left[(-4 + q h^2) U_{i,j} + \left(1 - \frac{p h}{2}\right) U_{i-1,j} + \left(1 + \frac{p h}{2}\right) U_{i+1,j} + U_{i,j-1} + U_{i,j+1}\right] = f_{ij}.
+\label{fishyFD}
+\end{equation}
+Equation \eqref{fishyFD} is sufficient to implement the scheme as code.  Note that $u=0$ along the boundary of the unit square, so they essentially remove any boundary-located rows and columns from the matrix.
+
+The following code is a straightforward modification of \texttt{poisson.m}:
+
+%\mfile{fishy.m}{fishy.m}
+
+What is my verification strategy?  As before I can manufacture a solution, this time a non-polynomial function which is both easily differentiated and which has flexible ``bumpiness'':
+    $$u(x,y) = \sin(L_x x) \sin(L_y y).$$
+Here $L_x,L_y$ are constants which give the desired number of bumps and satisfy the boundary conditions; they must be integer multiples of $\pi$.  Then $f(x,y)$ is found by differentiation:
+    $$f(x,y) = \left(-L_x^2-L_y^2+q\right) \sin(L_x x) \sin(L_y y) + p L_x \cos(L_x x) \sin(L_y y).$$
+My code \texttt{fishy.m} solves the verification case, for which I arbitrarily set $q=1$ and $p=2$, by default:
+\begin{mVerb}
+>> fishy(5);
+error on 5 x 5 grid with h = 0.1667:  |U-Uexact|_inf = 6.302e-01
+\end{mVerb}
+
+A loop generates convergence data, using the default ``backslash'' solution method:
+\begin{mVerb}
+>> for m = 5 * 2.^(0:6), fishy(m); end
+\end{mVerb}
+On the finest $m=5 \times 2^6 = 320$ grid, my computer takes a couple of minutes.  In this case the number of unknowns in the linear system is $N=m^2\approx 10^5$, so it only succeeds at all because the matrix $A$ is \emph{not} dense and because the backlash operation can exploit sparsity.  An $O(N^3)$ algorithm like dense Gauss elimination would be in trouble; $(10^5)^3 = 10^{15}$ is a quadrillion.
+
+I have previously described how to generate a figure from the convergence data.  It is time to admit that lazy people present it in tables.  The key tabular step to demonstrate convergence is to show the ratio of decrease of error norm.  This should be 4 for the above loop, because we double $m$ at each refinement and we expect $O(h^2)$ from a centered-difference method.  Thus Table 1 is pretty good evidence of convergence at the optimal rate.
+\begin{table}
+\begin{tabular}{llll}
+$m$ & $h$ & $\|E^h\|_\infty$ & decrease \\ \hline
+5 & 0.1667 & 6.302e-01 & \\
+10 & 0.0909 & 1.575e-01 & 4.00127 \\
+20 & 0.0476 & 4.060e-02 & 3.87931 \\
+40 & 0.0244 & 1.079e-02 & 3.76274 \\
+80 & 0.0123 & 2.768e-03 & 3.89812 \\
+160 & 0.0062 & 7.028e-04 & 3.93853 \\
+320 & 0.0031 & 1.767e-04 & 3.97736
+\end{tabular}
+
+\bigskip
+\caption{Evidence of convergence for \texttt{fishy.m}, in a manufactured-solution case with $p=2$ and $q=1$, including the ratio of $\|E^h\|_\infty$ for consecutive grids.}
+\end{table}
+
+\epart{b}  To examine whether $A$ is strictly diagonally-dominant (SDD) we return to equation \eqref{fishyFD}, not the code.  We see that up to a factor of $h^2$, which we can remove from the whole row, and which does not affect SDD,
+    $$a_{ii} = -4 + q h^2, \quad a_{i\pm 1,j} = 1 \pm \frac{ph}{2}, \quad a_{i,j\pm 1} = 1.$$
+Thus
+    $$\sum_{j\ne i} |a_{ij}| = \left|1 - \frac{ph}{2}\right| + \left|1 + \frac{ph}{2}\right| + 2.$$
+Consider cases:
+
+\begin{itemize}
+\item[\fbox{$p=0$}]  $A$ is SDD if and only if $|-4+q h^2| > 1 + 1 + 2 = 4$.  Because $h^2>0$, this is true iff $q$ is negative.  That is, $A$ is SDD if and only if $q < 0$.
+
+\item[\fbox{$q=0$}]  The answer can be given in terms of the size of the product $ph$.  If $|ph| \le 2$ then $1\pm ph/2 \ge 0$ so
+    $$\sum_{j\ne i} |a_{ij}| = 1 - \frac{ph}{2} + 1 + \frac{ph}{2} + 2 = 4$$
+and $|a_{ii}|=4$ also.  In these cases $A$ is not SDD, but it fails the ``strict'' only.  If $|ph| > 2$ then $A$ is not SDD because either $|1-ph/2| = -1 + ph/2$ or $|1+ph/2|=-1-ph/2$, and in either of these cases $\sum_{j\ne i} |a_{ij}|$ strictly exceeds 4.  (\emph{For instance, if $ph=4$ then $\sum_{j\ne i} |a_{ij}| = 1 + 3 + 2 = 6$.  So we see how to generate a case which is far from SDD: make $|ph|$ big.})
+
+\item[\fbox{$q = -1$}]  Now $|-4+qh^2|>4$ so if $|ph| \le 2$ then $A$ is SDD.  For $|ph|>2$ there are some complicated borderline cases, but $ph$ can always be made big enough in magnitude, for instance by fixing $h$ and making $p$ large, so that $A$ is not SDD.
+\end{itemize}
+
+\epart{c}  For this part I wrote a slightly-modified version of Gauss-Seidel which stops when the norm of the residual for $x_N$ is below a given tolerance, namely
+    $$\|b - A x_N\|_2 < \text{\texttt{tol}}.$$
+The new code \texttt{gsTOL.m}, which is not shown but is posted online, has signature
+\begin{center}
+\verb|[z,N] = gsTOL(A,b,x0,tol)|
+\end{center}
+The first output \texttt{z}$=x_N$ is the computed solution while the second output is the number of steps \texttt{N}.
+
+Note that \texttt{fishy.m} above has boolean argument \texttt{useGS} argument.  If it is \texttt{true} then it calls \texttt{gsTOL()} to solve the system, with \texttt{tol}$=10^{-8}$.  If $\|x_N\|_2 \ge 10^{100}$ then it decides that the iteration is diverging and stops.
+
+To actually answer this part, I first used $m=5$ and $q=1$ and looked for $p$ values so that the Gauss-Seidel iteration barely converged.  It turns out that with $p=27$ it converges slowly but with $p=28$ it diverges:
+\begin{mVerb}
+>> fishy(5,true,27,1);
+[starting Gauss-Seidel]
+[Gauss-Seidel did 673 iterations]
+>> fishy(5,true,28,1);
+[starting Gauss-Seidel]
+error: Gauss-Seidel method failed to converge
+...
+\end{mVerb}
+
+Now I did the calculation with $m=50$ and $q=1$.  This time, because $ph$ is much smaller, $p=28$ does converge, though the dimension is $100$ times higher so the computation is \emph{much} slower.  As basically expected, I found that increasing $p$ by a factor of ten causes divergence:
+\begin{mVerb}
+>> fishy(50,true,28,1);
+[starting Gauss-Seidel]
+[Gauss-Seidel did 743 iterations]
+>> fishy(50,true,280,1);
+[starting Gauss-Seidel]
+error: Gauss-Seidel method failed to converge
+...
+\end{mVerb}
+
+\epart{d}  \emph{Not graded.}
+
+\end{document}
+
