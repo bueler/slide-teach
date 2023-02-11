@@ -179,105 +179,62 @@ Since $\rho(M)<1$, by the Lemma on slide 9, the Jacobi iteration converges.
 \end{proof}
 
 
-FIXME from here
+\probpts{P15}{5 pts per part}  \ppart{a}  Based on the solution to \textbf{P10}, I wrote the following small modification of the code \texttt{steadyheat.m}:\footnote{See the Codes tab of the public course site.}
 
-\probpts{P20}{5 pts per part, except \emph{\textbf{(d)}}}  \ppart{a}  I start by writing-down the finite difference scheme both to correctly assemble the matrix, and to answer part \textbf{b)} below.  I used centered differencing for all the derivative terms, and many details are the same as for \textbf{P16}: $U_{ij} \approx u(x_i,y_j)$, $x_i = i h$, $y_j = j h$, and $f_{ij} = f(x_i,y_j)$.  Thus:
-\begin{equation*}
-\frac{U_{i-1,j} + U_{i+1,j} + U_{i,j-1} + U_{i,j+1} - 4 U_{i,j}}{h^2} + p \frac{U_{i+1,j} - U_{i-1,j}}{2h} + q U_{ij} = f_{ij}.
-\end{equation*}
-Factoring-out $1/h^2$ and rearranging makes the appearance similar to a row of the matrix $A$:
-\begin{equation}
-\frac{1}{h^2} \left[(-4 + q h^2) U_{i,j} + \left(1 - \frac{p h}{2}\right) U_{i-1,j} + \left(1 + \frac{p h}{2}\right) U_{i+1,j} + U_{i,j-1} + U_{i,j+1}\right] = f_{ij}.
-\label{fishyFD}
-\end{equation}
-Equation \eqref{fishyFD} is sufficient to implement the scheme as code.  Note that $u=0$ along the boundary of the unit square, so they essentially remove any boundary-located rows and columns from the matrix.
+\mfile{bvpq.m}{bvpq.m}
 
-The following code is a straightforward modification of \texttt{poisson.m}:
-
-%\mfile{fishy.m}{fishy.m}
-
-What is my verification strategy?  As before I can manufacture a solution, this time a non-polynomial function which is both easily differentiated and which has flexible ``bumpiness'':
-    $$u(x,y) = \sin(L_x x) \sin(L_y y).$$
-Here $L_x,L_y$ are constants which give the desired number of bumps and satisfy the boundary conditions; they must be integer multiples of $\pi$.  Then $f(x,y)$ is found by differentiation:
-    $$f(x,y) = \left(-L_x^2-L_y^2+q\right) \sin(L_x x) \sin(L_y y) + p L_x \cos(L_x x) \sin(L_y y).$$
-My code \texttt{fishy.m} solves the verification case, for which I arbitrarily set $q=1$ and $p=2$, by default:
+\epart{b}  Note that, in manufacturing a solution, $f(x)$ is computed by plugging-in the exact $u(x)$ and simply differentiating etc.~as needed:
+	$$f(x) = u''(x) - u(x) = \dots = \left(\frac{\pi^2}{4^2} + 1\right) \sin\left(\frac{\pi}{4} x\right) - 1$$
+Now the \texttt{help bvpq} comments in \texttt{bvpq.m} show how to solve the suggested test case:
 \begin{mVerb}
->> fishy(5);
-error on 5 x 5 grid with h = 0.1667:  |U-Uexact|_inf = 6.302e-01
+>> f = @(x) (pi^2/4^2 + 1) * sin((pi/4)*x) - 1;
+>> [x,U] = bvpq(20,0,2,-1,f,1,0);
+>> uexact = @(x) 1 - sin((pi/4)*x);
+>> plot(x,U,'o',x,uexact(x),'-')
+>> xlabel x,  legend('numerical','exact')
 \end{mVerb}
+This generates a figure showing the numerical solution for $m=20$ interior points, right on top of the exact solution.
 
-A loop generates convergence data, using the default ``backslash'' solution method:
+But how accurate is it, really?  And as $h \to 0$ do we get the expected rate of convergence of the error norms $\|U^h - \hat U^h)\|$, where $\hat U_j^h = u(x_j)$?  This can be done by a loop at the command line, for $m$ equal to powers of 2, measuring the error norms, and then using \texttt{polyfit} to get the convergence rate:
 \begin{mVerb}
->> for m = 5 * 2.^(0:6), fishy(m); end
+>> m = 2.^(1:7);
+>> for k = 1:7, [x,U] = bvpq(m(k),0,2,-1,f,1,0); err(k)=norm(U-uexact(x),'inf'); end 
+>> p = polyfit(log(h),log(err),1)
+p =
+       1.9911      -4.8924
+>> loglog(h,err,'o',h,exp(p(2) + p(1)*log(h)),'r:')
+>> xlabel h, ylabel('|U - u_{exact}|')
+>> text(0.1,0.001,'O(h^{1.99})','Color','r','FontSize',18)
 \end{mVerb}
-On the finest $m=5 \times 2^6 = 320$ grid, my computer takes a couple of minutes.  In this case the number of unknowns in the linear system is $N=m^2\approx 10^5$, so it only succeeds at all because the matrix $A$ is \emph{not} dense and because the backlash operation can exploit sparsity.  An $O(N^3)$ algorithm like dense Gauss elimination would be in trouble; $(10^5)^3 = 10^{15}$ is a quadrillion.
+The convergence rate of $E^h = \|U^h - \hat U^h)\| = C h^{1.99}$ is essentially perfect for the expected errors $O(h^2)$.  The generated figure is below
 
-I have previously described how to generate a figure from the convergence data.  It is time to admit that lazy people present it in tables.  The key tabular step to demonstrate convergence is to show the ratio of decrease of error norm.  This should be 4 for the above loop, because we double $m$ at each refinement and we expect $O(h^2)$ from a centered-difference method.  Thus Table 1 is pretty good evidence of convergence at the optimal rate.
-\begin{table}
-\begin{tabular}{llll}
-$m$ & $h$ & $\|E^h\|_\infty$ & decrease \\ \hline
-5 & 0.1667 & 6.302e-01 & \\
-10 & 0.0909 & 1.575e-01 & 4.00127 \\
-20 & 0.0476 & 4.060e-02 & 3.87931 \\
-40 & 0.0244 & 1.079e-02 & 3.76274 \\
-80 & 0.0123 & 2.768e-03 & 3.89812 \\
-160 & 0.0062 & 7.028e-04 & 3.93853 \\
-320 & 0.0031 & 1.767e-04 & 3.97736
-\end{tabular}
-
-\bigskip
-\caption{Evidence of convergence for \texttt{fishy.m}, in a manufactured-solution case with $p=2$ and $q=1$, including the ratio of $\|E^h\|_\infty$ for consecutive grids.}
-\end{table}
-
-\epart{b}  To examine whether $A$ is strictly diagonally-dominant (SDD) we return to equation \eqref{fishyFD}, not the code.  We see that up to a factor of $h^2$, which we can remove from the whole row, and which does not affect SDD,
-    $$a_{ii} = -4 + q h^2, \quad a_{i\pm 1,j} = 1 \pm \frac{ph}{2}, \quad a_{i,j\pm 1} = 1.$$
-Thus
-    $$\sum_{j\ne i} |a_{ij}| = \left|1 - \frac{ph}{2}\right| + \left|1 + \frac{ph}{2}\right| + 2.$$
-Consider cases:
-
-\begin{itemize}
-\item[\fbox{$p=0$}]  $A$ is SDD if and only if $|-4+q h^2| > 1 + 1 + 2 = 4$.  Because $h^2>0$, this is true iff $q$ is negative.  That is, $A$ is SDD if and only if $q < 0$.
-
-\item[\fbox{$q=0$}]  The answer can be given in terms of the size of the product $ph$.  If $|ph| \le 2$ then $1\pm ph/2 \ge 0$ so
-    $$\sum_{j\ne i} |a_{ij}| = 1 - \frac{ph}{2} + 1 + \frac{ph}{2} + 2 = 4$$
-and $|a_{ii}|=4$ also.  In these cases $A$ is not SDD, but it fails the ``strict'' only.  If $|ph| > 2$ then $A$ is not SDD because either $|1-ph/2| = -1 + ph/2$ or $|1+ph/2|=-1-ph/2$, and in either of these cases $\sum_{j\ne i} |a_{ij}|$ strictly exceeds 4.  (\emph{For instance, if $ph=4$ then $\sum_{j\ne i} |a_{ij}| = 1 + 3 + 2 = 6$.  So we see how to generate a case which is far from SDD: make $|ph|$ big.})
-
-\item[\fbox{$q = -1$}]  Now $|-4+qh^2|>4$ so if $|ph| \le 2$ then $A$ is SDD.  For $|ph|>2$ there are some complicated borderline cases, but $ph$ can always be made big enough in magnitude, for instance by fixing $h$ and making $p$ large, so that $A$ is not SDD.
-\end{itemize}
-
-\epart{c}  For this part I wrote a slightly-modified version of Gauss-Seidel which stops when the norm of the residual for $x_N$ is below a given tolerance, namely
-    $$\|b - A x_N\|_2 < \text{\texttt{tol}}.$$
-The new code \texttt{gsTOL.m}, which is not shown but is posted online, has signature
 \begin{center}
-\verb|[z,N] = gsTOL(A,b,x0,tol)|
+\includegraphics[width=0.6\textwidth]{bvpq.png}
 \end{center}
-The first output \texttt{z}$=x_N$ is the computed solution while the second output is the number of steps \texttt{N}.
 
-Note that \texttt{fishy.m} above has boolean argument \texttt{useGS} argument.  If it is \texttt{true} then it calls \texttt{gsTOL()} to solve the system, with \texttt{tol}$=10^{-8}$.  If $\|x_N\|_2 \ge 10^{100}$ then it decides that the iteration is diverging and stops.
+\epart{c}  The matrix diagonal entries are
+	$$a_{ii} = \frac{1}{h^2} (-2 + q h^2) = - \frac{2}{h^2} + q.$$
+For every row except the first and last rows, the sum of the off-diagonal entries is
+	$$\sum_{j\ne i} = \frac{1}{h^2} + \frac{1}{h^2} = \frac{2}{h^2}.$$
+SDD says
+    $$\left|- \frac{2}{h^2} + q\right| > \frac{2}{h^2}$$
+in this case.  As $h\to \infty$ the terms with $h^2$ in the denominator dominate, so SDD cannot occur if $q\ge 0$.  However, if $q<0$ then the inequality becomes
+    $$\frac{2}{h^2} + |q| > \frac{2}{h^2}$$
+which simply says $q<0$.  That is, $A^h$ is SDD for all $h$ if and only if $q<0$.
 
-To actually answer this part, I first used $m=5$ and $q=1$ and looked for $p$ values so that the Gauss-Seidel iteration barely converged.  It turns out that with $p=27$ it converges slowly but with $p=28$ it diverges:
-\begin{mVerb}
->> fishy(5,true,27,1);
-[starting Gauss-Seidel]
-[Gauss-Seidel did 673 iterations]
->> fishy(5,true,28,1);
-[starting Gauss-Seidel]
-error: Gauss-Seidel method failed to converge
-...
-\end{mVerb}
+\medskip
+\noindent
+\emph{Comment.}  The ODE $u''(x) + q u(x) = f(x)$ is sometimes called the \emph{good Helmholz} equation when $q<0$, and \emph{bad Helmholz} if $q>0$.  The invertibility of $A^h$ in the $q<0$ cases is one way to explain this language.
 
-Now I did the calculation with $m=50$ and $q=1$.  This time, because $ph$ is much smaller, $p=28$ does converge, though the dimension is $100$ times higher so the computation is \emph{much} slower.  As basically expected, I found that increasing $p$ by a factor of ten causes divergence:
-\begin{mVerb}
->> fishy(50,true,28,1);
-[starting Gauss-Seidel]
-[Gauss-Seidel did 743 iterations]
->> fishy(50,true,280,1);
-[starting Gauss-Seidel]
-error: Gauss-Seidel method failed to converge
-...
-\end{mVerb}
+\epart{d}  FIXME
 
-\epart{d}  \emph{Not graded.}
+
+
+\probpts{P16}{5 pts}  
+
+
+\probpts{P17}{5 pts per part}  
+
 
 \end{document}
 
