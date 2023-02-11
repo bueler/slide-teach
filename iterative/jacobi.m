@@ -1,7 +1,7 @@
 function z = jacobi(A,b,x0,N)
 % JACOBI  Do N steps of Jacobi iteration
 %    x_{k+1} = D^{-1} (b + (L + U) x_k)
-% to produce z = x_N.  Uses entries of A directly, but equivalent
+% to produce z = x_N.  Uses entries of A directly, but is equivalent
 % to above formula using splitting A = D - L - U.
 % Usage:
 %    z = jacobi(A,b,x0,N)
