@@ -24,11 +24,14 @@
 \newcommand{\RR}{{\mathbb{R}}}
 
 \newcommand{\bb}{\mathbf{b}}
+\newcommand{\bbf}{\mathbf{f}}
 \newcommand{\br}{\mathbf{r}}
 \newcommand{\bu}{\mathbf{u}}
 \newcommand{\bv}{\mathbf{v}}
 \newcommand{\bx}{\mathbf{x}}
 \newcommand{\by}{\mathbf{y}}
+
+\newcommand{\bzero}{\mathbf{0}}
 
 \newcommand{\eps}{\epsilon}
 \newcommand{\lam}{\lambda}
@@ -226,14 +229,44 @@ which simply says $q<0$.  That is, $A^h$ is SDD for all $h$ if and only if $q<0$
 \noindent
 \emph{Comment.}  The ODE $u''(x) + q u(x) = f(x)$ is sometimes called the \emph{good Helmholz} equation when $q<0$, and \emph{bad Helmholz} if $q>0$.  The invertibility of $A^h$ in the $q<0$ cases is one way to explain this language.
 
-\epart{d}  Not graded.  Discussed in class.
+\epart{d}  Not due and not graded.  Discussed in class.
+
+
+\clearpage\newpage
+\probpts{P16}{5 pts}  If $f(x)$ is a scalar function then the Jacobian is the ordinary derivative $J(x) = f'(x)$, thus the equations (8), (9) from the slides are simply
+\begin{align*}
+f'(x_k) s &= -f(x_k) \\
+x_{k+1} &= x_k + s
+\end{align*}
+Solving the first for $s$, by assuming the Jacobian is invertible, i.e.~assuming $f'(x_k)\ne 0$, and substituting in the second, we get the memorized equation $x_{k+1} = x_k - f(x_k) / f'(x_k)$.
 
 
 
-\probpts{P16}{5 pts}  
+FIXME check next
 
+\probpts{P17}{5 pts per part}  The sketchs are omitted, but they show a sphere of radius 2, a corrugated surface, and a parabolic trough, respectively.  The solutions to the first two equations form a wavy line on the sphere, and going around the sphere.  The surface of the third equation (the parabolic trough) intersects this wavy line in two points.  Thus we expect two solutions, one with $y>0$ and one with $y<0$.  Any simultaneous solution $(x,y,z)$ is on the sphere and thus inside the cube centered at the origin with side length 4.  But it has $|x|\le 1$ by the second equation and $z\ge 0$ by the third equation.  Thus $(x,y,z)$ is inside $[-1,1]\times [-2,2] \times [0,2]$.
 
-\probpts{P17}{5 pts per part}  
+\epart{b}  The first step is to put the system in the form $\bbf(\bx)=\bzero$.  We have $f_1(x) = x_1^2 + x_2^2 + x_3^2 - 4$, $f_2(x) = x_1 - \cos(\pi x_2)$, and $f_3(x) = x_3 - x_2^2$ as the components of the vector $\bf(\bx)$, so
+  $$\bbf(\bx) = \begin{bmatrix} x_1^2 + x_2^2 + x_3^2 - 4 \\ x_1 - \cos(\pi x_2) \\ x_3 - x_2^2 \end{bmatrix} \qquad \text{and} \qquad J(\bx) = \begin{bmatrix} 2 x_1 & 2 x_2 & 2 x_3 \\ 1 & \pi \sin(\pi x_2) & 0 \\ 0 & -2 x_2 & 1 \end{bmatrix}.$$
+I put these functions $\bbf(\bx)$ and $J(\bx)$ into the script:
+
+\mfile{newtonex.m}{newtonex.m}
+
+The results of the run
+\begin{mVerb}
+>> newtonex([-1 1 1],6)
+\end{mVerb}
+include Figure 1.  The solution itself is
+    $$\bx_+^* = (-0.856360744261663, 1.172720052019146, 1.375272320407789).$$
+The other solution $\bx_-^*$ is the same except that $x_2$ is opposite in sign.  It can be found by
+\begin{mVerb}
+>> newtonex([-1 -1 1],6)
+\end{mVerb}
+
+\begin{figure}[ht]
+FIXME %\includegraphics[height=2.6in,keepaspectratio=true]{figs/a2p5newton}
+\caption{Residual norm ($y$-axis) crashes downward in Newton's method.}
+\end{figure}
 
 
 \end{document}
