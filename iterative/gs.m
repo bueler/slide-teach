@@ -1,7 +1,8 @@
 function z = gs(A,b,x0,N)
 % GS  Do N steps of Gauss-Seidel iteration
 %    x_{k+1} = (D - L)^{-1} (b + U x_k)
-% to produce z = x_N.  Uses entries of A directly.
+% to produce z = x_N.  Uses entries of A directly, but equivalent
+% to above formula using splitting A = D - L - U.
 % Usage:
 %    z = gs(A,b,x0,N)
 % Example:
