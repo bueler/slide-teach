@@ -23,7 +23,7 @@
 % Or whatever. Note that the encoding and the font should match. If T1
 % does not look nice, try deleting the line with the fontenc.
 
-\usepackage{empheq,bm,xspace,fancyvrb}
+\usepackage{empheq,bm,xspace,minted}
 \usepackage{hyperref}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
@@ -52,19 +52,19 @@
 \renewcommand{\t}[1]{\texttt{#1}}
 \newcommand{\Matlab}{\textsc{Matlab}\xspace}
 \newcommand{\Octave}{\textsc{Octave}\xspace}
-%\newcommand{\MO}{\Matlab/\Octave}
-\newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
 \newcommand{\twovect}[4]{\ensuremath{{#1}_{#2} =
                             \begin{bmatrix} #3 \\ #4 \end{bmatrix}}}
 
-\newcommand{\mfile}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
-}
+\newcommand{\ftt}[1]{{\color{blue} \texttt{#1}}}
 
-\newcommand{\mfiletiny}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
+\newcommand{\optimaldef}{
+\begin{definition}
+an algorithm for computing a function on a class of problems, which acts on floating-point data of size $N$, is \emph{optimal} if it requires
+   $$O(N) \qquad \text{ or } \qquad O(N\log N)$$
+flops
+\end{definition}
 }
 
 
@@ -84,94 +84,312 @@
 \end{frame}
 
 \begin{frame}{Outline}
-  \tableofcontents[hideallsubsections]
+  %\tableofcontents[hideallsubsections]
+  \tableofcontents
 \end{frame}
 
-\section{how fast is the basic $Ax$ matrix-vector product operation?}
+\section{how fast is the basic matrix-vector product operation $z=Ax$?}
 
-\begin{frame}{example linear systems}
+\newcommand{\bulletax}{\begin{bmatrix} \bullet \\ \bullet \\ \bullet \\ \bullet \end{bmatrix} = \begin{bmatrix} \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \end{bmatrix} \begin{bmatrix} \bullet \\ \bullet \\ \bullet \end{bmatrix}}
 
+\begin{frame}{matrix-vector products}
 \begin{itemize}
-\item x
+\item the life-goal of a matrix $A \in \RR^{m\times n}$ is to act on (=multiply) vectors $x \in \RR^n$, yielding $z\in\RR^m$:
+    $$z = Ax \qquad\quad \bulletax$$
+\item this is a simple operation:
+    $$(Ax)_i = \sum_{j=0}^{n-1} a_{ij} x_j \qquad \text{ for } i=0,\dots,m-1$$
+
+    \begin{itemize}
+    \item[$\circ$] I will index rows and columns starting from zero
+    \item[$\circ$] vectors are column vectors
+    \end{itemize}
+\item how fast is it?
+\item what is its (\emph{algorithmic}) \emph{complexity}?
 \end{itemize}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{\texttt{matvec}}
+\begin{itemize}
+\item \phantom{actually,} this talk is based on genuine \phantom{pseudo}codes in Python\phantom{-ish}:
+\end{itemize}
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+\begin{minted}[fontsize=\small]{python}
+def matvec(A,x):
+    from numpy import zeros, shape
+    [m,n] = shape(A)
+    z = zeros((m,1))
+    for i in range(m):
+        s = 0.0
+        for j in range(n):
+            s += A[i][j] * x[j]
+        z[i] = s
+    return z
+\end{minted}
+\end{minipage}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{\texttt{matvec}}
+\begin{itemize}
+\item actually, this talk is based on genuine pseudocodes in Python-ish:
+\end{itemize}
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+\begin{minted}[fontsize=\small]{python}
+def matvec(A,x):
+    for i = 0 to m-1:
+        s = 0.0
+        for j = 0 to n-1:
+            s += A[i][j] * x[j]
+        z[i] = s
+    return z
+
+
+
+\end{minted}
+\end{minipage}
+\end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{\texttt{matvec} flops}
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+\begin{minted}[fontsize=\small]{python}
+def matvec(A,x):
+    for i = 0 to m-1:
+        s = 0.0
+        for j = 0 to n-1:
+            s += A[i][j] * x[j]
+        z[i] = s
+    return z
+\end{minted}
+\end{minipage}
+\end{center}
+
+\begin{itemize}
+\item \ftt{matvec} does exactly $2mn$ floating point operations (\emph{flops})
+    \begin{itemize}
+    \item[$\circ$] $n$ additions and $n$ multiplications for each of $m$ entries of result vector $Ax$
+    \end{itemize}
+\item complexity in big-O notation:
+    \begin{itemize}
+    \item[$\circ$] $O(mn)$ flops
+    \item[$\circ$] $O(mn)$ storage (including inputs)
+    \item[$\circ$] $O(mn)$ time?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\subsection{definition of ``optimal''}
+
+\begin{frame}{my definition of \emph{optimal}}
+
+\begin{itemize}
+\item I will throw around ``optimal'' a lot in this talk
+\end{itemize}
+
+\optimaldef
+
+\begin{itemize}
+\item this means there exists $C$ so that for all problems, of any size $N$,
+   $$(\text{flops}) \le C\, N \qquad \text{ or } \qquad (\text{flops}) \le C\, N\log N$$
+
+    \begin{itemize}
+    \item[$\circ$] quantifier order matters: \quad $\exists C \,\, \forall \text{ problems} \,\, \forall N \,\,  \dots$
+    \end{itemize}
+\item is \ftt{matvec} optimal?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{is \texttt{matvec} optimal?}
+
+\hfill
+{\scriptsize $\displaystyle \bulletax$}
+
+\vspace{2mm}
+
+\hfill
+{\scriptsize $z = A x$} \hspace{17mm}
+
+\vspace{-8mm}
+\begin{itemize}
+\item is \ftt{matvec} optimal?
+\item it depends on what are the \alert{data} and the \alert{problems}!
+\end{itemize}
+
+\begin{enumerate}
+\item<2->[1.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any matrix $A$ for which multiplication is valid}, then it \textbf{\emph{is not} optimal $O(N)$}
+    \begin{itemize}
+    \item[$\circ$] $2mn = 2m N \nleq C N$ for all problems \hfill $\gets$ \emph{$m$ depends on the problem}
+    \end{itemize}
+\item<3->[2.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider a \alert{all matrices $A$ with (fixed) $m$ rows}, then it \textbf{\emph{is} optimal $O(N)$}, but the constant can be big
+    \begin{itemize}
+    \item[$\circ$] $2mn = 2m N \leq C N$ for $C=m$
+    \end{itemize}
+\item<4->[3.] if the \alert{data $=$ matrix $A$} ($N=mn$), and we consider \alert{any $x$}, then it \textbf{\emph{is} optimal $O(N)$}
+    \begin{itemize}
+    \item[$\circ$] $2mn = 2 N \leq C N$ for $C=2$
+    \end{itemize}
+\item<5>[4.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any tridiagonal matrix $A$}, then it \textbf{\emph{is} optimal $O(N)$}, assuming we don't do the zero multiplications
+    \begin{itemize}
+    \item[$\circ$] $2\cdot 3\cdot n = 6 N \leq C N$ for $C=6$
+    \end{itemize}
+\end{enumerate}
+\end{frame}
+
+
+\newcommand{\bulletaxtri}{\begin{bmatrix} \bullet \\ \bullet \\ \bullet \\ \bullet \end{bmatrix} = \begin{bmatrix} \bullet & \bullet & & \\ \bullet & \bullet & \bullet & \\ & \bullet & \bullet & \bullet \\ & & \bullet & \bullet \end{bmatrix} \begin{bmatrix} \bullet \\ \bullet \\ \bullet \\ \bullet \end{bmatrix}}
+
+\begin{frame}[fragile]
+\frametitle{tridiagonal matrix-vector product}
+
+\begin{itemize}
+\item the tridiagonal case is actually a different algorithm
+\end{itemize}
+
+\bigskip
+
+\hfill
+{\scriptsize $\displaystyle \bulletaxtri$}
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{minted}[fontsize=\small]{python}
+def matvec_tri(A,x):
+    z[0] = A[0][0] * x[0] + A[0][1] * x[1]
+    for i = 1 to m-2:
+        s = 0.0
+        for j = i-1 to i+1:
+            s += A[i][j] * x[j]
+        z[i] = s
+    z[m-1] = A[m-1][m-2] * x[m-2] + A[m-1][m-1] * x[m-1]
+    return z
+\end{minted}
+\end{minipage}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{regarding optimal algorithms}
+
+\begin{itemize}
+\item in summary, I will stick to my definition!
+\item however, it is fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
+    \begin{itemize}
+    \item[$\circ$] because whether an algorithm is optimal depends on us \emph{agreeing} on which is the data and which is the problem class
+    \end{itemize}
+\item also, it is fair to wonder if flops are a good metric for modern computers
+    \begin{itemize}
+    \item[$\circ$] every other metric is messier\only<2>{, probably}
+\only<1>{
+    \item[$\circ$] \emph{put up or shut up!}
+}
+\only<2>{
+    \item[$\circ$] perhaps give a talk using another metric?
+}
+    \end{itemize}
+\end{itemize}
+
+\optimaldef
+\end{frame}
+
 
 \AtBeginSection[]
 {
   \begin{frame}<beamer>
     \frametitle{Outline}
-    \tableofcontents[currentsection,hideallsubsections]
+    %\tableofcontents[currentsection,hideallsubsections]
+    \tableofcontents[currentsection]
   \end{frame}
 }
 
-\section{complexity of Gauss elimination for systems}
+\section{complexity of Gauss elimination for linear systems $Ax=b$}
 
-\begin{frame}{example linear systems}
+\begin{frame}{y}
 
 \begin{itemize}
 \item x
 \end{itemize}
 \end{frame}
+
 
 \section{tridiagonal and other banded matrices}
 
-\begin{frame}{example linear systems}
+\begin{frame}{y}
 
 \begin{itemize}
 \item x
 \end{itemize}
 \end{frame}
+
 
 \section{circulant matrices}
 
-\begin{frame}{example linear systems}
+\begin{frame}{y}
 
 \begin{itemize}
 \item x
 \end{itemize}
 \end{frame}
 
-\section{sparse storage?}
+
+\section{sparse storage}
+
+\begin{frame}{y}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
 
 \section{paradigm: preconditioned Krylov iterations}
 
-\section{multigrid: a teaser}
-
-\begin{frame}{example linear systems}
+\begin{frame}{y}
 
 \begin{itemize}
-\item suppose we want to solve the linear system
-\begin{equation}
-A \bx = \bb \label{introsystem}
-\end{equation}
-where $A\in \RR^{m\times m}$ and $\bb\in \RR^m$
-\item the goal is to find $\bx\in \RR^m$
-\item  throughout these notes we use 2 linear system examples:
-  \begin{itemize}
-  \item[LS1] 
-\begin{equation*}
-\begin{bmatrix} 2 & 1 & 0 \\
-                0 & 2 & 1 \\
-                1 & 0 & 3 \end{bmatrix}
-\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix}
-=
-\begin{bmatrix} 2 \\ 1 \\ 4 \end{bmatrix}
-\end{equation*}
-  \item[LS2]
-\begin{equation*}
-\begin{bmatrix} 1 & 2 & 3 & 0 \\
-                2 & 1 &-2 &-3 \\
-               -1 & 1 & 1 & 0 \\
-                0 & 1 & 1 &-1 \end{bmatrix}
-\begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \end{bmatrix}
-=
-\begin{bmatrix} 7 \\ 1 \\ 1 \\ 3 \end{bmatrix}
-\end{equation*}
-  \end{itemize}
-\item it is trivial to find solutions of LS1, LS2 using the ``\texttt{x=A$\backslash$b}'' black box in \Matlab (or similar)
-\item LS1 and LS2 stand-in for the large linear systems we get from applying finite difference (FD) schemes to ODE and PDE problems
+\item x
 \end{itemize}
 \end{frame}
+
+
+\section{multigrid: a teaser}
+
+\begin{frame}{y}
+
+\begin{itemize}
+\item x
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{references}
+
+\begin{itemize}
+\item A.~Brandt (1977). \emph{Multi-level adaptive solutions to boundary-value problems}, Mathematics of Computation 31 (138), 333--390
+    \begin{itemize}
+    \item[$\circ$] the guru of multigrid should be better known
+    \end{itemize}
+\item W.~Briggs, V.~E.~Henson, \& S.~McCormick (2000).  \emph{A Multigrid Tutorial}, 2nd ed., SIAM Press, Philadelphia
+\item E.~Bueler (2021). \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
+    \begin{itemize}
+    \item[$\circ$] serious discussion of optimal PDE solvers, and constructions thereof
+    \end{itemize}
+\item L.~Trefethen \& D.~Bau (1997). \emph{Numerical Linear Algebra}, SIAM Press, Philadelphia
+    \begin{itemize}
+    \item[$\circ$] clear thinking on linear systems
+    \end{itemize}
+\item U.~Trottenberg, C.~Oosterlee, \& A. Schuller (2001).  \emph{Multigrid}, Elsevier, Oxford
+\end{itemize}
+\end{frame}
+
 
 \end{document}
 
