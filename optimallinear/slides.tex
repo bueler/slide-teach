@@ -62,8 +62,7 @@
 \newcommand{\optimaldef}{
 \begin{definition}
 an algorithm for computing a function on a class of problems, which acts on floating-point data of size $N$, is \emph{optimal} if it requires
-   $$O(N) \qquad \text{ or } \qquad O(N\log N)$$
-flops
+   $$O(N) \qquad \text{ or } \qquad O(N\log N) \qquad \text{ flops}$$
 \end{definition}
 }
 
@@ -96,14 +95,14 @@ flops
 \begin{itemize}
 \item the life-goal of a matrix $A \in \RR^{m\times n}$ is to act on (=multiply) vectors $x \in \RR^n$, yielding $z\in\RR^m$:
     $$z = Ax \qquad\quad \bulletax$$
-\item this is a simple operation:
+\item this is a simple and familiar operation:
     $$(Ax)_i = \sum_{j=0}^{n-1} a_{ij} x_j \qquad \text{ for } i=0,\dots,m-1$$
 
     \begin{itemize}
-    \item[$\circ$] I will index rows and columns starting from zero
-    \item[$\circ$] vectors are column vectors
+    \item[$\circ$] note: I will index rows and columns starting from 0 in this talk
+    \item[$\circ$] note: by default, vectors in $\RR^n$ are column vectors
     \end{itemize}
-\item how fast is it?
+\item how fast is matrix-vector multiplication?
 \item what is its (\emph{algorithmic}) \emph{complexity}?
 \end{itemize}
 \end{frame}
@@ -172,15 +171,15 @@ def matvec(A,x):
 \end{center}
 
 \begin{itemize}
-\item \ftt{matvec} does exactly $2mn$ floating point operations (\emph{flops})
+\item this \ftt{matvec} does exactly $2mn$ floating point operations (\emph{flops})
     \begin{itemize}
     \item[$\circ$] $n$ additions and $n$ multiplications for each of $m$ entries of result vector $Ax$
     \end{itemize}
 \item complexity in big-O notation:
     \begin{itemize}
     \item[$\circ$] $O(mn)$ flops
-    \item[$\circ$] $O(mn)$ storage (including inputs)
-    \item[$\circ$] $O(mn)$ time?
+    \item[$\circ$] $O(mn)$ storage (including inputs $A$ and $x$)
+    \item[$\circ$] $O(mn)$ time (messy?)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -225,7 +224,7 @@ def matvec(A,x):
 \end{itemize}
 
 \begin{enumerate}
-\item<2->[1.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any matrix $A$ for which multiplication is valid}, then it \textbf{\emph{is not} optimal $O(N)$}
+\item<2->[1.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any matrix $A\in\RR^{m\times n}$ for which multiplication is valid}, then it \textbf{\emph{is not} optimal $O(N)$}
     \begin{itemize}
     \item[$\circ$] $2mn = 2m N \nleq C N$ for all problems \hfill $\gets$ \emph{$m$ depends on the problem}
     \end{itemize}
@@ -252,7 +251,6 @@ def matvec(A,x):
 
 \begin{itemize}
 \item the tridiagonal case is actually a different algorithm
-\end{itemize}
 
 \bigskip
 
@@ -274,20 +272,24 @@ def matvec_tri(A,x):
 \end{minted}
 \end{minipage}
 \end{center}
+
+\bigskip
+\item this algorithm does $O(n)$ flops
+\end{itemize}
 \end{frame}
 
 
 \begin{frame}{regarding optimal algorithms}
 
 \begin{itemize}
-\item in summary, I will stick to my definition!
+\item I will stick to my definition of ``optimal''!
 \item however, it is fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
     \begin{itemize}
-    \item[$\circ$] because whether an algorithm is optimal depends on us \emph{agreeing} on which is the data and which is the problem class
+    \item[$\circ$] because whether an algorithm is optimal depends on an agreement regarding which is the data and which is the problem class
     \end{itemize}
 \item also, it is fair to wonder if flops are a good metric for modern computers
     \begin{itemize}
-    \item[$\circ$] every other metric is messier\only<2>{, probably}
+    \item[$\circ$] but every other metric is messier?
 \only<1>{
     \item[$\circ$] \emph{put up or shut up!}
 }
@@ -377,20 +379,26 @@ def matvec_tri(A,x):
 \begin{columns}
 \begin{column}{0.85\textwidth}
 \begin{itemize}
-\item A.~Brandt (1977). \emph{Multi-level adaptive solutions to boundary-value problems}, Mathematics of Computation 31 (138), 333--390
+{\small
+\item[] \textbf{A.~Brandt (1977)}. \emph{Multi-level adaptive solutions to boundary-value problems}, Mathematics of Computation 31 (138), 333--390
     \begin{itemize}
     \item[$\circ$] the guru of multigrid should be better known
     \end{itemize}
-\item W.~Briggs, V.~E.~Henson, \& S.~McCormick (2000).  \emph{A Multigrid Tutorial}, 2nd ed., SIAM Press, Philadelphia
-\item E.~Bueler (2021). \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
+\item[] \textbf{W.~Briggs, V.~E.~Henson, \& S.~McCormick (2000)}.  \emph{A Multigrid Tutorial}, 2nd ed., SIAM Press, Philadelphia
+\item[] \textbf{E.~Bueler (2021)}. \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
     \begin{itemize}
-    \item[$\circ$] serious discussion of optimal PDE solvers, with constructions
+    \item[$\circ$] optimal PDE solvers, multigrid, C and Python constructions
     \end{itemize}
-\item L.~Trefethen \& D.~Bau (2022). \emph{Numerical Linear Algebra}, 25th anniversary ed., SIAM Press, Philadelphia
+\item[] \textbf{G.~Golub \& C.~van Loan (2013)}. \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press, Baltimore
+    \begin{itemize}
+    \item[$\circ$] algorithms, banded \& circulant matrices, sparse storage
+    \end{itemize}
+\item[] \textbf{L.~Trefethen \& D.~Bau (2022)}. \emph{Numerical Linear Algebra}, 25th anniversary ed., SIAM Press, Philadelphia
     \begin{itemize}
     \item[$\circ$] clear thinking on linear systems
     \end{itemize}
-\item U.~Trottenberg, C.~Oosterlee, \& A. Schuller (2001).  \emph{Multigrid}, Elsevier, Oxford
+\item[] \textbf{U.~Trottenberg, C.~Oosterlee, \& A. Schuller (2001)}.  \emph{Multigrid}, Elsevier, Oxford
+}
 \end{itemize}
 \end{column}
 \begin{column}{0.15\textwidth}
