@@ -28,6 +28,7 @@
 
 \usepackage{empheq,bm,xspace,minted}
 \usepackage{hyperref}
+\usepackage{tikz}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
 % the following command: 
@@ -66,9 +67,21 @@
 \begin{definition}
 an algorithm for computing a function on a class of problems, which acts on floating-point data of size $N$, is \emph{optimal} if it requires
    $$O(N) \qquad \text{ or } \qquad O(N\log N) \qquad \text{ flops}$$
+as $N\to\infty$
 \end{definition}
 }
-
+\newcommand{\rbullet}{{\color{FireBrick} \bullet}}
+\newcommand{\lubullets}{
+$$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \end{bmatrix}
+\to
+\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \rbullet & \rbullet & \rbullet \\ 0 & \rbullet & \rbullet & \rbullet \\ 0 & \rbullet & \rbullet & \rbullet \end{bmatrix}
+\to
+\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \bullet & \bullet & \bullet \\ 0 & 0 & \rbullet & \rbullet \\ 0 & 0 & \rbullet & \rbullet \end{bmatrix}
+\to
+\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \bullet & \bullet & \bullet \\ 0 & 0 & \bullet & \bullet \\ 0 & 0 & 0 & \rbullet \end{bmatrix}$$
+}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 
 \title{Which linear systems can be solved optimally?}
 
@@ -80,6 +93,7 @@ an algorithm for computing a function on a class of problems, which acts on floa
 
 
 \begin{document}
+\beamertemplatenavigationsymbolsempty
 
 \begin{frame}
   \maketitle
@@ -173,16 +187,17 @@ def matvec(A,x):
 \end{minipage}
 \end{center}
 
+\bigskip
 \begin{itemize}
-\item this \ftt{matvec} does exactly $2mn$ floating point operations (\emph{flops})
+\item \ftt{matvec} does exactly $2mn$ floating point operations (\emph{flops})
     \begin{itemize}
     \item[$\circ$] $n$ additions and $n$ multiplications for each of $m$ entries of result vector $Ax$
     \end{itemize}
 \item complexity in big-O notation:
     \begin{itemize}
     \item[$\circ$] $O(mn)$ flops
-    \item[$\circ$] $O(mn)$ storage (including inputs $A$ and $x$)
-    \item[$\circ$] $O(mn)$ time (messy?)
+    \item[$\circ$] $O(mn)$ storage, including inputs $A$ and $x$
+    \item[$\circ$] $O(mn)$ time (maybe?)
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -319,52 +334,115 @@ def matvec_tri(A,x):
 \begin{frame}{Gaussian elimination to solve linear systems $Ax=b$}
 
 \begin{itemize}
-\item Gaussian elimination (GE) with back-substitution (BS) is the familiar way to solve linear systems $Ax=b$ where $A\in\RR^{m\times m}$ is square
-\item solving $Ax=b$ by GEBS is usually organized as $LU$ factorization (\emph{decomposition}) followed by triangular-system solves:
+\item Gaussian elimination (GE) with back-substitution (BS) is the familiar way to solve linear systems $Ax=b$
+\item for example:
+
+%>> L = [1 0 0 0; -1 1 0 0; 2 0 1 0; 1 1 1 1];
+%>> U = [1 2 3 4; 0 2 1 0; 0 0 3 1; 0 0 0 2];
+%>> x = [1 -1 1 1]';
+%>> A = L*U; b = A*x;
+%>> y = L\b;  U\y
+
+\vspace{-3mm}
+\mbox{
+\begin{minipage}[t]{0.1\textwidth}
+{\footnotesize
+\begin{align*}
+x_0 + 2 x_1 + 3 x_2 + 4 x_3 &= 6 \\
+-x_0 \phantom{+x_1} - 2 x_2 - 4 x_3 &= -7 \\
+2 x_0 + 4 x_1 + 9 x_2 + 9 x_3 &= 16 \\
+x_0 + 4 x_1 + 7 x_2 + 7 x_3 &= 11
+\end{align*}
+}
+\end{minipage}
+\hspace{3mm}
+\begin{minipage}[t]{0.2\textwidth}
+\vspace{10mm}
+$\stackrel{\text{T}}{\to}$
+\end{minipage}
+\hspace{-20mm}
+\begin{minipage}[t]{0.1\textwidth}
+{\footnotesize
+\begin{align*}
+x_0 + 2 x_1 + 3 x_2 + 4 x_3 &= 6 \\
+      2 x_1 + x_2 \phantom{+0x_3} &= -1 \\
+              3 x_2 + x_3 &= 4 \\
+                      2 x_3 &= 2
+\end{align*}
+}
+\end{minipage}
+\hspace{3mm}
+\begin{minipage}[t]{0.2\textwidth}
+\vspace{10mm}
+$\stackrel{\text{BS}}{\to}$
+\end{minipage}
+\hspace{-18mm}
+\begin{minipage}[t]{0.1\textwidth}
+{\footnotesize
+\begin{align*}
+x_0 &= 1 \\
+x_1 &= -1 \\
+x_2 &= 1 \\
+x_3 &= 1
+\end{align*}
+}
+\end{minipage}
+}
+
+\medskip
+\item triangularization $\stackrel{\text{T}}{\to}$ occurs in stages, for example:
+{\footnotesize
+\begin{align*}
+R_1 &\gets R_1 + R_0     &     &                 &      & \\
+R_2 &\gets R_2 - 2 R_0   & R_2 &\gets R_2        &      & \\
+R_3 &\gets R_3 - R_0     & R_3 &\gets R_3 - R_2  &  R_3 &\gets R_3 - R_2
+\end{align*}
+}
+\item each stage zeros-out a column, and \alert{modifies} everything to the right:
+{\scriptsize
+\lubullets
+}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Gaussian elimination is $LU$ decomposition}
+
+\begin{itemize}
+\item GEBS is usually implemented as $LU$ factorization (\emph{decomposition}) of $A$:
 {\scriptsize
 $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \end{bmatrix}
 =
 \begin{bmatrix} \bullet & & & \\ \bullet & \bullet & & \\ \bullet & \bullet & \bullet & \\ \bullet & \bullet & \bullet & \bullet \end{bmatrix}
 \begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ & \bullet & \bullet & \bullet \\ & & \bullet & \bullet \\ & & & \bullet \end{bmatrix}$$
 }
+
+\vspace{-2mm}
 $$A = L \, U \phantom{dflkja asdflk}$$
-    $$Ax=b \quad \iff \quad
-      \begin{matrix} A = LU \\
-                     L(U x) = b \end{matrix} \quad \iff
-      \begin{matrix} A = LU \\
-                     U x = y \\
+\item \dots followed by triangular-system solves to solve $Ax=b$:
+    $$Ax=b \quad \iff \quad L(U x) = b \quad \iff
+      \begin{matrix} U x = y \\
                      L y = b \end{matrix}$$
 
 \vspace{-2mm}
    \begin{itemize}
    \item[$\circ$] this way of organizing does not affect the scaling
-   \item[$\circ$] the triangular solves $Ux=y$ and $Ly=b$ each require exactly $m^2$ floating-point operations (\emph{exercise})
    \end{itemize}
+\item if $A \in \RR^{m\times m}$ then the triangular solves $Ux=y$ and $Ly=b$ each require exactly $m^2$ floating-point operations (\emph{exercise})
 \item partial pivoting should be done for numerical stability
    \begin{itemize}
-   \item[$\circ$] this addition does not affect its scaling
+   \item[$\circ$] results in $PA=LU$ where $P$ is a permutation-of-rows operation (matrix)
+   \item[$\circ$] partial pivoting is $O(m^2)$, so it does not affect scaling at leading order
    \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\newcommand{\rbullet}{{\color{FireBrick} \bullet}}
-
-\newcommand{\lubullets}{
-$$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \end{bmatrix}
-\to
-\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \rbullet & \rbullet & \rbullet \\ 0 & \rbullet & \rbullet & \rbullet \\ 0 & \rbullet & \rbullet & \rbullet \end{bmatrix}
-\to
-\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \bullet & \bullet & \bullet \\ 0 & 0 & \rbullet & \rbullet \\ 0 & 0 & \rbullet & \rbullet \end{bmatrix}
-\to
-\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ 0 & \bullet & \bullet & \bullet \\ 0 & 0 & \bullet & \bullet \\ 0 & 0 & 0 & \rbullet \end{bmatrix}$$
-}
-
 \begin{frame}[fragile]
 \frametitle{LU decomposition pseudocode}
 
 \begin{itemize}
-\item the $A=LU$ step dominates the time for GEBS on $Ax=b$
+\item the $A=LU$ triangularization step dominates the time for GEBS
 \item as we convert $A$ to $U$ we zero-out columns below the diagonal
 \item each column zeroing modifies a \alert{square of entries} to its right
 \end{itemize}
@@ -398,7 +476,8 @@ def lu(A):
 \begin{itemize}
 \item $A=LU$ requires $\frac{2}{3} m^3 + O(m^2) = O(m^3)$ floating point operations
    \begin{itemize}
-   \item[$\circ$] because the volume of an $m\times m\times m$ pyramid is $\frac{1}{3} m^3$
+   \item[$\circ$] because the volume of an $m\times m\times m$ pyramid is $\frac{1}{3} m^3$,
+   \item[$\circ$] and there are two flops per modified entry
    \end{itemize}
 \end{itemize}
 
@@ -426,23 +505,22 @@ def lu(A):
 \begin{frame}{scaling for solving \textbf{dense} linear systems}
 
 \begin{itemize}
-\item the rest of the talk assumes $A$ is square and invertible
-\item one may regard the data of ``solve $Ax=b$'' as the matrix $A\in\RR^{m\times m}$ itself
+\item the rest of the talk assumes $A\in\RR^{m\times m}$ is square and invertible
+\item one may regard the data of ``solve $Ax=b$'' as the matrix $A$ itself
 \item then an optimal solver for \textbf{dense} $A$ would require $O(m^2)$ flops
    \begin{itemize}
    \item[$\circ$] generic dense matrices $A$ have $m^2$ entries which affect the solution
    \item[$\circ$] touching each entry is $O(m^2)$
    \end{itemize}
 \item GEBS is $O(m^3)$
-\item $\exists$ solver algorithms for dense $A\in\RR^{m\times m}$ which scale as $O(m^{\,2.376})$
+\item $\exists$ solver algorithms\footnote{these ``fast solvers'' can even be stable with respect to rounding errors? this is not clear to me! see J.~Demmel, I.~Dumitriu, O.~Holtz, and R.~Kleinberg (2007). \emph{Fast matrix multiplication is stable}, Numer.~Math.~106 (2), 199--224} for dense $A\in\RR^{m\times m}$ which scale as $O(m^{\,2.376})$
    \begin{itemize}
    \item[$\circ$] famously starting with V.~Strassen (1969). \emph{Gaussian elimination is not optimal}, Numer.~Math.~13, 354--356
-   \item[$\circ$] these ``fast solvers'' can even be stable with respect to rounding errors? this is not clear to me! see J.~Demmel, I.~Dumitriu, O.~Holtz, and R.~Kleinberg (2007). \emph{Fast matrix multiplication is stable}, Numer.~Math.~106 (2), 199--224
    \end{itemize}
 \item however, this ``fast dense solver'' game is not practical
    \begin{itemize}
    \item[$\circ$] fascinating algebra, but little impact on scientific/engineering software
-   \item<2>[$\circ$] for the applications I care about, $O(m^{\,2.376})$ is catastophically slow
+   \item<2>[$\circ$] also, for the applications I care about, $O(m^{\,2.376})$ is catastophically slow
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -459,26 +537,40 @@ def lu(A):
 \item for special classes of $A\in\RR^{m\times m}$, are there optimal $O(m^1)$ solvers?
 \item more precisely, are there special classes of matrices $A\in\RR^{m\times m}$, which routinely arise in applications, for which there are $O(m^1)$ solvers?
    \begin{itemize}
-   \item[$\circ$] the answer will be ``yes''
+   \item[$\circ$] yes
    \end{itemize}
 \item $O(m^1)$ solvers $\implies$ there \emph{must} be exploitable matrix structure
    \begin{itemize}
-   \item[$\circ$] these are \emph{not} generic, dense matrices!
-   \item[$\circ$] many are sparse
-   \item[$\circ$] but some are dense!
+   \item[$\circ$] these are \emph{not} generic, dense matrices
+   \item[$\circ$] most are sparse, but some are dense!
    \end{itemize}
-\item a \emph{huge} amount of science/engineering-relevant software supports these special matrix cases, and these optimal solver algorithms
+\item a \emph{huge} amount of science/engineering-relevant software supports these special matrix classes and optimal solver algorithms
 \end{itemize}
 \end{frame}
 
 
 \section{tridiagonal and other banded matrices}
 
-\begin{frame}{y}
+\begin{frame}[fragile]
+\frametitle{banded matrices}
 
 \begin{itemize}
-\item x
+\item random $m=10$ matrix with bandwidths $p=2$ (lower) and $q=4$ (upper):
+
+\bigskip
+\begin{minted}[fontsize=\footnotesize]{python}
+from numpy import tril, triu
+from numpy.random import randn
+from matplotlib.pyplot import spy, show
+m,p,q = 10,2,4
+A = tril(triu(randn(m,m),-p),+q)
+spy(A,markersize=5.0)
+show()
+\end{minted}
 \end{itemize}
+
+\vspace{-20mm}
+\hfill \includegraphics[width=0.3\textwidth]{images/banded.png}
 \end{frame}
 
 
