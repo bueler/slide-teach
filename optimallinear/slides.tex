@@ -109,7 +109,7 @@ $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \
 
 \begin{frame}{matrix-vector products}
 \begin{itemize}
-\item the life-goal of a matrix $A \in \RR^{m\times n}$ is to act on (=multiply) vectors $x \in \RR^n$:
+\item the life-goal of a matrix $A \in \RR^{m\times n}$ is to act on (multiply) vectors $x \in \RR^n$:
     $$z = Ax \qquad\quad \bulletax$$
 \item this is a simple and familiar operation:
     $$z_i = \sum_{j=0}^{n-1} a_{ij} x_j \qquad \text{ for } i=0,\dots,m-1$$
@@ -208,7 +208,7 @@ def matvec(A,x):
 \begin{frame}{my definition of \emph{optimal}}
 
 \begin{itemize}
-\item I will throw around ``optimal'' a lot in this talk
+\item I will throw around the word ``optimal'' in this talk
 \end{itemize}
 
 \optimaldef
@@ -292,7 +292,7 @@ def matvec_tri(A,x):
 \end{center}
 
 \bigskip
-\item this algorithm does $O(n)$ flops, so it is optimal in any interpretation
+\item this algorithm does $O(n)$ flops, on data of size $O(n)$, in any interpretation, so it is optimal
 \end{itemize}
 \end{frame}
 
@@ -431,7 +431,7 @@ $$A = L \, U \phantom{dflkja asdflk}$$
 \item if $A \in \RR^{m\times m}$ then the triangular solves $Ux=y$ and $Ly=b$ each require exactly $m^2$ floating-point operations (\emph{exercise})
 \item partial pivoting should be done for numerical stability
    \begin{itemize}
-   \item[$\circ$] results in $PA=LU$ where $P$ is a permutation-of-rows operation (matrix)
+   \item[$\circ$] result: $PA=LU$ where $P$ is a permutation-of-rows operation (matrix)
    \item[$\circ$] partial pivoting is $O(m^2)$, so it does not affect scaling at leading order
    \end{itemize}
 \end{itemize}
@@ -505,12 +505,11 @@ def lu(A):
 \begin{frame}{scaling for solving \textbf{dense} linear systems}
 
 \begin{itemize}
-\item the rest of the talk assumes $A\in\RR^{m\times m}$ is square and invertible
+\item \alert{the rest of the talk assumes $A\in\RR^{m\times m}$ is square and invertible}
 \item one may regard the data of ``solve $Ax=b$'' as the matrix $A$ itself
 \item then an optimal solver for \textbf{dense} $A$ would require $O(m^2)$ flops
    \begin{itemize}
-   \item[$\circ$] generic dense matrices $A$ have $m^2$ entries which affect the solution
-   \item[$\circ$] touching each entry is $O(m^2)$
+   \item[$\circ$] one cannot do better because generic dense matrices $A$ have $m^2$ entries, and thus touching each entry is $O(m^2)$
    \end{itemize}
 \item GEBS is $O(m^3)$
 \item $\exists$ solver algorithms\footnote{these ``fast solvers'' can even be stable with respect to rounding errors? this is not clear to me! see J.~Demmel, I.~Dumitriu, O.~Holtz, and R.~Kleinberg (2007). \emph{Fast matrix multiplication is stable}, Numer.~Math.~106 (2), 199--224} for dense $A\in\RR^{m\times m}$ which scale as $O(m^{\,2.376})$
@@ -520,7 +519,7 @@ def lu(A):
 \item however, this ``fast dense solver'' game is not practical
    \begin{itemize}
    \item[$\circ$] fascinating algebra, but little impact on scientific/engineering software
-   \item<2>[$\circ$] also, for the applications I care about, $O(m^{\,2.376})$ is catastophically slow
+   \item<2>[$\circ$] also, for the applications I care about, $O(m^{\,2.376})$ is catastrophically slow
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -539,7 +538,7 @@ def lu(A):
    \begin{itemize}
    \item[$\circ$] yes
    \end{itemize}
-\item $O(m^1)$ solvers $\implies$ there \emph{must} be exploitable matrix structure
+\item $\exists O(m^1)$ solvers $\implies$ $\exists$ exploitable matrix structure
    \begin{itemize}
    \item[$\circ$] these are \emph{not} generic, dense matrices
    \item[$\circ$] most are sparse, but some are dense!
@@ -594,7 +593,7 @@ show()
 \end{frame}
 
 
-\section{paradigm: preconditioned Krylov iterations}
+\section{paradigm of the 1990s: preconditioned Krylov iterations}
 
 \begin{frame}{y}
 
