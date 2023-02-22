@@ -118,7 +118,11 @@ $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \
     \item[$\circ$] note: I will index rows and columns starting from 0 in this talk
     \item[$\circ$] note: by default, vectors in $\RR^n$ are column vectors
     \end{itemize}
-\item how fast is matrix-vector multiplication?
+
+\medskip
+\item how fast is matrix-vector multiplication for generic $A \in \RR^{m\times n}$ and $x \in \RR^n$?
+
+\medskip
 \item that is, what is its (\emph{algorithmic}) \emph{complexity}?
 \end{itemize}
 \end{frame}
@@ -242,19 +246,19 @@ def matvec(A,x):
 \end{itemize}
 
 \begin{enumerate}
-\item<2->[1.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any matrix $A\in\RR^{m\times n}$ for which multiplication is valid}, then it \textbf{\emph{is not} optimal $O(N)$}
+\item<2->[1.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any matrix $A\in\RR^{m\times n}$ for which multiplication is valid}, then it \textbf{\emph{is not} optimal}
     \begin{itemize}
     \item[$\circ$] $2mn = 2m N \nleq C N$ for all problems \hfill $\gets$ \emph{$m$ depends on the problem}
     \end{itemize}
-\item<3->[2.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider a \alert{all matrices $A$ with (fixed) $m$ rows}, then it \textbf{\emph{is} optimal $O(N)$}, but the constant can be big
+\item<3->[2.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider a \alert{all matrices $A$ with (fixed) $m$ rows}, then it \textbf{\emph{is} optimal}
     \begin{itemize}
     \item[$\circ$] $2mn = 2m N \leq C N$ for $C=m$
     \end{itemize}
-\item<4->[3.] if the \alert{data $=$ matrix $A$} ($N=mn$), and we consider \alert{any $x$}, then it \textbf{\emph{is} optimal $O(N)$}
+\item<4->[3.] if the \alert{data $=$ matrix $A$} ($N=mn$), and we consider \alert{any $x$}, then it \textbf{\emph{is} optimal}
     \begin{itemize}
     \item[$\circ$] $2mn = 2 N \leq C N$ for $C=2$
     \end{itemize}
-\item<5>[4.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any tridiagonal matrix $A$}, then it \textbf{\emph{is} optimal $O(N)$}, assuming we don't do the zero multiplications
+\item<5>[4.] if the \alert{data $=$ vector $x$} ($N=n$), and we consider \alert{any square tridiagonal matrix $A$}, then it \textbf{\emph{is} optimal} \hfill $\gets$ \emph{not counting $a_{ij}x_j$ if $a_{ij}=0$}
     \begin{itemize}
     \item[$\circ$] $2\cdot 3\cdot n = 6 N \leq C N$ for $C=6$
     \end{itemize}
@@ -268,7 +272,7 @@ def matvec(A,x):
 \frametitle{tridiagonal matrix-vector product}
 
 \begin{itemize}
-\item to be honest, the tridiagonal case is a different algorithm:
+\item to be honest, the square tridiagonal case is a different algorithm:
 
 \bigskip
 
@@ -292,7 +296,7 @@ def matvec_tri(A,x):
 \end{center}
 
 \bigskip
-\item this algorithm does $O(n)$ flops, so it is optimal in any interpretation
+\item this algorithm does $O(m)$ flops, so it is optimal in any interpretation
 \end{itemize}
 \end{frame}
 
@@ -300,8 +304,8 @@ def matvec_tri(A,x):
 \begin{frame}{regarding optimal algorithms}
 
 \begin{itemize}
-\item I will stick to my definition of ``optimal''!
-\item however, it is fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
+\item I will stick to my definition of ``optimal'' below!
+\item however, it is \alert{always} fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
     \begin{itemize}
     \item[$\circ$] because whether an algorithm is optimal depends on an agreement regarding which is the data and which is the problem class
     \end{itemize}
@@ -409,7 +413,7 @@ R_3 &\gets R_3 - R_0     & R_3 &\gets R_3 - R_2  &  R_3 &\gets R_3 - R_2
 \begin{frame}{Gaussian elimination is $LU$ decomposition}
 
 \begin{itemize}
-\item GEBS is usually implemented as $LU$ factorization (\emph{decomposition}) of $A$:
+\item GEBS is usually implemented as $LU$ factorization (\emph{decomposition}) of $A$,
 {\scriptsize
 $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet & \bullet \end{bmatrix}
 =
@@ -418,21 +422,23 @@ $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \
 }
 
 \vspace{-2mm}
-$$A = L \, U \phantom{dflkja asdflk}$$
-\item \dots followed by triangular-system solves to solve $Ax=b$:
+$$A = L \, U, \phantom{dflkja asdflk}$$
+followed by triangular-system solves to solve $Ax=b$:
     $$Ax=b \quad \iff \quad L(U x) = b \quad \iff
-      \begin{matrix} U x = y \\
-                     L y = b \end{matrix}$$
+      \begin{matrix} L y = b \\ U x = y \end{matrix}$$
 
 \vspace{-2mm}
    \begin{itemize}
-   \item[$\circ$] this way of organizing does not affect the scaling
+   \item[$\circ$] this way of organizing does not affect the algorithm's complexity
    \end{itemize}
-\item if $A \in \RR^{m\times m}$ then the triangular solves $Ux=y$ and $Ly=b$ each require exactly $m^2$ floating-point operations (\emph{exercise})
+\item if $A \in \RR^{m\times m}$ then the triangular solves $Ly=b$ and $Ux=y$ (forward- \& back-sub.) each require exactly $m^2$ floating-point operations
+   \begin{itemize}
+   \item[$\circ$] showing this is a good exercise
+   \end{itemize}
 \item partial pivoting should be done for numerical stability
    \begin{itemize}
-   \item[$\circ$] results in $PA=LU$ where $P$ is a permutation-of-rows operation (matrix)
-   \item[$\circ$] partial pivoting is $O(m^2)$, so it does not affect scaling at leading order
+   \item[$\circ$] result: $PA=LU$ where $P$ is a permutation-of-rows operation
+   \item[$\circ$] partial pivoting is $O(m^2)$; it does not affect complexity at leading order
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -443,8 +449,8 @@ $$A = L \, U \phantom{dflkja asdflk}$$
 
 \begin{itemize}
 \item the $A=LU$ triangularization step dominates the time for GEBS
-\item as we convert $A$ to $U$ we zero-out columns below the diagonal
-\item each column zeroing modifies a \alert{square of entries} to its right
+\item one converts $A$ to $U$ by zeroing-out columns below the diagonal
+\item each such stage modifies a \alert{square of entries} to its right
 \end{itemize}
 
 \medskip
@@ -506,13 +512,13 @@ def lu(A):
 
 \begin{itemize}
 \item the rest of the talk assumes $A\in\RR^{m\times m}$ is square and invertible
-\item one may regard the data of ``solve $Ax=b$'' as the matrix $A$ itself
+\item one \textbf{might} regard the data of ``solve $Ax=b$'' as the matrix $A$ itself
 \item then an optimal solver for \textbf{dense} $A$ would require $O(m^2)$ flops
    \begin{itemize}
    \item[$\circ$] generic dense matrices $A$ have $m^2$ entries which affect the solution
    \item[$\circ$] touching each entry is $O(m^2)$
    \end{itemize}
-\item GEBS is $O(m^3)$
+\item however, we know GEBS is $O(m^3)$, thus not optimal
 \item $\exists$ solver algorithms\footnote{these ``fast solvers'' can even be stable with respect to rounding errors? this is not clear to me! see J.~Demmel, I.~Dumitriu, O.~Holtz, and R.~Kleinberg (2007). \emph{Fast matrix multiplication is stable}, Numer.~Math.~106 (2), 199--224} for dense $A\in\RR^{m\times m}$ which scale as $O(m^{\,2.376})$
    \begin{itemize}
    \item[$\circ$] famously starting with V.~Strassen (1969). \emph{Gaussian elimination is not optimal}, Numer.~Math.~13, 354--356
@@ -520,7 +526,7 @@ def lu(A):
 \item however, this ``fast dense solver'' game is not practical
    \begin{itemize}
    \item[$\circ$] fascinating algebra, but little impact on scientific/engineering software
-   \item<2>[$\circ$] also, for the applications I care about, $O(m^{\,2.376})$ is catastophically slow
+   \item<2>[$\circ$] \alert{for the applications of greatest interest, $O(m^{\,2.376})$ is catastophically slow}
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -531,11 +537,10 @@ def lu(A):
 \begin{itemize}
 \item \alert{the rest of the talk assumes the size of the data is $m$}
    \begin{itemize}
-   \item[$\circ$] $A\in\RR^{m\times m}$, $b \in \RR^m$
    \item[$\circ$] $m$ = (number of unknowns) = (number of rows in $A$) = (length of $b$)
+   \item[$\circ$] $A\in\RR^{m\times m}$, $b \in \RR^m$
    \end{itemize}
-\item for special classes of $A\in\RR^{m\times m}$, are there optimal $O(m^1)$ solvers?
-\item more precisely, are there special classes of matrices $A\in\RR^{m\times m}$, which routinely arise in applications, for which there are $O(m^1)$ solvers?
+\item are there special classes of matrices $A\in\RR^{m\times m}$, which routinely arise in applications, for which there are $O(m^1)$ solvers?
    \begin{itemize}
    \item[$\circ$] yes
    \end{itemize}
