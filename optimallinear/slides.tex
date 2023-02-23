@@ -553,10 +553,40 @@ def lu(A):
 \end{frame}
 
 
-\section{tridiagonal and other banded matrices}
+\section{banded matrices}
+
+\begin{frame}{banded matrices}
+
+\begin{definition}
+a square matrix $A$ is \emph{banded} with \emph{lower bandwidth} $p$ and \emph{upper bandwidth} $q$ if
+    $$i > j + p \,\,\text{ or }\,\, j > i + q \quad \implies \quad a_{ij} = 0$$
+\end{definition}
+
+\begin{itemize}
+\item example non-zero pattern
+
+with $p=2,q=4$:
+
+\vspace{-7mm}
+\hspace{55mm} \includegraphics[width=0.28\textwidth]{images/banded.png}
+
+\medskip
+\item I have already mentioned tridiagonal matrices
+
+\vspace{-2mm}
+\hfill
+{\scriptsize $\displaystyle \begin{bmatrix} \bullet & \bullet & & \\ \bullet & \bullet & \bullet & \\ & \bullet & \bullet & \bullet \\ & & \bullet & \bullet \end{bmatrix}$} 
+
+\vspace{-5mm}
+   \begin{itemize}
+   \item[$\circ$] tridiagonal matrices are banded with $p,q=1,1$
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}[fragile]
-\frametitle{banded matrices}
+\frametitle{generating and viewing banded matrices}
 
 \begin{itemize}
 \item random $m=10$ matrix with bandwidths $p=2$ (lower) and $q=4$ (upper):
@@ -573,9 +603,72 @@ show()
 \end{minted}
 \end{itemize}
 
-\vspace{-20mm}
-\hfill \includegraphics[width=0.3\textwidth]{images/banded.png}
+\vspace{-10mm}
+\hfill \includegraphics[width=0.38\textwidth]{images/banded.png}
 \end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{banded LU decomposition}
+
+\begin{itemize}
+\item specializing LU decomposition to banded matrices is straightforward
+\item the version below computes $A=LU$ \emph{without} pivoting
+   \begin{itemize}
+   \item[$\circ$] skipping pivoting is generally unstable, but o.k.~for nice classes of matrices 
+   \item[$\circ$] the algorithm below is \emph{in place}; it overwrites $A$ with $L$ and $U$
+   \item[$\circ$] $2pqm + (\text{lower}) = O(pqm) = O(m)$ flops
+   \item[$\circ$] the tridiagonal case is often called the \emph{Thomas} algorithm
+   \end{itemize}
+
+\medskip
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{minted}[fontsize=\footnotesize]{python}
+def lu_banded(A):
+    for k = 0 to m-2:
+        for i = k+1 to min{k+p,m}:
+            A[i][k] = A[i][k] / U[k][k]
+        for j = k+1 to min{k+q,m}:
+            for i = k+1 to min{k+p,m}:
+                A[i][j] = A[i][j] - A[i][k] * A[k][j]
+    return A
+\end{minted}
+\end{minipage}
+\end{center}
+
+\bigskip
+\item banded LU is optimal $O(m)$
+   \begin{itemize}
+   \item[$\circ$] but the constant in ``$O(m)$'' is proportional to the product $pq$ of bandwidths
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{effect of pivoting on banded LU}
+
+\begin{itemize}
+\item pivoting expands the band, often acceptably
+\item \emph{theorem.} if $A$ is $p,q$ banded then $PA=LU$ where $U$ has upper bandwidth at most $p+q$; though $L$ can have any bandwidth, it has at most $p+1$ nonzeros per column
+\end{itemize}
+
+\includegraphics[width=0.25\textwidth]{images/banded-A.png}
+
+\mbox{\includegraphics[width=0.25\textwidth]{images/banded-PA.png} $=$ \includegraphics[width=0.25\textwidth]{images/banded-L.png} \includegraphics[width=0.25\textwidth]{images/banded-U.png}}
+
+FIXME
+\end{frame}
+
+
+\begin{frame}{where do banded matrices come from?}
+
+\begin{itemize}
+\item TWO-POINT BC
+\item 2D POISSON FD
+\end{itemize}
+\end{frame}
+
 
 
 \section{circulant matrices}
