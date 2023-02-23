@@ -579,7 +579,7 @@ with $p=2,q=4$:
 
 \vspace{-5mm}
    \begin{itemize}
-   \item[$\circ$] tridiagonal matrices are banded with $p,q=1,1$
+   \item[$\circ$] they are banded with $p,q=1,1$
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -617,7 +617,6 @@ show()
    \begin{itemize}
    \item[$\circ$] skipping pivoting is generally unstable, but o.k.~for nice classes of matrices 
    \item[$\circ$] the algorithm below is \emph{in place}; it overwrites $A$ with $L$ and $U$
-   \item[$\circ$] $2pqm + (\text{lower}) = O(pqm) = O(m)$ flops
    \item[$\circ$] the tridiagonal case is often called the \emph{Thomas} algorithm
    \end{itemize}
 
@@ -638,9 +637,10 @@ def lu_banded(A):
 \end{center}
 
 \bigskip
-\item banded LU is optimal $O(m)$
+\item this algorithm does $2pqm + (\text{lower}) = O(pqm) = O(m)$ flops
+\item so solving a banded linear system via LU is optimal $O(m)$
    \begin{itemize}
-   \item[$\circ$] but the constant in ``$O(m)$'' is proportional to the product $pq$ of bandwidths
+   \item[$\circ$] with a constant proportional to the product $pq$ of bandwidths
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -649,26 +649,93 @@ def lu_banded(A):
 \begin{frame}{effect of pivoting on banded LU}
 
 \begin{itemize}
-\item pivoting expands the band, often acceptably
-\item \emph{theorem.} if $A$ is $p,q$ banded then $PA=LU$ where $U$ has upper bandwidth at most $p+q$; though $L$ can have any bandwidth, it has at most $p+1$ nonzeros per column
+\item pivoting expands the band, but often acceptably
+
+\bigskip
+\emph{theorem.} if $A$ is $p,q$ banded then $PA=LU$ where $U$ has upper bandwidth at most $p+q$; though $L$ can have any bandwidth, it has at most $p+1$ nonzeros per column
+
+\bigskip
+\item for example, I generated a $20\times 20$ random matrix: \qquad $A=$
+   \begin{itemize}
+   \item[$\circ$] $p,q=2,4$
+   \end{itemize}
+
+\vspace{-12mm}
+\hfill \includegraphics[width=0.15\textwidth]{images/banded-A.png}
+
+\vspace{-3mm}
+\mbox{\includegraphics[width=0.2\textwidth]{images/banded-PA.png} \qquad \qquad \includegraphics[width=0.2\textwidth]{images/banded-L.png} \includegraphics[width=0.2\textwidth]{images/banded-U.png}}
+
+\vspace{-3mm}
+$$PA \hspace{15mm} = \hspace{15mm} L \hspace{30mm} U \hspace{20mm}$$
+
+\medskip
+\item if $p,q=O(1)$ then banded matrix LU with pivoting is optimal $O(m)$
 \end{itemize}
-
-\includegraphics[width=0.25\textwidth]{images/banded-A.png}
-
-\mbox{\includegraphics[width=0.25\textwidth]{images/banded-PA.png} $=$ \includegraphics[width=0.25\textwidth]{images/banded-L.png} \includegraphics[width=0.25\textwidth]{images/banded-U.png}}
-
-FIXME
 \end{frame}
 
 
 \begin{frame}{where do banded matrices come from?}
 
 \begin{itemize}
-\item TWO-POINT BC
-\item 2D POISSON FD
+\item one source: structured-grid approximations of differential equations
+\item consider a 2-point boundary value problem
+    $$u''(x) + p(x) u'(x) = f(x)$$
+\item discretize it on an $n$ point grid:
+    $$\frac{U_{j+1} - 2 U_j + U_{j-1}}{h^2} + p(x_j) \frac{U_{j+1} - U_{j-1}}{2 h} = f(x_j)$$
+\item yields a tridiagonal matrix $A$ (left)
 \end{itemize}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{images/spythree.png}
+\end{center}
 \end{frame}
 
+
+\begin{frame}{where do banded matrices come from?}
+
+\begin{itemize}
+\item discretizations of 2D and 3D partial differential equations (PDEs) also generates banded matrices
+\item however, the \alert{bandwidth} \alert{grows} with the number of
+
+grid points in each direction
+
+\vspace{-10mm}
+\hfill \includegraphics[width=0.25\textwidth]{images/stencil9.png}
+
+\vspace{-18mm}
+\item for example, a $n_x \times n_y$ 2D grid has $m=n_x n_y$
+
+unknowns and generates $A$ with bandwidth
+
+$p=q=\min\{n_x,n_y\} = O(m^{1/2})$ (middle)
+
+\item an unstructured triangularization can only generate
+
+a banded matrix if the ordering of unknowns is
+
+carefully chosen (right; not-so-good ordering)
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.75\textwidth]{images/spythree.png}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{2D and 3D PDE solutions}
+
+\begin{itemize}
+\item banded LU solvers for 2D and 3D PDE problems are \emph{not} optimal
+   \begin{itemize}
+   \item[$\circ$] \alert{2D} yields $p=q=O(m^{1/2})$ bandwidth and $O(pqm)={\color{FireBrick} O(m^2)}$ flops
+   \item[$\circ$] \alert{3D} yields $O(m^{2/3})$ bandwidth and $O(pqm) = {\color{FireBrick} O(m^{7/3})}$ flops
+   \item[$\circ$] contrast 1D ODE BVPs, with $O(1)$ bandwidth and $O(m)$ flops
+   \end{itemize}
+\item other ideas are needed!
+\item \alert{multigrid} is such an idea
+\end{itemize}
+\end{frame}
 
 
 \section{circulant matrices}
@@ -700,7 +767,7 @@ so that, for example,
 {\small
 	$$D_5 c = \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 2 \\ 8 \\ 3 \\ -1 \\ 7 \end{bmatrix} = \begin{bmatrix} 7 \\ 2 \\ 8 \\ 3 \\ -1 \end{bmatrix} \hspace{45mm}$$
 }
-\item then, for example: \qquad $\displaystyle A = 2 I + 8 D_5 + 3 D_5^2 + (-1) D_5^3 + 7 D_5^4$
+\item then, for example: \qquad $\displaystyle A = 2 I + 8 D_5 + 3 D_5^2 + (-1) D_5^3 + 7 D_5^4$ \hfill $\uparrow$
 
 \vspace{-50mm}
 {\scriptsize
@@ -714,30 +781,98 @@ so that, for example,
 \end{frame}
 
 
+\begin{frame}{eigenvalues and diagonalization}
+
+\begin{itemize}
+\item will return to circulants and downshifts \dots but first recall
+
+\begin{definition}
+a square matrix $A$ has an \emph{eigenvector} $v$ if $v$ is nonzero and $Av=\lambda v$ for some scalar $\lambda$, in which case $\lambda$ is the \emph{eigenvalue}
+\end{definition}
+
+\item suppose we build $V$ by using eigenvectors as the columns:
+\begin{align*}
+\left[\begin{array}{c|c|c} && \\ A v_0 & \cdots & A v_k \\ && \end{array} \right] &= \left[\begin{array}{c|c|c} && \\ \lambda_0 v_0 & \cdots & \lambda_k v_k \\ && \end{array} \right] \\
+A V &= V \Lambda
+\end{align*}
+where $\Lambda$ is diagonal with $\lambda_0,\dots,\lambda_k$ on the diagonal
+\item if $A$ is $m\times m$, and \alert{if} there are $m$ linearly-independent eigevectors $v_0,\dots,v_{m-1}$ of $A$, so $V$ is invertible, then we say $A$ is \emph{diagonalizable}:
+	$$AV = V \Lambda \qquad \iff \qquad A = V \Lambda V^{-1}$$
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{diagonalization and polynomials}
 
 \begin{itemize}
-\item recall that a square matrix $A$ has an \emph{eigenvector} $v$ if $v$ is nonzero and $Av=\lambda v$ for some scalar $\lambda$, in which case $\lambda$ is the \emph{eigenvalue}
-\item also recall that if $A$ is $m\times m$, and if there is a set of $m$ linearly-independent eigevectors $v_0,\dots,v_{m-1}$ of $A$, then we say $A$ is \emph{diagonalizable}:
-	$$AV = V \Lambda \qquad \iff \qquad A = V \Lambda V^{-1}$$
 \item suppose we have a scalar polynomial of degree $n$:
 	$$p(\xi) = c_0 + c_1 \xi + c_2 \xi^2 + \dots + c_n \xi^n$$
-\item the matrix $p(A)$, for a diagonalizable matrix $A$, is easily computed:
+\item if $A$ is diagonalizable then the matrix $p(A)$ is easily computed:
 \begin{align*}
 p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
      &= c_0 I + c_1 V \Lambda V^{-1} + c_2 \left(V \Lambda V^{-1}\right)^2 + \dots + c_n \left(V \Lambda V^{-1}\right)^n \\
      &= c_0 V I V^{-1} + c_1 V \Lambda V^{-1} + c_2 V \Lambda^2 V^{-1} + \dots + c_n V \Lambda^n V^{-1} \\
-     &= V \left(c_0 + c_1 \Lambda + \dots + c_n \Lambda^n\right) V^{-1} = V \begin{bmatrix} p(\lambda_0) & & \\ & \ddots & \\ & & p(\lambda_{m-1}) \end{bmatrix} V^{-1}
+     &= V \left(c_0 + c_1 \Lambda + \dots + c_n \Lambda^n\right) V^{-1} \\
+     &= V \begin{bmatrix} p(\lambda_0) & & \\ & \ddots & \\ & & p(\lambda_{m-1}) \end{bmatrix} V^{-1} \\
+     &= V p(\Lambda) V^{-1}
 \end{align*}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{y}
+\begin{frame}{diagonalizing downshift matrices?}
 
 \begin{itemize}
-\item FIXME we have circulant as poly in $D_m$
-\item diagonalize $D_m$ by $F_m$ using $\omega_m$ s.t. $\omega_m^m = 1$
+\item recall: circulant matrices are polynomials in the downshift matrix $D_m$
+	$$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = p(D_m)$$
+
+   \begin{itemize}
+   \item[$\circ$] $c$, the first column of $A$, gives the coefficients of $p(\xi)$
+   \end{itemize}  
+\item can we diagonalize $D_m$?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{can we diagonalize the downshift $D_m$?}
+
+\begin{itemize}
+\item let us suppose that there is a magic number $\omega_m$ such that $(\omega_m)^m = 1$
+\item then we can generate eigenvectors of $D_m$, e.g.~when $m=5$ and $\omega=\omega_5$:
+{\footnotesize
+\begin{align*}
+D_5 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} = 1 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}  \\
+D_5 \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} = \begin{bmatrix} \omega^4 \\ 1 \\ \omega \\ \omega^2 \\ \omega^3 \end{bmatrix} = \omega^{-1} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} \\
+D_5 \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} = \begin{bmatrix} \omega^8 \\ 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \end{bmatrix} = \omega^{-2} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} \\
+&\vdots
+\end{align*}
+}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the magic exponential}
+
+\begin{itemize}
+\item such a magic number exists!
+{\large
+    $$\omega_m = e^{-i 2\pi/m} \hspace{30mm}$$
+}
+%>> x = -1.3:.01:1.3;
+%>> theta=0:pi/200:2*pi;
+%>> a = cos(2*pi/5); b =-sin(2*pi/5);
+%>> plot(x,zeros(size(x)),'k',zeros(size(x)),x,'k',cos(theta),sin(theta),'r',a,b,'g.','markersize',24)
+%>> hold on, plot([0,a],[0,b],'g--'), hold off
+%>> axis equal, axis off
+%>> print -dpng 'magic5.png'
+
+\vspace{-20mm}
+\hfill \includegraphics[width=0.25\textwidth]{images/magic5.png}
+\item what is this matrix $F_m$? the DFT
+\item the FFT applies $F_m$ in $O(m\log m)$ time, as long as $m$ is ``highly composite''
+\item also $F_m^{-1}$
+\item if $A$ is circulant, we can solve $Ax=b$ in $O(m\log m)$ time
+\item spell-out fast linear solver here as pseudocode
 \end{itemize}
 \end{frame}
 
@@ -745,10 +880,7 @@ p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
 \begin{frame}{y}
 
 \begin{itemize}
-\item what is this matrix $F_m$? the DFT
-\item the FFT applies $F_m$ in $O(m\log m)$ time, as long as $m$ is ``highly composite''
-\item also $F_m^{-1}$
-\item if $A$ is circulant, we can solve $Ax=b$ in $O(m\log m)$ time
+\item 
 \end{itemize}
 \end{frame}
 
@@ -763,22 +895,58 @@ p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
 \end{frame}
 
 
-\section{paradigm of the 1990s: preconditioned Krylov iterations}
+%\section{paradigm of the 1990s: preconditioned Krylov iterations}
+%
+%\begin{frame}{y}
+%
+%\begin{itemize}
+%\item x
+%\end{itemize}
+%
+%\hfill \includegraphics[width=0.2\textwidth]{images/akrylov.jpg}
+%\end{frame}
+
 
 \begin{frame}{y}
 
 \begin{itemize}
 \item x
 \end{itemize}
-
-\hfill \includegraphics[width=0.2\textwidth]{images/akrylov.jpg}
 \end{frame}
 
 
-\begin{frame}{y}
+\begin{frame}{summary: some directions suggested by this talk}
 
 \begin{itemize}
-\item x
+\item sparse storage schemes
+   \begin{itemize}
+   \item[$\circ$] practicalities?
+   \item[$\circ$] parallelization?
+   \end{itemize}
+\item sparse direct linear algebra
+   \begin{itemize}
+   \item[$\circ$] how to re-order variables to minimize fill-in in LU
+   \item[$\circ$] this is graph theory (nested-disection, minimum degree, Cuthill-McKee, \dots)
+   \end{itemize}
+\item how does the FFT actually work?
+   \begin{itemize}
+   \item[$\circ$] why is it $O(m\log m)$?
+   \item[$\circ$] what else is it good for? (signal/image processing, filters, fast Poisson, \dots)
+   \end{itemize}
+\item Krylov methods
+   \begin{itemize}
+   \item[$\circ$] conjugate gradient, GMRES, \dots
+   \item[$\circ$] matrix-free Krylov
+   \end{itemize}
+\item matrix-based preconditioners for Krylov methods
+   \begin{itemize}
+   \item[$\circ$] incomplete LU, incomplete Cholesky, \dots
+   \end{itemize}
+\item multigrid for PDE problems
+   \begin{itemize}
+   \item[$\circ$] geometric multigrid
+   \item[$\circ$] algebraic multigrid, a black-box-ish preconditioner
+   \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -794,10 +962,10 @@ p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
 %    \item[$\circ$] the guru of multigrid should be better known
 %    \end{itemize}
 %\item[] \textbf{W.~Briggs, V.~E.~Henson, \& S.~McCormick (2000)}.  \emph{A Multigrid Tutorial}, 2nd ed., SIAM Press, Philadelphia
-\item[] \textbf{E.~Bueler (2021)}. \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
-    \begin{itemize}
-    \item[$\circ$] Krylov methods, multigrid, optimal PDE solvers
-    \end{itemize}
+%\item[] \textbf{E.~Bueler (2021)}. \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
+%    \begin{itemize}
+%    \item[$\circ$] Krylov methods, multigrid, optimal PDE solvers
+%    \end{itemize}
 \item[] \textbf{G.~Golub \& C.~van Loan (2013)}. \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press, Baltimore
     \begin{itemize}
     \item[$\circ$] algorithms, banded \& circulant matrices, sparse storage
@@ -813,13 +981,13 @@ p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
 \begin{column}{0.17\textwidth}
 %\hfill \includegraphics[width=\textwidth]{images/abrandt.jpg}
 %\vspace{7mm}
-\hfill \includegraphics[width=0.8\textwidth]{images/bueler.jpg}
+%\hfill \includegraphics[width=0.8\textwidth]{images/bueler.jpg}
+
+%\medskip
+\hfill \includegraphics[width=0.9\textwidth]{images/golubvanloan.jpg}
 
 \medskip
-\hfill \includegraphics[width=0.8\textwidth]{images/golubvanloan.jpg}
-
-\medskip
-\hfill \includegraphics[width=0.8\textwidth]{images/trefethenbau.jpg}
+\hfill \includegraphics[width=0.9\textwidth]{images/trefethenbau.jpg}
 %\vspace{5mm}
 \end{column}
 \end{columns}
