@@ -207,8 +207,6 @@ def matvec(A,x):
 \end{frame}
 
 
-\subsection{definition of ``optimal''}
-
 \begin{frame}{my definition of \emph{optimal}}
 
 \begin{itemize}
@@ -885,12 +883,183 @@ D_5 \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatr
 \end{frame}
 
 
-\section{sparse storage}
+\section{regarding sparse storage}
 
-\begin{frame}{y}
+\begin{frame}{regarding sparse storage}
 
 \begin{itemize}
-\item x
+\item suppose you have a sparse $A$
+   \begin{itemize}
+   \item[$\circ$] for example, suppose $A$ has $O(1)$ nonzeros per row, which happens for most PDE discretization schemes
+   \item[$\circ$] you want to apply $A$ to a vector $x\in\RR^m$ in an efficient $O(m)$ manner
+   \end{itemize}
+
+\begin{definition}
+\emph{sparse storage} is a data structure which holds only the nonzero entries of a matrix $A$, allowing computation of $Ax$ and evaluation of $a_{ij}$
+\end{definition}   
+
+\item for example, \texttt{scipy.sparse} has 7 such data structures (object classes):
+
+\medskip
+\begin{center}
+\includegraphics[width=0.65\textwidth]{images/scipysparse.png}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{compressed sparse row (CSR) example}
+
+$$A = \begin{bmatrix} 1 & 0 & \pi \\ 0 & 0 & 3.1 \\ \sin(1) & 5 & 6 \end{bmatrix}$$
+
+\begin{itemize}
+\item store $A$ sparsely by giving $(\text{\texttt{row}},\text{\texttt{col}})$ indices of nonzero entries \texttt{data}:
+
+\begin{center}
+\begin{minipage}{0.85\textwidth}
+\begin{minted}[fontsize=\small]{python}
+import numpy as np
+from scipy.sparse import csr_array
+row = np.array([0, 0, 1, 2, 2, 2])
+col = np.array([0, 2, 2, 0, 1, 2])
+data = np.array([1.0, np.pi, 3.1, np.sin(1.0), 5.0, 6.0])
+A = csr_array((data, (row, col)), shape=(3, 3))
+\end{minted}
+\end{minipage}
+\end{center}
+
+\bigskip
+\item look at the result as entered:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{minted}[fontsize=\small]{python}
+In [4]: print(A)
+  (0, 0)	1.0
+  (0, 2)	3.141592653589793
+  (1, 2)	3.1
+  (2, 0)	0.8414709848078965
+  (2, 1)	5.0
+  (2, 2)	6.0
+\end{minted}
+\end{minipage}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{compressed sparse row (CSR) example}
+
+$$A = \begin{bmatrix} 1 & 0 & \pi \\ 0 & 0 & 3.1 \\ \sin(1) & 5 & 6 \end{bmatrix}$$
+
+\begin{itemize}
+\item store $A$ sparsely by giving $(\text{\texttt{row}},\text{\texttt{col}})$ indices of nonzero entries \texttt{data}:
+
+\begin{center}
+\begin{minipage}{0.85\textwidth}
+\begin{minted}[fontsize=\small]{python}
+import numpy as np
+from scipy.sparse import csr_array
+row = np.array([0, 0, 1, 2, 2, 2])
+col = np.array([0, 2, 2, 0, 1, 2])
+data = np.array([1.0, np.pi, 3.1, np.sin(1.0), 5.0, 6.0])
+A = csr_array((data, (row, col)), shape=(3, 3))
+\end{minted}
+\end{minipage}
+\end{center}
+
+\bigskip
+\item look at the result as a ``full'' matrix:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{minted}[fontsize=\small]{python}
+In [5]: print(A.toarray())
+[[1.         0.         3.14159265]
+ [0.         0.         3.1       ]
+ [0.84147098 5.         6.        ]]
+ 
+ 
+ 
+\end{minted}
+\end{minipage}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{compressed sparse row (CSR) example}
+
+$$A = \begin{bmatrix} 1 & 0 & \pi \\ 0 & 0 & 3.1 \\ \sin(1) & 5 & 6 \end{bmatrix}$$
+
+\begin{itemize}
+\item store $A$ sparsely by giving $(\text{\texttt{row}},\text{\texttt{col}})$ indices of nonzero entries \texttt{data}:
+
+\begin{center}
+\begin{minipage}{0.85\textwidth}
+\begin{minted}[fontsize=\small]{python}
+import numpy as np
+from scipy.sparse import csr_array
+row = np.array([0, 0, 1, 2, 2, 2])
+col = np.array([0, 2, 2, 0, 1, 2])
+data = np.array([1.0, np.pi, 3.1, np.sin(1.0), 5.0, 6.0])
+A = csr_array((data, (row, col)), shape=(3, 3))
+\end{minted}
+\end{minipage}
+\end{center}
+
+\bigskip
+\item look at the result \emph{as actually stored}:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{minted}[fontsize=\small]{python}
+In [6]: print(A.indptr),print(A.indices),print(A.data)
+[0 2 3 6]
+[0 2 2 0 1 2]
+[1.  3.14159265  3.1  0.84147098  5.  6. ]
+ 
+ 
+ 
+\end{minted}
+\end{minipage}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{how CSR \texttt{matvec} works}
+
+$$A = \begin{bmatrix} 1 & 0 & \pi \\ 0 & 0 & 3.1 \\ \sin(1) & 5 & 6 \end{bmatrix}$$
+
+\bigskip
+\begin{minted}[fontsize=\small]{python}
+A.indptr  = [0 2 3 6]
+A.indices = [0 2 2 0 1 2]
+A.data    = [1.  3.14159265  3.1  0.84147098  5.  6. ]
+\end{minted}
+
+\bigskip
+\begin{center}
+\begin{minipage}{0.7\textwidth}
+\begin{minted}[fontsize=\small]{python}
+def matvec_csr(A,x):
+    for i = 0 to m-1:
+        kk = A.indptr[i]:A.indptr[i+1]
+        z[i] = np.dot(A.data[kk], x[A.indices[kk]])
+    return z
+\end{minted}
+\end{minipage}
+\end{center}
+
+\begin{itemize}
+\item if $A$ has $O(1)$ nonzeros per row then this operation is $O(m)$ flops
+\item note $z$ is constructed sequentially but $x$ is addressed randomly
+   \begin{itemize}
+   \item[$\circ$] CSC sparse storage reverses this pattern
+   \end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -906,13 +1075,6 @@ D_5 \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatr
 %\hfill \includegraphics[width=0.2\textwidth]{images/akrylov.jpg}
 %\end{frame}
 
-
-\begin{frame}{y}
-
-\begin{itemize}
-\item x
-\end{itemize}
-\end{frame}
 
 
 \begin{frame}{summary: some directions suggested by this talk}
