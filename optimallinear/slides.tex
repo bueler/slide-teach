@@ -103,7 +103,7 @@ $$\begin{bmatrix} \bullet & \bullet & \bullet & \bullet \\ \bullet & \bullet & \
   \tableofcontents[hideallsubsections]
 \end{frame}
 
-\section{how fast is the basic matrix-vector product operation $z=Ax$?}
+\section{how fast is the basic matrix-vector product $z=Ax$?}
 
 \newcommand{\bulletax}{\begin{bmatrix} \bullet \\ \bullet \\ \bullet \\ \bullet \end{bmatrix} = \begin{bmatrix} \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \\ \bullet & \bullet & \bullet \end{bmatrix} \begin{bmatrix} \bullet \\ \bullet \\ \bullet \end{bmatrix}}
 
@@ -303,17 +303,17 @@ def matvec_tri(A,x):
 
 \begin{itemize}
 \item I will stick to my definition of ``optimal'' below!
-\item however, it is \alert{always} fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
+\item<2-> however, it is \alert{always} fair to stop me and ask ``what is the data?'' or ``what is the class of problems?'' at any time
     \begin{itemize}
     \item[$\circ$] because whether an algorithm is optimal depends on an agreement regarding which is the data and which is the problem class
     \end{itemize}
-\item<2-> it is fair to wonder if flops are a good metric for modern computers
+\item<3-> it is fair to wonder if flops are a good metric for modern computers
     \begin{itemize}
     \item[$\circ$] but every other metric is messier?
-\only<2>{
+\only<3>{
     \item[$\circ$] \emph{put up or shut up!}
 }
-\only<1,3>{
+\only<1,2,4>{
     \item[$\circ$] perhaps give a talk using another metric?
 }
     \end{itemize}
@@ -543,7 +543,7 @@ def lu(A):
    \end{itemize}
 \item $\exists O(m^1)$ solvers $\implies$ $\exists$ exploitable matrix structure
    \begin{itemize}
-   \item[$\circ$] these are \emph{not} generic, dense matrices
+   \item[$\circ$] these are \emph{not} generic matrices
    \item[$\circ$] most are sparse, but some are dense!
    \end{itemize}
 \item a \emph{huge} amount of science/engineering-relevant software supports these special matrix classes and optimal solver algorithms
@@ -611,11 +611,11 @@ show()
 
 \begin{itemize}
 \item specializing LU decomposition to banded matrices is straightforward
-\item the version below computes $A=LU$ \emph{without} pivoting
+\item the pseudocode below computes $A=LU$ \emph{without} pivoting
    \begin{itemize}
-   \item[$\circ$] skipping pivoting is generally unstable, but o.k.~for nice classes of matrices 
    \item[$\circ$] the algorithm below is \emph{in place}; it overwrites $A$ with $L$ and $U$
    \item[$\circ$] the tridiagonal case is often called the \emph{Thomas} algorithm
+   \item[$\circ$] skipping pivoting is generally unstable?
    \end{itemize}
 
 \medskip
@@ -635,7 +635,7 @@ def lu_banded(A):
 \end{center}
 
 \bigskip
-\item this algorithm does $2pqm + (\text{lower}) = O(pqm) = O(m)$ flops
+\item this algorithm does \quad $2pqm + \text{lower} = O(pqm) = O(m)$ \quad flops
 \item so solving a banded linear system via LU is optimal $O(m)$
    \begin{itemize}
    \item[$\circ$] with a constant proportional to the product $pq$ of bandwidths
@@ -650,7 +650,7 @@ def lu_banded(A):
 \item pivoting expands the band, but often acceptably
 
 \bigskip
-\emph{theorem.} if $A$ is $p,q$ banded then $PA=LU$ where $U$ has upper bandwidth at most $p+q$; though $L$ can have any bandwidth, it has at most $p+1$ nonzeros per column
+\emph{theorem.} {\scriptsize [Golub \& van Loan, thm 4.3.2]} if $A$ is $p,q$ banded then $PA=LU$ where $U$ has upper bandwidth at most $p+q$; though $L$ can have any bandwidth, it has at most $p+1$ nonzeros per column
 
 \bigskip
 \item for example, I generated a $20\times 20$ random matrix: \qquad $A=$
@@ -668,7 +668,7 @@ def lu_banded(A):
 $$PA \hspace{15mm} = \hspace{15mm} L \hspace{30mm} U \hspace{20mm}$$
 
 \medskip
-\item if $p,q=O(1)$ then banded matrix LU with pivoting is optimal $O(m)$
+\item if $p,q=O(1)$ then LU with partial pivoting is optimal $O(m)$
 \end{itemize}
 \end{frame}
 
@@ -693,7 +693,7 @@ $$PA \hspace{15mm} = \hspace{15mm} L \hspace{30mm} U \hspace{20mm}$$
 \begin{frame}{where do banded matrices come from?}
 
 \begin{itemize}
-\item discretizations of 2D and 3D partial differential equations (PDEs) also generates banded matrices
+\item discretizations of 2D and 3D partial differential equations (PDEs) also create banded matrices
 \item however, the \alert{bandwidth} \alert{grows} with the number of
 
 grid points in each direction
@@ -721,14 +721,24 @@ carefully chosen (right; not-so-good ordering)
 \end{frame}
 
 
-\begin{frame}{2D and 3D PDE solutions}
+\begin{frame}{optimal 2D and 3D PDE solutions?}
 
 \begin{itemize}
-\item banded LU solvers for 2D and 3D PDE problems are \emph{not} optimal
+\item FD, FE, and FV discretizations fo 2D and 3D problems generate sparse matrices with $O(1)$ nonzeros per row
    \begin{itemize}
-   \item[$\circ$] \alert{2D} yields $p=q=O(m^{1/2})$ bandwidth and $O(pqm)={\color{FireBrick} O(m^2)}$ flops
-   \item[$\circ$] \alert{3D} yields $O(m^{2/3})$ bandwidth and $O(pqm) = {\color{FireBrick} O(m^{7/3})}$ flops
-   \item[$\circ$] contrast 1D ODE BVPs, with $O(1)$ bandwidth and $O(m)$ flops
+   \item[$\circ$] in the unstructured case this assumes a (realistic!) minimum-degree condition on the mesh
+   \end{itemize}
+\item if the mesh/grid is structured then the matrix is also banded
+   \begin{itemize}
+   \item[$\circ$] 1D ODE BVPs yield $O(1)$ bandwidth
+   \item[$\circ$] \alert{2D} yields ${\color{FireBrick} O(m^{1/2})}$ bandwidth
+   \item[$\circ$] \alert{3D} yields ${\color{FireBrick} O(m^{2/3})}$ bandwidth
+   \item[$\circ$] a dense matrix has $O(m^1)$ bandwidth
+   \end{itemize}
+\item banded LU solvers for 2D and 3D PDEs are generally \emph{not} optimal
+   \begin{itemize}
+   \item[$\circ$] \alert{2D}: $O(pqm)={\color{FireBrick} O(m^2)}$ flops
+   \item[$\circ$] \alert{3D}: $O(pqm) = {\color{FireBrick} O(m^{7/3})}$ flops
    \end{itemize}
 \item other ideas are needed!
 \item \alert{multigrid} is such an idea
@@ -736,168 +746,25 @@ carefully chosen (right; not-so-good ordering)
 \end{frame}
 
 
-\section{circulant matrices}
+\section{sparse storage?}
 
-\begin{frame}{circulant matrices}
-
-\begin{definition}
-a square matrix $A \in \RR^{m\times m}$ is \emph{circulant} if each wrapped diagonal is constant, that is, there is a vector $c \in \RR^m$, the first column of $A$, so that
-	$$a_{ij} = c_{\,i - j \hspace{-2mm} \mod m}$$
-\end{definition}
-
-\begin{itemize}
-\item example:
-	$$A = \begin{bmatrix} 2 & 7 & -1 & 3 & 8 \\ 8 & 2 & 7 & -1 & 3 \\ 3 & 8 & 2 & 7 & -1 \\ -1 & 3 & 8 & 2 & 7 \\ 7 & -1 & 3 & 8 & 2 \end{bmatrix} \qquad \text{ is from } c = \begin{bmatrix} 2 \\ 8 \\ 3 \\ -1 \\ 7 \end{bmatrix}$$
-\item these are \emph{dense} matrices
-\item can be stored with $O(m)$ storage \dots store $c$ not $A$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{downshifting to circulate}
-
-\begin{itemize}
-\item let $D_m$ be the \emph{downshift} matrix, for example
-{\small
-	$$D_5 = \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \hspace{50mm}$$
-}
-so that, for example,
-{\small
-	$$D_5 c = \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 2 \\ 8 \\ 3 \\ -1 \\ 7 \end{bmatrix} = \begin{bmatrix} 7 \\ 2 \\ 8 \\ 3 \\ -1 \end{bmatrix} \hspace{45mm}$$
-}
-\item then, for example: \qquad $\displaystyle A = 2 I + 8 D_5 + 3 D_5^2 + (-1) D_5^3 + 7 D_5^4$ \hfill $\uparrow$
-
-\vspace{-50mm}
-{\scriptsize
-\hfill $\displaystyle \boxed{\begin{matrix} \text{recall} \\ \\ A = \begin{bmatrix} 2 & 7 & -1 & 3 & 8 \\ 8 & 2 & 7 & -1 & 3 \\ 3 & 8 & 2 & 7 & -1 \\ -1 & 3 & 8 & 2 & 7 \\ 7 & -1 & 3 & 8 & 2 \end{bmatrix} \end{matrix}}$
-}
-
-\vspace{30mm}
-\item generally, if $A$ is circulant with first column $c$ then
-	$$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = \sum_{k=0}^{m-1} c_k D_m^k$$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{eigenvalues and diagonalization}
-
-\begin{itemize}
-\item will return to circulants and downshifts \dots but first recall
-
-\begin{definition}
-a square matrix $A$ has an \emph{eigenvector} $v$ if $v$ is nonzero and $Av=\lambda v$ for some scalar $\lambda$, in which case $\lambda$ is the \emph{eigenvalue}
-\end{definition}
-
-\item suppose we build $V$ by using eigenvectors as the columns:
-\begin{align*}
-\left[\begin{array}{c|c|c} && \\ A v_0 & \cdots & A v_k \\ && \end{array} \right] &= \left[\begin{array}{c|c|c} && \\ \lambda_0 v_0 & \cdots & \lambda_k v_k \\ && \end{array} \right] \\
-A V &= V \Lambda
-\end{align*}
-where $\Lambda$ is diagonal with $\lambda_0,\dots,\lambda_k$ on the diagonal
-\item if $A$ is $m\times m$, and \alert{if} there are $m$ linearly-independent eigevectors $v_0,\dots,v_{m-1}$ of $A$, so $V$ is invertible, then we say $A$ is \emph{diagonalizable}:
-	$$AV = V \Lambda \qquad \iff \qquad A = V \Lambda V^{-1}$$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{diagonalization and polynomials}
-
-\begin{itemize}
-\item suppose we have a scalar polynomial of degree $n$:
-	$$p(\xi) = c_0 + c_1 \xi + c_2 \xi^2 + \dots + c_n \xi^n$$
-\item if $A$ is diagonalizable then the matrix $p(A)$ is easily computed:
-\begin{align*}
-p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
-     &= c_0 I + c_1 V \Lambda V^{-1} + c_2 \left(V \Lambda V^{-1}\right)^2 + \dots + c_n \left(V \Lambda V^{-1}\right)^n \\
-     &= c_0 V I V^{-1} + c_1 V \Lambda V^{-1} + c_2 V \Lambda^2 V^{-1} + \dots + c_n V \Lambda^n V^{-1} \\
-     &= V \left(c_0 + c_1 \Lambda + \dots + c_n \Lambda^n\right) V^{-1} \\
-     &= V \begin{bmatrix} p(\lambda_0) & & \\ & \ddots & \\ & & p(\lambda_{m-1}) \end{bmatrix} V^{-1} \\
-     &= V p(\Lambda) V^{-1}
-\end{align*}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{diagonalizing downshift matrices?}
-
-\begin{itemize}
-\item recall: circulant matrices are polynomials in the downshift matrix $D_m$
-	$$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = p(D_m)$$
-
-   \begin{itemize}
-   \item[$\circ$] $c$, the first column of $A$, gives the coefficients of $p(\xi)$
-   \end{itemize}  
-\item can we diagonalize $D_m$?
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{can we diagonalize the downshift $D_m$?}
-
-\begin{itemize}
-\item let us suppose that there is a magic number $\omega_m$ such that $(\omega_m)^m = 1$
-\item then we can generate eigenvectors of $D_m$, e.g.~when $m=5$ and $\omega=\omega_5$:
-{\footnotesize
-\begin{align*}
-D_5 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} = 1 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}  \\
-D_5 \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} = \begin{bmatrix} \omega^4 \\ 1 \\ \omega \\ \omega^2 \\ \omega^3 \end{bmatrix} = \omega^{-1} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} \\
-D_5 \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} = \begin{bmatrix} \omega^8 \\ 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \end{bmatrix} = \omega^{-2} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} \\
-&\vdots
-\end{align*}
-}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{the magic exponential}
-
-\begin{itemize}
-\item such a magic number exists!
-{\large
-    $$\omega_m = e^{-i 2\pi/m} \hspace{30mm}$$
-}
-%>> x = -1.3:.01:1.3;
-%>> theta=0:pi/200:2*pi;
-%>> a = cos(2*pi/5); b =-sin(2*pi/5);
-%>> plot(x,zeros(size(x)),'k',zeros(size(x)),x,'k',cos(theta),sin(theta),'r',a,b,'g.','markersize',24)
-%>> hold on, plot([0,a],[0,b],'g--'), hold off
-%>> axis equal, axis off
-%>> print -dpng 'magic5.png'
-
-\vspace{-20mm}
-\hfill \includegraphics[width=0.25\textwidth]{images/magic5.png}
-\item what is this matrix $F_m$? the DFT
-\item the FFT applies $F_m$ in $O(m\log m)$ time, as long as $m$ is ``highly composite''
-\item also $F_m^{-1}$
-\item if $A$ is circulant, we can solve $Ax=b$ in $O(m\log m)$ time
-\item spell-out fast linear solver here as pseudocode
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{y}
-
-\begin{itemize}
-\item 
-\end{itemize}
-\end{frame}
-
-
-\section{regarding sparse storage}
-
-\begin{frame}{regarding sparse storage}
+\begin{frame}{sparse storage basics}
 
 \begin{itemize}
 \item suppose you have a sparse $A$
    \begin{itemize}
-   \item[$\circ$] for example, suppose $A$ has $O(1)$ nonzeros per row, which happens for most PDE discretization schemes
+   \item[$\circ$] for example, suppose $A$ has $O(1)$ nonzeros per row
+       \begin{itemize}
+       \item e.g.~from a PDE discretization scheme
+       \end{itemize}
    \item[$\circ$] you want to apply $A$ to a vector $x\in\RR^m$ in an efficient $O(m)$ manner
    \end{itemize}
 
 \begin{definition}
-\emph{sparse storage} is a data structure which holds only the nonzero entries of a matrix $A$, allowing computation of $Ax$ and evaluation of $a_{ij}$
+\emph{sparse storage} is a data structure holding only the nonzero matrix entries
 \end{definition}   
 
+\item computation of $Ax$, and extraction of $a_{ij}$, must be implemented
 \item for example, \texttt{scipy.sparse} has 7 such data structures (object classes):
 
 \medskip
@@ -1028,7 +895,6 @@ In [6]: print(A.indptr),print(A.indices),print(A.data)
 \end{frame}
 
 
-
 \begin{frame}[fragile]
 \frametitle{how CSR \texttt{matvec} works}
 
@@ -1075,6 +941,191 @@ def matvec_csr(A,x):
 %\hfill \includegraphics[width=0.2\textwidth]{images/akrylov.jpg}
 %\end{frame}
 
+
+\section{circulant matrices}
+
+\begin{frame}{circulant matrices}
+
+\begin{definition}
+a square matrix $A \in \RR^{m\times m}$ is \emph{circulant} if each wrapped diagonal is constant, that is, there is a vector $c \in \RR^m$, the first column of $A$, so that
+	$$a_{ij} = c_{\,i - j \hspace{-2mm} \mod m}$$
+\end{definition}
+
+\begin{itemize}
+\item example:
+	$$A = \begin{bmatrix} 2 & 7 & -1 & 3 & 8 \\ 8 & 2 & 7 & -1 & 3 \\ 3 & 8 & 2 & 7 & -1 \\ -1 & 3 & 8 & 2 & 7 \\ 7 & -1 & 3 & 8 & 2 \end{bmatrix} \qquad \text{ is from } c = \begin{bmatrix} 2 \\ 8 \\ 3 \\ -1 \\ 7 \end{bmatrix}$$
+\item these are \emph{dense} matrices
+\item however, they can be stored with $O(m)$ storage: store $c$ not $A$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{downshifting to circulate}
+
+\begin{itemize}
+\item let $D_m$ be the \emph{downshift} matrix, for example
+{\small
+	$$D_5 = \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \hspace{50mm}$$
+}
+so that, for example,
+{\small
+	$$D_5 c = \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 2 \\ 8 \\ 3 \\ -1 \\ 7 \end{bmatrix} = \begin{bmatrix} 7 \\ 2 \\ 8 \\ 3 \\ -1 \end{bmatrix} \hspace{45mm}$$
+}
+\item then, for example: \qquad $\displaystyle A = 2 I + 8 D_5 + 3 D_5^2 + (-1) D_5^3 + 7 D_5^4$ \hfill $\uparrow$
+
+\vspace{-50mm}
+{\scriptsize
+\hfill $\displaystyle \boxed{\begin{matrix} \text{recall} \\ \\ A = \begin{bmatrix} 2 & 7 & -1 & 3 & 8 \\ 8 & 2 & 7 & -1 & 3 \\ 3 & 8 & 2 & 7 & -1 \\ -1 & 3 & 8 & 2 & 7 \\ 7 & -1 & 3 & 8 & 2 \end{bmatrix} \end{matrix}}$
+}
+
+\vspace{30mm}
+\item generally, if $A$ is circulant with first column $c$ then
+	$$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = \sum_{k=0}^{m-1} c_k D_m^k$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{eigenvalues and diagonalization}
+
+\begin{itemize}
+\item will return to circulants and downshifts \dots but first recall
+
+\begin{definition}
+a square matrix $A$ has an \emph{eigenvector} $v$ if $v$ is nonzero and $Av=\lambda v$ for some scalar $\lambda$, in which case $\lambda$ is the \emph{eigenvalue}
+\end{definition}
+
+\item suppose we build $V$ by using eigenvectors as the columns:
+\begin{align*}
+\left[\begin{array}{c|c|c} && \\ A v_0 & \cdots & A v_k \\ && \end{array} \right] &= \left[\begin{array}{c|c|c} && \\ \lambda_0 v_0 & \cdots & \lambda_k v_k \\ && \end{array} \right] \\
+A V &= V \Lambda
+\end{align*}
+where $\Lambda$ is diagonal with $\lambda_0,\dots,\lambda_k$ on the diagonal
+\item if $A$ is $m\times m$, and \alert{if} there are $m$ linearly-independent eigevectors $v_0,\dots,v_{m-1}$ of $A$, so $V$ is invertible, then we say $A$ is \emph{diagonalizable}:
+	$$AV = V \Lambda \qquad \iff \qquad A = V \Lambda V^{-1}$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{diagonalization and polynomials}
+
+\begin{itemize}
+\item suppose we have a scalar polynomial of degree $n$:
+	$$p(\xi) = c_0 + c_1 \xi + c_2 \xi^2 + \dots + c_n \xi^n$$
+\item if $A= V \Lambda V^{-1}$ is diagonalizable then $p(A)$ is easily computed:
+\begin{align*}
+p(A) &= c_0 + c_1 A + c_2 A^2 + \dots + c_n A^n \\
+     &= c_0 I + c_1 V \Lambda V^{-1} + c_2 \left(V \Lambda V^{-1}\right)^2 + \dots + c_n \left(V \Lambda V^{-1}\right)^n \\
+     &= c_0 V I V^{-1} + c_1 V \Lambda V^{-1} + c_2 V \Lambda^2 V^{-1} + \dots + c_n V \Lambda^n V^{-1} \\
+     &= V \left(c_0 + c_1 \Lambda + \dots + c_n \Lambda^n\right) V^{-1} \\
+     &= V \begin{bmatrix} p(\lambda_0) & & \\ & \ddots & \\ & & p(\lambda_{m-1}) \end{bmatrix} V^{-1} \\
+     &= V p(\Lambda) V^{-1}
+\end{align*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{diagonalizing downshift matrices?}
+
+\begin{itemize}
+\item recall: any circulant matrix is a polynomial in the downshift matrix $D_m$
+	$$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = p(D_m)$$
+
+   \begin{itemize}
+   \item[$\circ$] $c$, the first column of $A$, gives the coefficients of $p(\xi)$
+   \end{itemize}  
+\item can we diagonalize $D_m$?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{can we diagonalize the downshift $D_m$?}
+
+\begin{itemize}
+\item let us suppose that there is a magic number $\omega_m \ne 1$ such that $(\omega_m)^m = 1$
+\item then we can generate eigenvectors of $D_m$
+\item for example: $m=5$ and $\omega=\omega_5$
+{\footnotesize
+\begin{align*}
+D_5 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix} = 1 \begin{bmatrix} 1 \\ 1 \\ 1 \\ 1 \\ 1 \end{bmatrix}  \\
+D_5 \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} = \begin{bmatrix} \omega^4 \\ 1 \\ \omega \\ \omega^2 \\ \omega^3 \end{bmatrix} = \omega^{-1} \begin{bmatrix} 1 \\ \omega \\ \omega^2 \\ \omega^3 \\ \omega^4 \end{bmatrix} \\
+D_5 \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} &= \begin{bmatrix} & & & & 1 \\ 1 & & & & \\ & 1 & & & \\ & & 1 & & \\ & & & 1 & \end{bmatrix} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} = \begin{bmatrix} \omega^8 \\ 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \end{bmatrix} = \omega^{-2} \begin{bmatrix} 1 \\ \omega^2 \\ \omega^4 \\ \omega^6 \\ \omega^8 \end{bmatrix} \\
+&\vdots
+\end{align*}
+}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the magic exponential}
+
+\begin{itemize}
+\item such a magic number exists!
+{\large
+    $$\omega_m = e^{-i 2\pi/m} \hspace{30mm}$$
+}
+%>> x = -1.3:.01:1.3;
+%>> theta=0:pi/200:2*pi;
+%>> a = cos(2*pi/5); b =-sin(2*pi/5);
+%>> plot(x,zeros(size(x)),'k',zeros(size(x)),x,'k',cos(theta),sin(theta),'r',a,b,'g.','markersize',24)
+%>> hold on, plot([0,a],[0,b],'g--'), hold off
+%>> axis equal, axis off
+%>> print -dpng 'magic5.png'
+
+\vspace{-15mm}
+\hfill \includegraphics[width=0.25\textwidth]{images/magic5.png}
+
+\vspace{-15mm}
+\item the columns of the following symmetric 
+
+$m\times m$ matrix are linearly-independent:
+  $$F_m = \begin{bmatrix} 1 & 1 & 1 & \dots & 1 \\ 1 & \omega_m & \omega_m^2 & \dots & \omega_m^{m-1} \\ 1 & \omega_m^2 & \omega_m^4 &  & \omega_m^{2(m-1)} \\ \vdots & \vdots & & \ddots & \vdots \\ 1 & \omega_m^{m-1} & \omega_m^{2(m-1)} & \dots & \omega_m^{(m-1)(m-1)} \end{bmatrix} \hspace{30mm}$$
+\item this matrix diagonalizes $D_m$:
+    $$D_m = F_m \begin{bmatrix} 1 & & & \\ & \bar\omega_m & & \\ & & \ddots & \\ & & & {\bar\omega_m}^{m-1} \end{bmatrix} F_m^{-1}$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{the discrete Fourier transform}
+
+\begin{itemize}
+\item this matrix $F_m$ is called the \emph{discrete Fourier transform} (DFT)
+\item the \emph{fast Fourier transform} (\texttt{FFT}) is an algorithm which applies $F_m$ to any $x\in\RR^m$ in $O(m\log m)$ flops
+   \begin{itemize}
+   \item[$\circ$] this assumes $m$ is ``highly composite'' \dots $m=2^k$ is most common
+   \item[$\circ$] the same algorithm (\texttt{barFFT} applies $\bar F_m$) can apply the inverse:
+       $$F_m^{-1} = \frac{1}{m} \bar F_m$$
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{fast solution of circulant systems}
+
+\begin{itemize}
+\item suppose $A$ is circulant, with first column $c$, and we want to solve $Ax=b$
+\item we know
+  $$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = p(D_m)$$
+and $D_m = F_m \Lambda F_m^{-1}$ where $\lambda_j = {\bar\omega_m}^j$
+\item fast solution process:
+    $$Ax = b \qquad \iff \qquad F_m p(\Lambda) F_m^{-1} x = b \qquad \iff \qquad \begin{matrix} u = F_m^{-1} b \\ v = p(\Lambda)^{-1} u \\ x = F_m v \end{matrix}$$ 
+
+\begin{minted}[fontsize=\small]{python}
+def solve_circulant(c,x,b):
+    z = barFFT(c)
+    u = barFFT(b)
+    v = u ./ z
+    x = FFT(v)
+    x /= m
+    return x
+\end{minted}
+
+\vspace{-20mm}
+\hfill $\gets$ \quad $O(m\log m)$ flops \dots optimal!
+
+\vspace{15mm}
+\end{itemize}
+\end{frame}
 
 
 \begin{frame}{summary: some directions suggested by this talk}
