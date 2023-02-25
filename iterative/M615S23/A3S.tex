@@ -72,14 +72,14 @@ frame=lines,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\footnotesize}
 
 
 \begin{document}
-\noindent \scriptsize Math 615 NADE (Bueler) \hfill 20 February 2023
+\noindent \scriptsize Math 615 NADE (Bueler) \hfill 24 February 2023 (revised)
 
 \bigskip
 \Large\textbf{\centerline{Solutions to Assignment \# 3}} \normalsize
 
 \medskip
 \begin{center}
-\emph{The point value of each Problem is given below.  The total was 60 points.}
+\emph{The point value of each Problem is given below.  The total was 65 points.}
 \end{center}
 
 \thispagestyle{empty}
@@ -160,7 +160,7 @@ ans =  6.8541
 The explosion happens, at least asymptotically, as $\|x_k\| \approx C (6.85)^k$.
 
 
-\probpts{P14}{15 pts}  \emph{The context.}  Let $M = D^{-1}(L+U)$ where $A=D-L-U$.  Here $D$ is diagonal, $L$ is strictly lower-triangular, and $U$ is strictly upper-triangular, and the nonzero entries of $D$ are the diagonal entries of $A$, while entries of $L,U$ are the negatives of the sub- and super-diagonal entries of $A$.  In these terms, the Jacobi iteration is $x_{k+1} = M x_k + D^{-1} b$ with constant vector $c=D^{-1} b$.  The convergence Lemma on slide 9 therefore says Jacobi iteration converges if and only if $\rho(M) < 1$.  We use these ideas to prove the following statement.
+\probpts{P14}{10 pts}  \emph{The context.}  Let $M = D^{-1}(L+U)$ where $A=D-L-U$.  Here $D$ is diagonal, $L$ is strictly lower-triangular, and $U$ is strictly upper-triangular, and the nonzero entries of $D$ are the diagonal entries of $A$, while entries of $L,U$ are the negatives of the sub- and super-diagonal entries of $A$.  In these terms, the Jacobi iteration is $x_{k+1} = M x_k + D^{-1} b$ with constant vector $c=D^{-1} b$.  The convergence Lemma on slide 9 therefore says Jacobi iteration converges if and only if $\rho(M) < 1$.  We use these ideas to prove the following statement.
 
 \medskip
 If $A$ is strictly diagonally-dominant then the Jacobi iteration converges.
@@ -218,7 +218,7 @@ For every row except the first and last rows, the sum of off-diagonal entries is
 	$$\sum_{j\ne i} |a_{ij}| = \frac{1}{h^2} + \frac{1}{h^2} = \frac{2}{h^2}.$$
 SDD says
     $$\left|- \frac{2}{h^2} + q\right| > \frac{2}{h^2}.$$
-As $h\to \infty$ the terms with $h^2$ in the denominator dominate, so SDD cannot occur if $q\ge 0$ because cancellation occurs on the left.  However, if $q<0$ then the inequality becomes
+As $h\to \infty$ the terms with $h^2$ in the denominator dominate, so SDD cannot hold for all $h$ if $q\ge 0$, because cancellation occurs on the left.  However, if $q<0$ then the inequality becomes
     $$\frac{2}{h^2} + |q| > \frac{2}{h^2},$$
 which is true when $q<0$.  That is, $A^h$ is SDD for all $h$ if and only if $q<0$.
 
@@ -238,7 +238,7 @@ Solving the first for $s$, by assuming the Jacobian is invertible, i.e.~assuming
 
 
 \clearpage\newpage
-\probpts{P17}{5 pts per part}  The sketchs are omitted, but they show a sphere of radius 2, a corrugated surface, and a parabolic trough, respectively.  The solutions to the first two equations form a wavy line on the sphere, and going around the sphere.  The surface of the third equation (the parabolic trough) intersects this wavy line in two points.  Thus we expect two solutions, one with $y>0$ and one with $y<0$, but both with $z$ positive.  Any simultaneous solution $(x,y,z)$ is on the sphere and thus inside the cube centered at the origin with side length 4.  But it has $|x|\le 1$ by the second equation and $z\ge 0$ by the third equation.  Thus solutions $(x,y,z)$ are inside $[-1,1]\times [-2,2] \times [0,2]$.
+\probpts{P17}{5 pts per part}  \ppart{a}  The sketchs are omitted, but they show a sphere of radius 2, a corrugated surface, and a parabolic trough, respectively.  The solutions to the first two equations form a wavy line on the sphere, and going around the sphere.  The surface of the third equation (the parabolic trough) intersects this wavy line in two points.  Thus we expect two solutions, one with $y>0$ and one with $y<0$, but both with $z$ positive.  Any simultaneous solution $(x,y,z)$ is on the sphere and thus inside the cube centered at the origin with side length 4.  But it has $|x|\le 1$ by the second equation and $z\ge 0$ by the third equation.  Thus solutions $(x,y,z)$ are inside $[-1,1]\times [-2,2] \times [0,2]$.
 
 \epart{b}  The first step is to put the system in the form $\bbf(\bx)=\bzero$.  We have $f_1(x) = x_1^2 + x_2^2 + x_3^2 - 4$, $f_2(x) = x_1 - \cos(\pi x_2)$, and $f_3(x) = x_3 - x_2^2$ as the components of the vector $\bf(\bx)$, so
   $$\bbf(\bx) = \begin{bmatrix} x_1^2 + x_2^2 + x_3^2 - 4 \\ x_1 - \cos(\pi x_2) \\ x_3 - x_2^2 \end{bmatrix} \qquad \text{and} \qquad J(\bx) = \begin{bmatrix} 2 x_1 & 2 x_2 & 2 x_3 \\ 1 & \pi \sin(\pi x_2) & 0 \\ 0 & -2 x_2 & 1 \end{bmatrix}.$$
@@ -246,7 +246,7 @@ I put these functions $\bbf(\bx)$ and $J(\bx)$ into the script:
 
 \mfile{newtonex.m}{newtonex.m}
 
-The run shows that the number of correct digits stars to grow very rapidly starting with the 2nd iteration or so:
+The run shows that the number of correct digits starts to grow very rapidly starting with the 2nd iteration or so:
 \begin{mVerb}
 >> newtonex([-1 1 1],6)
 -1.000000000000000   1.000000000000000   1.000000000000000
