@@ -1,4 +1,4 @@
-% Copyright 2020, 2021  Ed Bueler
+% Copyright 2020-2023  Ed Bueler
 
 \documentclass[10pt,dvipsnames,usepdftitle=false,
 hyperref={pdftitle = {Finite volume methods},
@@ -92,8 +92,9 @@ hyperref={pdftitle = {Finite volume methods},
 
 \title[Finite volume methods]{Finite volume methods for \\ advection equations and hyperbolic systems}
 
-\subtitle{version 3, April 2021}
-%version 2: \date{June 2020}
+\subtitle{version 4, June 2023}
+%version 3, April 2021
+%version 2, June 2020
 
 \author{Ed Bueler, UAF}
 
@@ -171,7 +172,6 @@ hyperref={pdftitle = {Finite volume methods},
 \item {\large \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}}
 
 \medskip
-%\item K.~W.~Morton and D.~F.~Mayers, \emph{Numerical Solutions of Partial Differential Equations: An Introduction}, Cambridge University Press, 2nd ed., 2005
 \item W.~Hundsdorfer and J.~G.~Verwer, \emph{Numerical Solution of Time-Dependent Advection-Diffusion-Reaction Equations}, Springer, 2003
 \item E.~Bueler, \emph{PETSc for Partial Differential Equations}, SIAM Press, 2020
 \end{itemize}
@@ -199,7 +199,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW ADVECTION MOVIE}
+\alert{SHOW ADVECTION MOVIE}  \qquad $\leftarrow$ \texttt{movies/advection.mp4}
 \end{center}
 \vspace{10mm}
 
@@ -207,10 +207,12 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 % make riemann
 % ./riemann -problem advection -da_grid_x 200 -limiter minmod -ts_monitor_solution binary:q.dat -ts_monitor binary:t.dat
 % make petscPyScripts
-% mkdir advection
-% ./plotTS.py -mx 200 -ylabel "q" -ax 0.0 -bx 1.0 -cellcentered t.dat q.dat -oroot advection/bar
-% cd advection
-% eog bar*.png
+% mkdir advectionmovie
+% ./plotTS.py -mx 200 -ylabel "q" -ax 0.0 -bx 1.0 -cellcentered t.dat q.dat -oroot advectionmovie/bar
+% cd advectionmovie
+% eog bar*.png  % ok as live view
+% ffmpeg -r 30 -f image2 -s 1920x1080 -i bar%03d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p advection.mp4
+% mv advection.mp4 PATHTOSLIDETEACH/fvolume/movies
 \end{frame}
 
 
