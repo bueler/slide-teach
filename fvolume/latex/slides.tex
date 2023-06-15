@@ -100,7 +100,7 @@ hyperref={pdftitle = {Finite volume methods},
 
 \date{}
 
-\titlegraphic{\vspace{-10mm} \includegraphics[width=0.5\textwidth]{figs/leveque13p4}}
+\titlegraphic{\vspace{-10mm} \includegraphics[width=0.65\textwidth]{figs/leveque13p4}}
 
 %\institute[UAF]{University of Alaska Fairbanks}
 
@@ -167,7 +167,7 @@ hyperref={pdftitle = {Finite volume methods},
 \end{frame}
 
 
-\begin{frame}{references, big and small}
+\begin{frame}{references}
 \begin{itemize}
 \item {\large \alert{R.~J.~LeVeque, \emph{Finite Volume Methods for Hyperbolic Problems}, Cambridge University Press, 2002}}
 
@@ -181,6 +181,25 @@ hyperref={pdftitle = {Finite volume methods},
 \begin{center}
 \includegraphics[height=36mm]{figs/covers/leveque} \qquad \includegraphics[height=26mm]{figs/covers/hv} \qquad \includegraphics[height=26mm]{figs/covers/bueler}
 \end{center}
+\end{frame}
+
+
+\begin{frame}{slides, movies, and codes}
+\begin{itemize}
+\item for these \alert{slides} (as \texttt{.pdf}), and the \alert{movies} (as \texttt{.mp4}), see the \texttt{fvolume/} directory in this Github repository:
+\begin{center}
+\href{https://github.com/bueler/slide-teach}{\texttt{https://github.com/bueler/slide-teach}}
+\end{center}
+
+\bigskip
+\item for the \alert{C codes} which generated all the results, see the \texttt{c/riemann/} directory in this Github repository:
+\begin{center}
+\href{https://github.com/bueler/p4pdes-next}{\texttt{https://github.com/bueler/p4pdes-next}}
+\end{center}
+
+\bigskip
+\item C programming is \alert{NOT} required for appreciating these notes!
+\end{itemize}
 \end{frame}
 
 
@@ -255,18 +274,18 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW SHALLOW WATER ``HUMP'' MOVIE}
+\alert{SHOW SHALLOW WATER ``HUMP'' MOVIE}  \qquad $\leftarrow$ \texttt{movies/hump.mp4}
 \end{center}
 
 \vspace{10mm}
 
 % ./riemann -problem swater -initial hump -da_grid_x 1000 -limiter minmod -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
 % mkdir swater
+% make petscPyScripts
 % ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot swater/height
-% ./plotTS.py -mx 1000 -ylabel "hu (flux)" -ax -5.0 -bx 5.0 -dof 2 -c 1 -cellcentered t.dat q.dat -oroot swater/flux
 % cd swater
 % eog height*.png
-% eog flux*.png
+% ffmpeg -r 30 -f image2 -s 1920x1080 -i height%03d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p hump.mp4
 \end{itemize}
 \end{frame}
 
@@ -274,7 +293,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 \begin{frame}{multiple roles for exact solutions}
 
 \begin{itemize}
-\item generally, exact solutions are rare but valuable
+\item exact solutions are rare but valuable!
 \item in these slides, exact solutions have two roles:
   \begin{enumerate}
   \item for \emph{verifying} simulations
@@ -299,19 +318,18 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
 
 \begin{itemize}
 \item I am interested in high performance solutions of PDEs
-\item all examples in these slides use fast, but less-elegant, C code
+\item all examples in these slides use fast C code
     \begin{itemize}
-    \item[$\circ$] compared to Matlab
+    \item[$\circ$] but more complicated than Matlab or Python
     \end{itemize}
-\item \dots calling the Portable Extensible Toolkit for Scientific computing:
+\item my C codes call the Portable Extensible Toolkit for Scientific computing:
 
     \begin{center}
-    \href{https://www.mcs.anl.gov/petsc/}{\texttt{www.mcs.anl.gov/petsc/}}
+    \href{https://petsc.org/release/}{\texttt{https://petsc.org}}
     \end{center}
 
     \begin{itemize}
-    \item[$\circ$] a mathematical library for high-performance computing
-    \item[$\circ$] by DOE's Argonne National Lab \dots who also brought you MPI
+    \item[$\circ$] a mathematical library for high-performance computing from the Department of Energy's Argonne National Laboratory
     \end{itemize}
 \item the run which generated the previous shallow water movie, with $1000\times 361$ (space$\times$time) grid, completed in 0.3 seconds
 % using linux-c-opt:
@@ -337,7 +355,7 @@ with speed $a=1$, initial condition $q(0,x)$ known, and periodic boundary condit
     \item[$\circ$] slowing me down is a \emph{good}\, thing!
     \item[$\circ$] I'll try to watch the zoom chat, too
     \end{itemize}
-\item feel free to email after the talk, or into the indefinite future:
+\item feel free to email any time after the talk:
     \begin{itemize}
     \item[$\circ$] \texttt{elbueler\@@alaska.edu}
     %\item[$\circ$] I might be able to help with numerical questions (but not 615 homework)
@@ -483,9 +501,9 @@ Q_i^{n+1} &= \tfrac{1}{2} \nu (1+\nu) Q_{i-1}^n + \left(1 - \nu^2\right) Q_i^n +
 
 \begin{itemize}
 \item by the way \dots
-\item can you describe multiple interpretations of Lax-Wendroff?
+\item there are multiple interpretations of Lax-Wendroff:
     \begin{enumerate}
-    \item<1-4> quadratic interpolation above
+    \item<1-4> quadratic interpolation (previous)
     \item<2-4> \only<2-4>{use spatial difference on $O(\Delta t^2)$ term in Taylor series}
     \item<3-4> \only<3-4>{half steps of Lax-Friedrichs followed by leap-frog}
     \item<4> \only<4>{\emph{revealed later in this talk}}
@@ -497,7 +515,7 @@ Q_i^{n+1} &= \tfrac{1}{2} \nu (1+\nu) Q_{i-1}^n + \left(1 - \nu^2\right) Q_i^n +
 \begin{frame}{stability}
 
 \begin{itemize}
-\item in a very early paper, Courant, Friedrichs, and Lewy gave a criterion for stability of numerical methods on hyperbolic PDEs
+\item in a very early paper, Courant, Friedrichs, and Lewy (1928) gave a criterion for stability of numerical methods on hyperbolic PDEs
 \item \alert{CFL criterion:} the characteristic through the new location $(t_{n+1},x_i)$ must be in the numerical domain of dependence of the scheme at $t_n$, i.e.
     $$\nu_{CFL} = \frac{|a|\Delta t}{\Delta x} \le 1 \qquad \iff \qquad \Delta t \le \frac{\Delta x}{|a|}$$
 
@@ -561,18 +579,6 @@ $q_t+a q_x=0$, $a=1$, $0\le x\le 1$, and periodic boundary conditions
 \item this talk: make sense of these 1990s buzzwords!
 \end{itemize}
 \end{frame}
-
-
-%\begin{frame}{a \Matlab code to play with}
-%\begin{itemize}
-%\item mostly I have been playing with PETSc, but \dots
-%\item here is a simple \Matlab code:
-%\begin{center}
-%\href{http://bueler.github.io/programs/adcompare.m}{\texttt{bueler.github.io/programs/adcompare.m}}
-%\end{center}
-%\item it implements upwind and Lax-Wendroff for scalar advection
-%\end{itemize}
-%\end{frame}
 
 
 \begin{frame}{the finite volume (FV) idea}
@@ -865,6 +871,7 @@ Note that the SVD will be a key topic and tool in Math 614 Numerical Linear Alge
 Ed
 \end{comment}
 
+
 \begin{frame}[fragile]
 \frametitle{left eigenvectors, transposes, and \Matlab}
 
@@ -1011,14 +1018,11 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 \begin{itemize}
 \item I used all these ideas in a C$+$PETSc program for the acoustics problem:
     $$\begin{matrix} p_t + K_0 u_x = 0 \\ u_t + \frac{1}{\rho_0} p_x = 0 \end{matrix}$$
-\item see \texttt{riemann} at
-\begin{center}
-\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/c/p4pdes-next}}
-\end{center}
+\item see \texttt{c/riemann/riemann.c} at \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
 
 \vspace{3mm}
 \begin{center}
-\alert{SHOW ACOUSTICS MOVIE}
+\alert{SHOW ACOUSTICS MOVIE}  \qquad $\leftarrow$ \texttt{movies/acoustics.mp4}
 \end{center}
 \end{itemize}
 
@@ -1026,10 +1030,9 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 % make petscPyScripts
 % mkdir acoustics
 % ./plotTS.py -mx 500 -dof 2 -c 0 -ylabel "p (pressure)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustics/pressure t.dat q.dat
-% ./plotTS.py -mx 500 -dof 2 -c 1 -ylabel "u (velocity)" -ax -1.0 -bx 1.0 -cellcentered -oroot acoustics/velocity t.dat q.dat
 % cd acoustics/
 % eog pressure*.png
-% eog velocity*.png
+% ffmpeg -r 30 -f image2 -s 1920x1080 -i pressure%03d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p acoustics.mp4
 \end{frame}
 
 
@@ -1049,7 +1052,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \bigskip
 \footnotesize
-\item generalize to nonlinear systems by using $A=\bbf'(\bq)$?
+\item can we generalize to nonlinear systems by using $A=\bbf'(\bq)$?
 \end{itemize}
 \end{frame}
 
@@ -1376,14 +1379,11 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
     \begin{itemize}
     \item[$\circ$] formula (12.4) in LeVeque (2002)
     \end{itemize}
-\item I used this in a C PETSc code; see \texttt{riemann} at
-\begin{center}
-\href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
-\end{center}
+\item see \texttt{c/riemann/riemann.c} at \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW TRAFFIC SHOCK MOVIE}
+\alert{SHOW TRAFFIC SHOCK MOVIE}  \qquad $\leftarrow$ \texttt{movies/traffic.mp4}
 \end{center}
 \end{itemize}
 
@@ -1395,6 +1395,7 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 % ./plotTS.py -mx 1000 -ylabel "q (density)" -ax -30.0 -bx 30.0 -cellcentered -oroot traffic/bar t.dat q.dat
 % cd traffic
 % eog bar*.png
+% ffmpeg -r 30 -f image2 -s 1920x1080 -i bar%03d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p traffic.mp4
 \end{frame}
 
 
@@ -1501,29 +1502,20 @@ p(t,x_*) + Z_0 u(t,x_*) &= v_2(t,x_*) = v_2(t_n,x_*-\lambda_2 (t-t_n)) \\
 
 \begin{itemize}
 \item put together the above tools \dots
-\item if you use C and PETSc then you have my program \texttt{riemann} at
-    \begin{center}
-    \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
-    \end{center}
-\end{itemize}
+\item see \texttt{c/riemann/riemann.c} at \href{https://github.com/bueler/p4pdes-next}{\texttt{github.com/bueler/p4pdes-next}}
 
 \vspace{10mm}
 \begin{center}
-\alert{SHOW SHALLOW WATER ``DAM'' MOVIE}
+\alert{SHOW SHALLOW WATER ``DAM'' MOVIE}  \qquad $\leftarrow$ \texttt{movies/dam.mp4}
+\end{center}
+\end{itemize}
 
 % ./riemann -problem swater -initial dam -da_grid_x 1000 -limiter mc -ts_monitor binary:t.dat -ts_monitor_solution binary:q.dat
 % mkdir dam
 % ./plotTS.py -mx 1000 -ylabel "h (height)" -ax -5.0 -bx 5.0 -dof 2 -c 0 -cellcentered t.dat q.dat -oroot dam/height
-% ./plotTS.py -mx 1000 -ylabel "hu (flux)" -ax -5.0 -bx 5.0 -dof 2 -c 1 -cellcentered t.dat q.dat -oroot dam/flux
 % cd dam
 % eog height*.png
-% eog flux*.png
-
-\bigskip
-\alert{(OR SHALLOW WATER ``HUMP'' MOVIE)}
-
-% LOOK IN swater/
-\end{center}
+% ffmpeg -r 30 -f image2 -s 1920x1080 -i height%03d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p dam.mp4
 \end{frame}
 
 
@@ -1826,17 +1818,17 @@ $ tmpg -n 4 ./advect -adv_problem rotation \
 \vspace{-1mm}
 \item parallel run with 12 processes in 90 seconds:
     \begin{itemize}
-    \item[$\circ$] $N=640\times 640 \times 4022 = 1.6 \times 10^9$ \dots billion-point space-time grid
+    \item[$\circ$] $N=640\times 640 \times 4022 = 1.6 \times 10^9$, a billion-point space-time grid
+    \item[$\circ$] \dots but no graphics, which would take forever
     \end{itemize}
 \begin{Verbatim}[fontsize=\footnotesize]
 $ tmpg -n 12 ./advect -adv_problem rotation -da_refine 7 \
-    -ts_max_time 6.283185 -ts_type ssp -adv_limiter koren \
-    -ts_view_solution draw -draw_size 600,600 -draw_pause -1
+    -ts_max_time 6.283185 -ts_type ssp -adv_limiter koren
 \end{Verbatim}
 %$
 
 \bigskip
-\hspace{15mm} \alert{SHOW}
+\hspace{15mm} \alert{SHOW LIVE}
 \end{itemize}
 \end{frame}
 
