@@ -87,9 +87,10 @@
 
 \begin{frame}{purpose}
 \begin{quote}
-The topic of these slides is covered in Chapter 8 of the text.\footnote{Greenbaum \& Chartier, \emph{Numerical Methods: Design, Analysis, and Computer Implementation of Algorithms}, Princeton University Press 2012).}  The emphasis here, in these slides, is on \alert{how} to put a polynomial through points.  The polynomial interpolation error theorem, which we will get to in Chapter 8, addresses the ``how good is the result'' question.  It is a good idea to look at Chapter 8, but it is not essential for understanding these slides or for doing Assignment \#3.
+The topic of these slides is covered in Chapter 8 of the text.\footnote{Greenbaum \& Chartier, \emph{Numerical Methods: Design, Analysis, and Computer Implementation of Algorithms}, Princeton University Press 2012).}  When we get there we will be more thorough.
 
 \bigskip
+The emphasis here, in these slides, is on \alert{how} to put a polynomial through points.  The polynomial interpolation error theorem (Chapter 8), addresses the ``how good is the result'' question.  While it is a good idea to look at Chapter 8, it is not needed for understanding these slides or for doing Assignment \#3.
 \end{quote}
 \end{frame}
 
@@ -102,7 +103,7 @@ The topic of these slides is covered in Chapter 8 of the text.\footnote{Greenbau
   \begin{itemize}
   \item[$\circ$]  in these notes I will \emph{never} assume the $x$-coordinates are equally-spaced
   \end{itemize}
-\item let us name these points $(x_i,y_i)$, for $i=1,2,3,4$
+\item name the points $(x_i,y_i)$, for $i=1,2,3,4$
 \item there is a polynomial $P(x)$ of degree 3 which goes through these points
 \item we will build it concretely
 \item we will show later that there is only one such polynomial
@@ -114,7 +115,7 @@ The topic of these slides is covered in Chapter 8 of the text.\footnote{Greenbau
 
 \begin{itemize}
 \item figure below shows the points from the previous slide
-\item the points may be values of a function $f(x)$ \dots but we don't know or see that function
+\item they may be values of a function $f(x)$ \dots but we don't know or see that function
 
 \medskip
   \begin{center}
@@ -149,7 +150,7 @@ c_0 + c_1 (5) + c_2 (5)^2 + c_3 (5)^3 &= 0
 \begin{frame}{a linear system}
 \begin{itemize}
 \item you can solve the equations by hand \dots that would be tedious
-\item we have a great matrix-vector tool, namely \MO
+\item you are allowed a wand \dots I mean a \MO
 \item the system has a matrix form ``$A\, \bv = \bb$'' with $\bv$ unknown:
 $$\begin{bmatrix}
 1 & -1 & (-1)^2 & (-1)^3 \\
@@ -166,7 +167,7 @@ c_0 \\ c_1 \\ c_2 \\ c_3
 \item I am not simplifying the numbers in the matrix \dots because:
   \begin{itemize}
   \item[$\circ$] a machine can do that, and 
-  \item[$\circ$] the pattern in the matrix entries is clear if they are unsimplified
+  \item[$\circ$] the pattern is what matters\footnote{often you should keep things unsimplified if they are going to become code}
   \end{itemize}
 \item \MS you can convert from the original ``fit a polynomial through these points'' question into the matrix form ``$A\, \bv = \bb$''
 \end{itemize}
@@ -209,9 +210,36 @@ v =
 
 
 \begin{frame}[fragile]
-\frametitle{linear systems in \MO}
+\frametitle{did we solve the problem?}
 
 \begin{itemize}
+\item the polynomial we found does go through the points:
+
+\medskip
+\begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
+>> 3.000000 + 0.983333*(-1) - 0.066667*(-1)^2 -0.050000*(-1)^3
+ans =  2
+>> 3.000000 + 0.983333*(0) - 0.066667*(0)^2 -0.050000*(0)^3
+ans =  3
+>> 3.000000 + 0.983333*(3) - 0.066667*(3)^2 -0.050000*(3)^3
+ans =  4.0000
+>> 3.000000 + 0.983333*(5) - 0.066667*(5)^2 -0.050000*(5)^3
+ans = -1.0000e-05
+\end{Verbatim}
+
+\medskip
+  \begin{center}
+  \includegraphics[width=0.45\textwidth]{ex1solved}
+  \end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{summary: linear systems in \MO}
+
+\begin{itemize}
+\item before we move on, here is a summary of some basics
 \item you enter matrices like $A$ by rows
   \begin{itemize}
   \item[$\circ$] spaces separate entries
@@ -244,31 +272,6 @@ b =
 \end{frame}
 
 
-\begin{frame}[fragile]
-\frametitle{did we solve the problem?}
-
-FIXME FROM HERE
-
-\begin{itemize}
-\item the polynomial we found had better go through the points:
-\begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
->> 3.000000 + 0.983333*(-1) - 0.066667*(-1)^2 -0.050000*(-1)^3
-ans =  2
->> 3.000000 + 0.983333*(0) - 0.066667*(0)^2 -0.050000*(0)^3
-ans =  3
->> 3.000000 + 0.983333*(3) - 0.066667*(3)^2 -0.050000*(3)^3
-ans =  4.0000
->> 3.000000 + 0.983333*(5) - 0.066667*(5)^2 -0.050000*(5)^3
-ans = -1.0000e-05
-\end{Verbatim}
-\item a graph is convincing, too:
-  \begin{center}
-  \includegraphics[width=0.45\textwidth]{ex1solved}
-  \end{center}
-\end{itemize}
-\end{frame}
-
-
 \begin{frame}{the general case}
 
 \begin{itemize}
@@ -281,7 +284,7 @@ ans = -1.0000e-05
 	$$P(x) = c_0 + c_1 x + c_2 x^2 + \dots + c_{n-1} x^{n-1}$$
 \item the equations which determine $P(x)$ say that \emph{the polynomial goes through the points}:
 	$$P(x_i) = y_i \qquad \text{for} \quad i=1,2,\dots,n$$
-\item written out there are $n$ equations of this form:
+\item this is a system of $n$ equations of this form:
 	$$c_0 + c_1 x_i + c_2 x_i^2 + \dots + c_{n-1} x_i^{n-1} = y_i \qquad \text{for} \quad i=1,2,\dots,n$$
 \item the $n$ coefficients $c_i$ are unknown, while the $x_i$ and $y_i$ are known
 \end{itemize}
@@ -289,7 +292,7 @@ ans = -1.0000e-05
 
 
 \begin{frame}[fragile]
-\frametitle{the pattern in the matrix, for the general case}
+\frametitle{the pattern in the matrix}
 
 \begin{itemize}
 \item as a matrix:
@@ -300,14 +303,14 @@ ans = -1.0000e-05
 	1 & x_n & x_n^2 & \dots & x_n^{n-1} \\
 	\end{bmatrix}$$
 \item and $\bb$ is a column vector with entries $y_i$:\quad  $\bb = [y_1\quad y_2 \quad \dots \, y_n]'$
-\item as before, this gives a system of $n$ equations, \quad $A\, \bv = \bb$
-\item the matrix $A$ is called a \emph{Vandermonde matrix}, from about 1772
+\item as before, this gives a system of $n$ equations:\quad $A\, \bv = \bb$
+\item the matrix $A$ is called a \emph{Vandermonde matrix}\footnote{Alexandre-Th\'eophile Vandermonde, in papers on determinants in 1772}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
-\frametitle{Vandermonde matrix, built-in}
+\frametitle{the Vandermonde matrix is a built-in}
 
 \begin{itemize}
 \item actually, Vandermonde matrices are already built-in to \MO
@@ -326,7 +329,7 @@ ans =
   \item[$\circ$] oops!  the columns are in reversed order, compared to our choice
   \item[$\circ$] note that \emph{only} the $x$-coordinates are needed to build $A$, and not the $y$-coordinates
   \end{itemize}
-\item we easily fix the column order to agree with our earlier ordering using ``\texttt{fliplr}'', which stands for ``flip left-to-right'':
+\item fix the column order to agree with our earlier choice using ``\texttt{fliplr}'' (flip left-to-right):
 \begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
 >> A = fliplr(vander([-1 0 3 5]))
 A =
@@ -340,10 +343,10 @@ A =
 
 
 \begin{frame}[fragile]
-\frametitle{Vandermonde matrix method for polynomial interpolation}
+\frametitle{example of the Vandermonde matrix method}
 
 \begin{itemize}
-\item thus a complete code to solve our 4 point problem earlier is:
+\item a complete code to solve our 4-point problem:
 
 \bigskip
 \begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
@@ -360,9 +363,9 @@ A =
 \bigskip
 \begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
   plot([-1 0 3 5],[2 3 4 0],'o','markersize',12)
-  x = -2:0.01:6;  P = v(1) + v(2)*x + v(3)*x.^2 + v(4)*x.^3;
-  hold on, plot(x,P,'r'), hold off
-  xlabel x, ylabel y
+  x = -2:0.01:6;
+  P = v(1) + v(2)*x + v(3)*x.^2 + v(4)*x.^3;
+  hold on,  plot(x,P,'r'),  hold off,  xlabel x,  ylabel y
 \end{Verbatim}
 \bigskip
 
@@ -372,139 +375,39 @@ A =
 
 
 \begin{frame}[fragile]
-\frametitle{on the cost of solving Vandermonde matrix problems}
+\frametitle{example of \texttt{polyfit}}
 
 \begin{itemize}
-\item often we want to do polynomial fits \emph{many times for different data}
-\item so, is it quick?  here are some facts to know about solving these systems:
-  \begin{itemize}
-  \item[$\circ$] if there are $n$ points then the matrix $A$ has $n$ rows and $n$ columns
-  \item[$\circ$] \emph{internally in} \MO, the linear system $A\,\bv=\bb$ is solved by Gaussian elimination
-  \item[$\circ$] Gaussian elimination does about $\frac{2}{3} n^3$ arithmetic operations (i.e.~additions, subtractions, multiplications, divisions) to solve such a linear system
-  \end{itemize}
-\item so finding the coefficients of the polynomial $P(x)$ through $n$ points takes about $n^3$ operations
-\item but then you need more operations to \emph{evaluate} that polynomial, which is what you usually do with it
-\end{itemize}
-\end{frame}
+\item actually we don't even need to call \texttt{vander} ourselves, because polynomial interpolation is built-in to \MO:
 
-
-\begin{frame}{``new'' idea: Newton's form}
-
-FIXME: REMOVE NEWTON
-
-\begin{itemize}
-\item before Vandermonde there was already a good, practical idea
-  \begin{itemize}
-  \item[$\circ$] an old idea of Newton, perhaps about 1690
-  \end{itemize}
-\item the idea is to write the polynomial through the data $P(x)$ \emph{not} using the ``monomials'' $1,x,x^2,x^3,\dots,x^{n-1}$,
-\item \dots but instead to use a form of the polynomial which includes the $x$-coordinates of the data points:
-\begin{align*}
-P(x) &= c_0 + c_1 (x-x_1) + c_2 (x - x_1)(x - x_2) + \\
-     &\qquad \dots + c_{n-1} (x-x_1)(x-x_2) \dots (x-x_{n-1})
-\end{align*}
-\item do you see why this helps?
-
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Newton's form example: 4 points}
-
-\begin{itemize}
-\item with the $n=4$ points $(-1,2), (0,3), (3,4), (5,0)$ we can write
-\begin{align*}
-P(x) &= c_0 + c_1 (x+1) + c_2 (x +1)(x) + c_3 (x +1)(x) (x-3)
-\end{align*}
-\item this polynomial must go through the four points, so:
-\begin{align*}
-c_0 &                 &= 2 \\
-c_0 &+ c_1 (0+1)                  &= 3 \\
-c_0 &+ c_1 (3+1) + c_2 (3 +1)(3)  &= 4 \\
-c_0 &+ c_1 (5+1) + c_2 (5 +1)(5) + c_3 (5 +1)(5) (5-3) &= 0 
-\end{align*}
-\item note that lots of matrix entries are zero!
-\item the system of equations has the form
-	$$M\, \bw = \bb$$
-where $M$ is a triangular matrix, $\bb$ is the same as in the Vandermonde form, and $\bw$ has the unknown coefficients:
-   $$\bw = [c_0\, c_1\, c_2\, c_3]'$$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Newton's form example, cont.}
-
-\begin{itemize}
-\item can you solve this by hand?
-\item \emph{yes}:  find $c_0$ from first equation, then $c_1$ from second equation, etc.
-\item I get $c_0=2$, $c_1=1$, $c_2=-1/6$, $c_3=-1/20$,  so
-	$$P(x) = 2 + (x+1) - \frac{1}{6} (x +1)(x) - \frac{1}{20} (x +1)(x) (x-3)$$
-\item \MS you can do this yourself, on a similar example
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Newton's form example, $\text{cont.}^2$}
-
-\begin{itemize}
-\item so we have a concrete polynomial, but not in standard form:
-	$$P(x) = 2 + (x+1) - \frac{1}{6} (x +1)(x) - \frac{1}{20} (x +1)(x) (x-3)$$
-\item an uninteresting calculation puts it in standard form:
-\begin{align*}
-P(x) &= 3 + \frac{59}{60} x - \frac{1}{15} x^2 - \frac{1}{20} x^3 \\
-     &= 3 + 0.983333 x - 0.066667 x^2 - 0.05 x^3
-\end{align*}
-\item which is exactly the same polynomial we found earlier
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Newton's form for polynomial interpolation: example code}
-
-\begin{itemize}
-\item the advantage of the Newton form is that a \emph{triangular} matrix $M$ is created
-  \begin{itemize}
-  \item[$\circ$] which makes it easier to solve the system by hand
-  \item[$\circ$] only $O(n^2)$ operations are needed to solve the system
-  \item[$\circ$] the polynomial comes out in a non-standard form but it is just as easy to evaluate at a point (i.e.~using Horner's method)
-  \end{itemize}
-\item here is a short code to solve the 4 point problem:
+\bigskip
+\begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
+  v = polyfit([-1 0 3 5], [2 3 4 0], 3)
+\end{Verbatim}
 \bigskip
 
-\mfile{newt4.m}
+\item the only difference is that the coefficient order is reversed:
+	$$P(x) = \text{\texttt{v(n)}} + \text{\texttt{v(n-1)}}\, x + \dots + \text{\texttt{v(1)}}\, x^{n-1}$$
+
+\item plot using the ``evaluate a polynomial'' built-in called \texttt{polyval()}:
+
+\bigskip
+\begin{Verbatim}[frame=single,fontfamily=courier,fontsize=\scriptsize]
+  plot([-1 0 3 5],[2 3 4 0],'o','markersize',12)
+  x = -2:0.01:6;
+  P = polyval(v,x);
+  hold on,  plot(x,P,'r'),  hold off,  xlabel x,  ylabel y
+\end{Verbatim}
+\bigskip
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{Newton's form shows there is a unique interpolating polynomial}
-
-
-\begin{itemize}\small
-  \item for both Vandermonde and Newton matrix approximations we build an invertible matrix, so in each case there is exactly one solution
-  \item this is easiest to see from the general Newton form matrix:
-\scriptsize
-  $$M = \begin{bmatrix}
-  \,\,1 & & & &  \\
-  \,\,1 & (x_2-x_1) & & & \\
-  \,\,1 & (x_3-x_1) & (x_3 - x_1)(x_3 - x_2) & & \\
-  \,\,\vdots & \vdots & \vdots & \ddots & \\
-  \,\,1 & (x_n-x_1) & (x_n - x_1)(x_n - x_2) & \dots & (x_n-x_1)(x_n-x_2)\dots(x_n-x_{n-1})
-  \end{bmatrix}$$
-\small
-  \item the diagonal entries are all nonzero as long as the $x$-coordinates are distinct
-  \item because the matrix is triangular, the determinant is the product of the diagonal:
-  	$$\det M = \prod_{i > j} (x_i-x_j) \ne 0$$
-  \item so the polynomial $P(x)$ always exists and is unique
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{Lagrange's idea: no systems at all!}
+\begin{frame}{Lagrange's idea (1795): no systems at all!}
 
 \begin{itemize}
-\item another new idea
-\item given the same $n=4$ points\quad  $(-1,2), (0,3), (3,4), (5,0)$
-\item Lagrange and others, by about 1800, knew how to write down four polynomials, now called the \emph{Lagrange polynomials}, corresponding to the $x$-coordinates $x_1,\dots,x_4$:
+\item a new idea, illustrated with the same points\quad  $(-1,2), (0,3), (3,4), (5,0)$
+\item Lagrange (and others) could directly write down four polynomials corresponding to the $x$-coordinates $x_1,\dots,x_4$:
 \small
 \begin{align*}
 \ell_{1}(x) &= \frac{(x-x_2)(x-x_3)(x-x_4)}{(x_1-x_2)(x_1-x_3)(x_1-x_4)} = \frac{x (x-3) (x-5)}{(-1)(-4)(-6)} \\
@@ -513,7 +416,16 @@ P(x) &= 3 + \frac{59}{60} x - \frac{1}{15} x^2 - \frac{1}{20} x^3 \\
 \ell_{4}(x) &= \frac{(x-x_1)(x-x_2)(x-x_3)}{(x_4-x_1)(x_4-x_2)(x_4-x_3)} = \frac{(x+1) (x) (x-3)}{(6)(5)(2)}
 \end{align*}
 \normalsize
-\item the \emph{pattern} needs attention:  \textbf{a.} the numerator and denominator have the same pattern, but the denominator is a constant; \textbf{b.} $\ell_i(x)$ has no ``$(x-x_i)$'' factor in the numerator, nor ``$(x_i-x_i)$'' factor in the denominator;  \textbf{c.} as long as the $x_i$ are distinct, we never divide by zero
+\item these are called the \emph{Lagrange polynomials}
+\item the \emph{pattern}:
+  %\renewcommand{\labelenumi}{}
+  \begin{enumerate}
+  \item numerator and denominator have similar structure
+  \item \dots but the denominators are constant
+  \item $\ell_i(x)$ has no ``$(x-x_i)$'' factor in the numerator
+  \item $\ell_i(x)$ has no ``$(x_i-x_i)$'' factor in the denominator
+  \item as long as the $\{x_i\}$ are distinct, we never divide by zero
+  \end{enumerate}
 \end{itemize}
 \end{frame}
 
@@ -529,8 +441,8 @@ P(x) &= 3 + \frac{59}{60} x - \frac{1}{15} x^2 - \frac{1}{20} x^3 \\
 \begin{quote}
 the polynomial $\ell_i(x)$ has value 0 at all of the $x$-values of the points, except that it is 1 at $x_i$
 \end{quote}
-\item why is this helpful?
 \item \MS make sure you can find the Lagrange polynomials if I give you the $x$-values of $n$ points
+\item but why is this helpful?
 \end{itemize}
 \end{frame}
 
@@ -558,8 +470,7 @@ the polynomial $\ell_i(x)$ has value 0 at all of the $x$-values of the points, e
 \begin{itemize}
 \item \emph{wait}, why is this the answer?:
 	$$P(x) \stackrel{\ast}{=} y_1 \ell_1(x) + y_2 \ell_2(x) + y_3 \ell_3(x) + y_4 \ell_4(x)$$
-\item because $P(x)$ \emph{is} of degree three, as a linear combination of degree 3 polynomials, and
-\item because:
+\item because $P(x)$ \emph{is} of degree three\footnote{it is a linear combination of degree 3 polynomials}, and because:
 \small
 \begin{align*}
 P(x_1) &= y_1 \ell_1(x_1) + y_2 \ell_2(x_1) + y_3 \ell_3(x_1) + y_4 \ell_4(x_1) \\
@@ -637,15 +548,15 @@ which is exactly what we found earlier
 \end{frame}
 
 
-\begin{frame}{so, is the Lagrange scheme a good idea?  cont.}
+\begin{frame}{so, is the Lagrange scheme a good idea?}
 
 \begin{itemize}
-\item we have seen that actually using the formulas to find a familiar form for $P(x)$ is \dots awkward
-\item the problem with the Lagrange form is that even when we write down the correct linear combination of Lagrange polynomials $\ell_i(x)$ to give $P(x)$, we do not have quick ways of getting:
+\item we have seen that using the Lagrange formulas to find $P(x)$ is \dots awkward?
+\item the problem with the Lagrange form is that even when we write down the correct linear combination of Lagrange polynomials $\ell_i(x)$ to give $P(x)$, we do \emph{not} have quick ways of getting:
   \begin{itemize}
-  \item[$\circ$] either the coefficients $a_i$ in the standard form,
+  \item[$\circ$] the coefficients $a_i$ in the standard (monomial) form:
     	$$P(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_{n-1} x^{n-1}$$
-  \item[$\circ$] or the values of the polynomial $P(x)$ at locations $\bar x$ in between the $x_i$:
+  \item[$\circ$] the values of the polynomial $P(x)$ at locations $\bar x$ in between the $x_i$:
     $$P(\bar x) = \bar y$$
   \end{itemize}
 \item generally-speaking, the output values of a polynomial are the desired numbers; this is the purpose of polynomial \emph{interpolation}
@@ -657,26 +568,22 @@ which is exactly what we found earlier
 
 \begin{frame}{conclusion: how to do polynomial interpolation}
 
+\noindent \textbf{problem:} find the degree $n-1$ polynomial $P(x)$ which goes through $n$ given points $(x_i,y_i)$
+
+\bigskip
 \begin{itemize}
-\item the problem is to find the degree $n-1$ polynomial $P(x)$ which goes through $n$ given points $(x_i,y_i)$
-\item we have three methods, all of which do the job:
+\item we have two methods:
   \begin{itemize}
-  \item[$\circ$]  the Vandermonde matrix method,
-  \item[$\circ$]  the Newton polynomial form, and its triangular matrix method,
-  \item[$\circ$]  and Lagrange's direct formula for the polynomial
+  \item[$\circ$]  the Vandermonde matrix method \hfill {\footnotesize $\leftarrow$ built-in as \texttt{polyfit}}
+  \item[$\circ$]  Lagrange's direct formula for the polynomial
   \end{itemize}
-\item the first two require solving linear systems, while the last does not
-  \begin{itemize}
-  \item[$\circ$] Lagrange's direct formula requires us to simplify like crazy
-  \item[$\circ$] Newton gives easier linear systems (triangular) than does Vandermonde
-  \item[$\circ$] \Matlab makes solving linear systems easy anyway
-  \end{itemize}
-\item another issue:
+\item the Vandermonde linear system is easily solved in \MO
+\item Lagrange's direct formula requires us to simplify algebraically
+\item bigger issue addressed in Chapter 8:
   \begin{itemize}
   \item[$\circ$] \emph{question}: how accurate is polynomial interpolation?
-  \item[$\circ$] \emph{answer}: see the polynomial interpolation error theorem in Chapter 8
+  \item[$\circ$] \emph{answer}: the polynomial interpolation error theorem
   \end{itemize}
-%  \item[$\circ$] we will get to one more algorithm, Neville's algorithm, which gets the polynomial values but skips finding any coefficients
 \end{itemize}
 \end{frame}
 
