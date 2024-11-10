@@ -1,0 +1,179 @@
+% Copyright 2024  Ed Bueler
+
+\documentclass[10pt,
+               svgnames,
+               hyperref={colorlinks,citecolor=DeepPink4,linkcolor=FireBrick,urlcolor=Maroon},
+               usepdftitle=false]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Madrid}
+
+  \usecolortheme{beaver}
+
+  \setbeamercovered{transparent}
+  
+  \setbeamerfont{frametitle}{size=\large}
+}
+
+\setbeamercolor*{block title}{bg=red!10}
+\setbeamercolor*{block body}{bg=red!5}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{empheq,bm,xspace,minted}
+\usepackage{hyperref}
+\usepackage{tikz}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+%\beamerdefaultoverlayspecification{<+->}
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bc}{\mathbf{c}}
+\newcommand{\bbf}{\mathbf{f}}
+\newcommand{\bl}{\bm{\ell}}
+\newcommand{\br}{\mathbf{r}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bw}{\mathbf{w}}
+
+\newcommand{\bzero}{\bm{0}}
+
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+
+\newcommand{\ddt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
+\newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
+\renewcommand{\t}[1]{\texttt{#1}}
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+\newcommand{\Octave}{\textsc{Octave}\xspace}
+\newcommand{\eps}{\epsilon}
+
+\newcommand{\twovect}[4]{\ensuremath{{#1}_{#2} =
+                            \begin{bmatrix} #3 \\ #4 \end{bmatrix}}}
+
+\newcommand{\ftt}[1]{{\color{blue} \texttt{#1}}}
+
+\newcommand{\rbullet}{{\color{FireBrick} \bullet}}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+
+\title{Training in machine learning is not optimization}
+
+\subtitle{but it is close}
+
+\author{Ed Bueler}
+
+\institute[]{UAF Math 661 Optimization}
+
+\date{Fall 2024}
+
+
+\begin{document}
+\beamertemplatenavigationsymbolsempty
+
+\begin{frame}
+  \maketitle
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{how fast is the basic matrix-vector product $z=Ax$?}
+
+
+\begin{frame}[fragile]
+\frametitle{fast solution of circulant systems}
+
+\begin{itemize}
+\item suppose $A$ is circulant, with first column $c$, and we want to solve $Ax=b$
+\item we know
+  $$A = c_0 I + c_1 D_m + c_2 D_m^2 + \dots + c_{m-1} D_m^{m-1} = p(D_m)$$
+and $D_m = F_m \Lambda F_m^{-1}$ where $\lambda_j = {\bar\omega_m}^j$
+\item fast solution process:
+    $$Ax = b \qquad \iff \qquad F_m p(\Lambda) F_m^{-1} x = b \qquad \iff \qquad \begin{matrix} u = F_m^{-1} b \\ v = p(\Lambda)^{-1} u \\ x = F_m v \end{matrix}$$ 
+
+\begin{minted}[fontsize=\small]{python}
+def solve_circulant(c,x,b):
+    z = barFFT(c)
+    u = barFFT(b)
+    v = u ./ z
+    x = FFT(v)
+    x /= m
+    return x
+\end{minted}
+
+\vspace{-20mm}
+\hfill $\gets$ \quad $O(m\log m)$ flops \dots optimal!
+
+\vspace{15mm}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{summary: some directions suggested by this talk}
+
+\begin{itemize}
+\item sparse storage schemes
+   \begin{itemize}
+   \item[$\circ$] practicalities?
+   \item[$\circ$] parallelization?
+   \end{itemize}
+\item sparse direct linear algebra
+   \begin{itemize}
+   \item[$\circ$] how to re-order variables to minimize fill-in in LU
+   \item[$\circ$] this is graph theory (nested-disection, minimum degree, Cuthill-McKee, \dots)
+   \end{itemize}
+\item how does the FFT actually work?
+   \begin{itemize}
+   \item[$\circ$] why is it $O(m\log m)$?
+   \item[$\circ$] what else is it good for? (signal/image processing, filters, fast Poisson, \dots)
+   \end{itemize}
+\item Krylov methods
+   \begin{itemize}
+   \item[$\circ$] conjugate gradient, GMRES, \dots
+   \item[$\circ$] matrix-free Krylov
+   \end{itemize}
+\item matrix-based preconditioners for Krylov methods
+   \begin{itemize}
+   \item[$\circ$] incomplete LU, incomplete Cholesky, \dots
+   \end{itemize}
+\item multigrid for PDE problems
+   \begin{itemize}
+   \item[$\circ$] geometric multigrid
+   \item[$\circ$] algebraic multigrid, a black-box-ish preconditioner
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{references}
+
+\begin{itemize}
+{\small
+%\item[] \textbf{E.~Bueler (2021)}. \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
+%    \begin{itemize}
+%    \item[$\circ$] Krylov methods, multigrid, optimal PDE solvers
+%    \end{itemize}
+\item[] \textbf{L.~Trefethen \& D.~Bau (2022)}. \emph{Numerical Linear Algebra}, 25th anniversary ed., SIAM Press, Philadelphia
+    \begin{itemize}
+    \item[$\circ$] clear thinking on matrices and core algorithms
+    \end{itemize}
+}
+\end{itemize}
+
+\end{frame}
+
+\end{document}
