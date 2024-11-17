@@ -39,7 +39,7 @@ boxfig()
 plt.show()
 
 # Figures 3 .. 6: show that fully-fitting batch is unstable
-for j in range(4):
+for j in range(6):
     mb = 4   # batch size
     xb = x[mb*j:mb*(j+1)]
     yb = y[mb*j:mb*(j+1)]
