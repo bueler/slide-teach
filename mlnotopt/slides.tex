@@ -5,17 +5,10 @@
                hyperref={colorlinks,citecolor=DeepPink4,linkcolor=FireBrick,urlcolor=Maroon},
                usepdftitle=false]{beamer}
 
-\mode<presentation>
-{
-  \usetheme{Madrid}
-
-  \usecolortheme{beaver}
-
-  \setbeamercovered{transparent}
-  
-  \setbeamerfont{frametitle}{size=\large}
-}
-
+\usetheme{Madrid}
+\usecolortheme{beaver}
+\setbeamercovered{transparent}
+\setbeamerfont{frametitle}{size=\large}
 \setbeamercolor*{block title}{bg=red!10}
 \setbeamercolor*{block body}{bg=red!5}
 
@@ -27,7 +20,7 @@
 % does not look nice, try deleting the line with the fontenc.
 
 \usepackage{empheq,bm,xspace,minted}
-\usepackage{hyperref}
+%\usepackage{hyperref}
 \usepackage{tikz}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
@@ -69,9 +62,9 @@
             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 
 
-\title{Training in machine learning is not optimization}
+\title{Machine learning training is not optimization}
 
-\subtitle{but it is close}
+\subtitle{but it's close}
 
 \author{Ed Bueler}
 
@@ -91,7 +84,104 @@
   \tableofcontents[hideallsubsections]
 \end{frame}
 
-\section{how fast is the basic matrix-vector product $z=Ax$?}
+
+\section{regression \emph{is} optimization}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{generalization}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{stochastic gradient descent (SGD)}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{neural nets}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{online optimization and regret}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\section{beyond SGD}
+
+\begin{frame}{Outline}
+  \tableofcontents[hideallsubsections,currentsection]
+\end{frame}
+
+\begin{frame}{title}
+
+\begin{itemize}
+\item foo
+   \begin{itemize}
+   \item[$\circ$] bar
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
 
 
 \begin{frame}[fragile]
@@ -123,37 +213,12 @@ def solve_circulant(c,x,b):
 \end{frame}
 
 
-\begin{frame}{summary: some directions suggested by this talk}
+\begin{frame}{title}
 
 \begin{itemize}
-\item sparse storage schemes
+\item foo
    \begin{itemize}
-   \item[$\circ$] practicalities?
-   \item[$\circ$] parallelization?
-   \end{itemize}
-\item sparse direct linear algebra
-   \begin{itemize}
-   \item[$\circ$] how to re-order variables to minimize fill-in in LU
-   \item[$\circ$] this is graph theory (nested-disection, minimum degree, Cuthill-McKee, \dots)
-   \end{itemize}
-\item how does the FFT actually work?
-   \begin{itemize}
-   \item[$\circ$] why is it $O(m\log m)$?
-   \item[$\circ$] what else is it good for? (signal/image processing, filters, fast Poisson, \dots)
-   \end{itemize}
-\item Krylov methods
-   \begin{itemize}
-   \item[$\circ$] conjugate gradient, GMRES, \dots
-   \item[$\circ$] matrix-free Krylov
-   \end{itemize}
-\item matrix-based preconditioners for Krylov methods
-   \begin{itemize}
-   \item[$\circ$] incomplete LU, incomplete Cholesky, \dots
-   \end{itemize}
-\item multigrid for PDE problems
-   \begin{itemize}
-   \item[$\circ$] geometric multigrid
-   \item[$\circ$] algebraic multigrid, a black-box-ish preconditioner
+   \item[$\circ$] bar
    \end{itemize}
 \end{itemize}
 \end{frame}
@@ -163,17 +228,38 @@ def solve_circulant(c,x,b):
 
 \begin{itemize}
 {\small
-%\item[] \textbf{E.~Bueler (2021)}. \emph{PETSc for Partial Differential Equations}, SIAM Press, Philadelphia
-%    \begin{itemize}
-%    \item[$\circ$] Krylov methods, multigrid, optimal PDE solvers
-%    \end{itemize}
-\item[] \textbf{L.~Trefethen \& D.~Bau (2022)}. \emph{Numerical Linear Algebra}, 25th anniversary ed., SIAM Press, Philadelphia
+\item E.~Bueler (2022a). \href{https://bueler.github.io/M692S22/slides/bueler-intro.pdf}{\emph{Getting started on machine learning with one \dots neural net}}
     \begin{itemize}
-    \item[$\circ$] clear thinking on matrices and core algorithms
+    \scriptsize
+    \item[$-$] slides on neural net basics, and how SGD is applied in practice
+    \end{itemize}
+\item E.~Bueler (2022b). \href{https://bueler.github.io/M692S22/slides/bueler-regret.pdf}{\emph{Online optimization: good ML training algorithms regret less}}
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] slides on online optimization and regret bounds
+    \end{itemize}
+\item I.~Goodfellow,  Y.~Bengio, \& A.~Courville (2016).  \href{https://mitpress.mit.edu/9780262035613/deep-learning/}{\emph{Deep Learning}}, MIT Press
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] see sections on optimization and SGD
+    \end{itemize}
+\item D.~P.~Kingma \& J.~Ba (2014). \href{https://arxiv.org/abs/1412.6980}{\emph{Adam: A method for stochastic optimization}}, preprint arXiv:1412.6980
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] 196,000 citations
+    \end{itemize}
+\item S.~J.~Reddi, S.~Kale, \& S.~Kumar (2019). \href{https://arxiv.org/abs/1904.09237}{\emph{On the convergence of Adam and beyond}}, preprint arXiv:1904.09237
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] Adam $\stackrel{\text{replace with}}{\to}$ AMSGrad
+    \end{itemize}
+\item M.~Zinkevich (2003). \href{https://www.aaai.org/Papers/ICML/2003/ICML03-120.pdf}{\emph{Online convex programming and generalized infinitesimal gradient ascent}}, Proceedings of the 20th International Conference on Machine Learning, 928-936
+    \begin{itemize}
+    \scriptsize
+    \item[$-$] introduced regret; $O(\sqrt{j})$ regret bound of SGD
     \end{itemize}
 }
 \end{itemize}
-
 \end{frame}
 
 \end{document}
