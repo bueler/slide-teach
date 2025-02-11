@@ -43,6 +43,8 @@
 \newcommand{\bu}{\mathbf{u}}
 \newcommand{\bw}{\mathbf{w}}
 
+\newcommand{\bzero}{\bm{0}}
+
 \newcommand{\grad}{\nabla}
 \newcommand{\Grad}{\grad}
 \newcommand{\Div}{\nabla\cdot}
@@ -93,6 +95,7 @@
 
 \date{Spring 2025}
 
+
 \begin{document}
 \beamertemplatenavigationsymbolsempty
 
@@ -105,10 +108,18 @@
 
 \begin{itemize}
 \item all examples here are for domains $\Omega \subset \RR^2$
-\item denote: $\bu=\bu(t,x,y)$ is velocity and $p=p(t,x,y)$ is pressure
-\item assume density $\rho>0$ is constant; fluid is incompressible
-\item assume constant dynamic viscosity: $\sigma = -p I + 2 \mu D\bu$ for constant $\mu>0$
-\item body force, possibly: $\bbf = \rho \bg$
+\item notation: \, $\bu(t,x,y)$ is velocity and $p(t,x,y)$ is pressure
+\item density $\rho>0$ is constant
+    \begin{itemize}
+    \item[$\circ$] fluid is incompressible
+    \end{itemize}
+\item dynamic viscosity $\mu>0$ is constant
+    \begin{itemize}
+    \item[$\circ$] constitutive relation: \, $\sigma = -p I + 2 \mu D\bu$
+    \end{itemize}
+\item body force: \, $\bbf = \rho \bg$
+
+\bigskip
 \item units: $[\bu]=\text{m}\,\text{s}^{-1}$, $[p]=\text{N}\,\text{m}^{-2}\,\text{s}^{-1}$, $[\rho]=\text{kg}\,\text{m}^{-3}$, $[\mu]=\text{kg}\,\text{m}^{-1}\,\text{s}^{-1}$
 \end{itemize}
 \end{frame}
@@ -117,7 +128,7 @@
 \begin{frame}{the Navier-Stokes model}
 
 \begin{itemize}
-\item the Navier-Stokes equations are:
+\item the time-dependent, incompressible, constant-viscosity Navier-Stokes equations are:
 \begin{align*}
 \rho\left(\bu_t + \bu \cdot \grad \bu\right) &= \mu \grad^2 \bu - \grad p + \rho \bg & &\text{conservation of momentum} \\
 \Div \bu &= 0 & &\text{incompressibility (c.~of mass)}
@@ -129,15 +140,19 @@
 \begin{frame}{flow past a cylinder 1}
 
 \begin{itemize}
-\item Nick provided formula for the potential flow past a cylinder \dots recall
-\item from Navier-Stokes, derive by taking the viscosity $\mu$ to be very large:
-	$$\mu |\grad^2 \bu| \gg \rho|\left(\bu_t + \bu \cdot \grad \bu\right)|,\, |\grad p|,\, \rho |\bg|$$
-\item equations simplify:
+\item recall from 2 weeks ago that Nick provided formula for the potential flow past a cylinder
+\item in potential flow the vorticity is zero: \, $\bm{\omega}=\Curl\bu=\bzero$
+\item incompressible potential flows satisfy:
 \begin{align*}
-0 &= \mu \grad^2 \bu & &\text{conservation of momentum} \\
+\Curl \bu &= 0 & &\text{conservation of momentum} \\
 \Div \bu &= 0 & &\text{incompressibility (c.~of mass)}
 \end{align*}
-\item but, $\grad^2 \bu = \grad\left(\Div \bu\right) - \Curl(\Curl \bu)$, so vorticity is zero ($\bm{\omega}=\Curl\bu=0$)
+\item vorticity is zero ($\Curl\bu=0$) so there exists a potential $\bu = \grad \phi$
+\item by incompressibility $\phi$ is harmonic: \, $\grad^2 \phi = 0$
+\item assume far field velocity $\bu=(U_0,0)$
+\item assume non-penetration and free slip on circle $r=a$
+\item get by separation of variables:
+	$$\phi(r,\theta) = U_0 \left(r + \frac{a^2}{r}\right) \cos(\theta) \hspace{2.3in}$$
 \end{itemize}
 \end{frame}
 
@@ -145,17 +160,87 @@
 \begin{frame}{flow past a cylinder 2}
 
 \begin{itemize}
-\item vorticity is zero ($\Curl\bu=0$) so there exists a potential $\bu = \grad \phi$
-\item by incompressibility $\phi$ is harmonic:
-	$$\grad^2 \phi = 0$$
-\item assume far field velocity $\bu=(U_0,0)$, non-penetration and free slip on circle $r=a$
-\item get by separation of variables:
+\item potential:
 	$$\phi(r,\theta) = U_0 \left(r + \frac{a^2}{r}\right) \cos(\theta) \hspace{2.3in}$$
+\item velocity is $\bu = \grad \phi$
+\item note boundary condition along
+
+cylinder, i.e.~non-penetration
+
+and free slip, is not realistic for
+
+a viscous fluid
 \end{itemize}
 
-\vspace{-19mm}
-\hfill
-\mbox{\includegraphics[width=0.37\textwidth]{figs/flowcyl.png} \qquad}
+\vspace{-25mm}
+\hfill \includegraphics[width=0.45\textwidth]{figs/flowcyl.png}
+\end{frame}
+
+
+\begin{frame}{plan for today}
+
+\begin{itemize}
+\item use Firedrake to solve Navier-Stokes (NS) in two situations:
+    \begin{enumerate}
+    \item lid-driven cavity on a square \hfill \alert{$\leftarrow$ \emph{DEMO NOW!}}
+    \item flow around a cylinder on a custom mesh
+    \end{enumerate}
+
+\bigskip
+\item TO DO today:
+    \begin{itemize}
+    \item[$\circ$] the Reynolds scaling argument, to reduce \# of parameters
+    \item[$\circ$] implicit discretization of Navier-Stokes (in time)
+    \item[$\circ$] weak form, and the idea behind finite elements
+    \item[$\circ$] choice of function spaces
+    \item[$\circ$] practical Firedrake coding
+    \item[$\circ$] visualization with Paraview
+    \item[$\circ$] meshing with Gmsh
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Reynolds number}
+
+\begin{itemize}
+\item a particular simulation using our NS sets several overall values (scalars):
+    \begin{itemize}
+    \item[] $\rho$ density
+    \item[] $\mu$ dynamic viscosity
+    \item[] $L$ (how long and wide is the domain?)
+    \item[] $V$ (how fast is the fluid, at inputs/boundaries?)
+    \end{itemize}
+\item ignoring gravity \dots
+\item one can change variables in the NS model using these substitutions:
+    $$\bu = V \tilde \bu, \qquad p = \rho V^2 \tilde p, \qquad \grad = \frac{1}{L} \tilde \grad, \qquad \frac{\partial}{\partial t} = \frac{V}{L} \frac{\partial}{\partial \tilde t}$$
+    \begin{itemize}
+    \item[$\circ$] the new variables have tildes: \, $\bu,p,x,t \to \tilde \bu,\tilde p,\tilde x,\tilde t$
+    \item[$\circ$] the new variables are dimensionless
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{implicit time steps}
+
+\begin{itemize}
+\item most discretization in time is really finite differences
+\item I will use $O(\Delta t)$ backward Euler method, which is highly stable but otherwise not wonderful
+	$$\bu_t \approx \frac{\bu^{n} - \bu^{n-1}}{\Delta t}$$
+    \begin{itemize}
+    \item[$\circ$] \emph{key theory idea}: there is no time derivative in incompressiblity equation, thus NS equations are really a ``differential-algebraic'' system in time, thus infinitely stiff, thus implicit methods are a good idea
+    \end{itemize}
+\item the equations remain continuous in space:
+\begin{align*}
+\rho\left(\frac{\bu^{n} - \bu^{n-1}}{\Delta t} + \bu^n \cdot \grad \bu^n\right) &= \mu \grad^2 \bu^n - \grad p^n + \rho \bg \\
+\Div \bu^n &= 0
+\end{align*}
+
+    \begin{itemize}
+    \item[$\circ$] $\bu^{n-1}$ is known from previous time step, or initial condition
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 
@@ -167,17 +252,26 @@
 \end{frame}
 
 
-
-\begin{frame}[fragile]{steepest-descent with back-tracking code}
+\begin{frame}{}
 
 \begin{itemize}
-\item here is a basic implementation of \emph{steepest-descent} with \emph{back-tracking}
-    \begin{itemize}
-    \item[$=$] SDBT
-    \end{itemize}
-\item it assumes that the user supplies $x_0$ and a function $f$ that returns both the values $f(x)$ and the gradient $\grad f(x)$:
+\item 
+\end{itemize}
+\end{frame}
 
-\medskip
+
+\begin{frame}{}
+
+\begin{itemize}
+\item 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{bar}
+
+\begin{itemize}
+\item foo
 \begin{Verbatim}[fontsize=\small]
 function [z, xk, k] = sdbt(f, x0, tol)
 
@@ -204,29 +298,13 @@ end
 \begin{frame}{summary}
 
 \begin{itemize}
-\item steepest descent (gradient descent) simply uses the search direction $p_k = -\grad f(x_k)$
+\item stuff
 \item determining the step size $\alpha_k$, when actually taking the step, namely $x_{k+1}=x_k + \alpha_k p_k$, is nontrivial
     \begin{itemize}
     \item[$\circ$] line search (section 11.5) or trust region (11.6) is needed
     \item[$\circ$] for general functions, back-tracking is reasonable
     \item[$\circ$] for quadratic functions we can use the optimal step size
     \end{itemize}
-\item even with good line search, steepest descent sucks
-    \begin{itemize}
-    \item[$\circ$] steepest descent is slow when contour lines (level sets) are highly curved
-
-    \smallskip
-    \item[$\circ$] going down the gradient is generally \alert{the wrong direction}:
-        \begin{itemize}
-        \item steepest descent direction $p_k = - I^{-1} \grad f(x_k)$ is wrong, while
-        \item Newton direction $p_k = - (\grad^2f(x_k))^{-1} \grad f(x_k)$ is perfect for quadratic objectives
-        \end{itemize}
-    \item[$\circ$] the steepest-descent vector $p_k = -\grad f(x_k)$ has a length which depends on the scaling of $f(x)$, which is bad
-        \begin{itemize}
-        \item the Newton step does not have this flaw
-        \end{itemize}
-    \end{itemize}
-\item however, functions like Rosenbrock remain difficult even for Newton
 \end{itemize}
 \end{frame}
 
