@@ -55,23 +55,15 @@
 
 \newcommand{\ddt}[1]{\ensuremath{\frac{\partial #1}{\partial t}}}
 \newcommand{\ddx}[1]{\ensuremath{\frac{\partial #1}{\partial x}}}
-\renewcommand{\t}[1]{\texttt{#1}}
 \newcommand{\Matlab}{\textsc{Matlab}\xspace}
 \newcommand{\Octave}{\textsc{Octave}\xspace}
-%\newcommand{\MO}{\Matlab/\Octave}
-\newcommand{\MO}{\Matlab}
 \newcommand{\eps}{\epsilon}
 
-\newcommand{\MS}{\alert{MAKE SURE}\xspace}
-
-\newcommand{\exer}[2]{\medskip\noindent \textbf{#1.}\quad #2}
+\renewcommand{\Re}{\text{Re}}
+\newcommand{\buold}{\bu^{\text{old}}}
 
 \newcommand{\mfile}[1]{
 \VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
-}
-
-\newcommand{\mfiletiny}[1]{
-\VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\tiny]{#1}
 }
 
 \DefineVerbatimEnvironment{mVerb}{Verbatim}{numbersep=2mm,framerule=0.1mm,framesep=2mm,xleftmargin=4mm,fontsize=\small}
@@ -104,10 +96,10 @@
 \end{frame}
 
 
-\begin{frame}{flow assumptions}
+\begin{frame}{assumptions}
 
 \begin{itemize}
-\item all examples here are for domains $\Omega \subset \RR^2$
+\item all examples here are for 2D domains $\Omega \subset \RR^2$
 \item notation: \, $\bu(t,x,y)$ is velocity and $p(t,x,y)$ is pressure
 \item density $\rho>0$ is constant
     \begin{itemize}
@@ -117,7 +109,7 @@
     \begin{itemize}
     \item[$\circ$] constitutive relation: \, $\sigma = -p I + 2 \mu D\bu$
     \end{itemize}
-\item body force: \, $\bbf = \rho \bg$
+\item body force set to zero: \, $\bbf = \bzero$
 
 \bigskip
 \item units: $[\bu]=\text{m}\,\text{s}^{-1}$, $[p]=\text{N}\,\text{m}^{-2}\,\text{s}^{-1}$, $[\rho]=\text{kg}\,\text{m}^{-3}$, $[\mu]=\text{kg}\,\text{m}^{-1}\,\text{s}^{-1}$
@@ -130,25 +122,25 @@
 \begin{itemize}
 \item the time-dependent, incompressible, constant-viscosity Navier-Stokes equations are:
 \begin{align*}
-\rho\left(\bu_t + \bu \cdot \grad \bu\right) &= \mu \grad^2 \bu - \grad p + \rho \bg & &\text{conservation of momentum} \\
+\rho\left(\bu_t + \bu \cdot \grad \bu\right) &= \mu \grad^2 \bu - \grad p & &\text{conservation of momentum} \\
 \Div \bu &= 0 & &\text{incompressibility (c.~of mass)}
 \end{align*}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{flow past a cylinder 1}
+\begin{frame}{potential flow past a cylinder}
 
 \begin{itemize}
 \item recall from 2 weeks ago that Nick provided formula for the potential flow past a cylinder
-\item in potential flow the vorticity is zero: \, $\bm{\omega}=\Curl\bu=\bzero$
+\item in a \alert{potential flow} the vorticity is zero: \, $\bm{\omega}=\Curl\bu=\bzero$
 \item incompressible potential flows satisfy:
 \begin{align*}
 \Curl \bu &= 0 & &\text{conservation of momentum} \\
 \Div \bu &= 0 & &\text{incompressibility (c.~of mass)}
 \end{align*}
-\item vorticity is zero ($\Curl\bu=0$) so there exists a potential $\bu = \grad \phi$
-\item by incompressibility $\phi$ is harmonic: \, $\grad^2 \phi = 0$
+\item zero curl ($\Curl\bu=0$) so there exists a potential $\bu = \grad \phi$
+\item \dots and by incompressibility $\phi$ is harmonic: \, $\grad^2 \phi = 0$
 \item assume far field velocity $\bu=(U_0,0)$
 \item assume non-penetration and free slip on circle $r=a$
 \item get by separation of variables:
@@ -157,22 +149,29 @@
 \end{frame}
 
 
-\begin{frame}{flow past a cylinder 2}
+\begin{frame}{potential flow past a cylinder}
 
 \begin{itemize}
 \item potential:
-	$$\phi(r,\theta) = U_0 \left(r + \frac{a^2}{r}\right) \cos(\theta) \hspace{2.3in}$$
-\item velocity is $\bu = \grad \phi$
-\item note boundary condition along
+	$$\phi(r,\theta) = U_0 \left(r + \frac{a^2}{r}\right) \cos\theta \hspace{2.3in}$$
+\item velocity $\bu = \grad \phi$:
+{\scriptsize
+    $$\hspace{-4mm} \bu(r,\theta) = U_0 \left(1 - \frac{a^2}{r^2}\right) \cos\theta \,\hat \br - U_0 \left(1 + \frac{a^2}{r^2}\right) \sin\theta \,\hat \theta \hspace{3in}$$
+}
+\item \emph{however}, the boundary condition
 
-cylinder, i.e.~non-penetration
+along the cylinder, non-penetration
 
 and free slip, is not realistic for
 
 a viscous fluid
+\item in fact there is substantial
+
+vorticity along the cylinder
+\item and flow separation \dots
 \end{itemize}
 
-\vspace{-25mm}
+\vspace{-50mm}
 \hfill \includegraphics[width=0.45\textwidth]{figs/flowcyl.png}
 \end{frame}
 
@@ -191,8 +190,8 @@ a viscous fluid
     \begin{itemize}
     \item[$\circ$] the Reynolds scaling argument, to reduce \# of parameters
     \item[$\circ$] implicit discretization of Navier-Stokes (in time)
-    \item[$\circ$] weak form, and the idea behind finite elements
-    \item[$\circ$] choice of function spaces
+    \item[$\circ$] weak form
+    \item[$\circ$] choice of finite element function spaces
     \item[$\circ$] practical Firedrake coding
     \item[$\circ$] visualization with Paraview
     \item[$\circ$] meshing with Gmsh
@@ -204,16 +203,21 @@ a viscous fluid
 \begin{frame}{Reynolds number}
 
 \begin{itemize}
-\item a particular simulation using our NS sets several overall values (scalars):
+\item recall NS equations:
+\begin{align*}
+\rho\left(\bu_t + \bu \cdot \grad \bu\right) &= \mu \grad^2 \bu - \grad p, \qquad 
+\Div \bu = 0
+\end{align*}
+\item a particular simulation sets several scales:
     \begin{itemize}
     \item[] $\rho$ density
     \item[] $\mu$ dynamic viscosity
     \item[] $L$ (how long and wide is the domain?)
-    \item[] $V$ (how fast is the fluid, at inputs/boundaries?)
+    \item[] $V$ (how fast is the fluid, e.g.~at boundaries?)
     \end{itemize}
-\item ignoring gravity \dots
 \item one can change variables in the NS model using these substitutions:
     $$\bu = V \tilde \bu, \qquad p = \rho V^2 \tilde p, \qquad \grad = \frac{1}{L} \tilde \grad, \qquad \frac{\partial}{\partial t} = \frac{V}{L} \frac{\partial}{\partial \tilde t}$$
+
     \begin{itemize}
     \item[$\circ$] the new variables have tildes: \, $\bu,p,x,t \to \tilde \bu,\tilde p,\tilde x,\tilde t$
     \item[$\circ$] the new variables are dimensionless
@@ -222,35 +226,92 @@ a viscous fluid
 \end{frame}
 
 
+\begin{frame}{Reynolds number}
+
+\begin{itemize}
+\item one rewrites the NS equations using the tilde variables \dots
+\item drop the tildes:
+\begin{align*}
+\bu_t + \bu \cdot \grad \bu &= \frac{\mu}{\rho V L} \grad^2 \bu - \grad p, \qquad 
+\Div \bu = 0
+\end{align*}
+\item note coefficient is dimensionless:
+	$$\frac{[\mu]}{[\rho] [V] [L]} = \frac{(\text{kg}\,\text{m}^{-1}\,\text{s}^{-1})}{(\text{kg}\,\text{m}^{-3}) (\text{m}\,\text{s}^{-1}) (\text{m})} = 1$$
+\end{itemize}
+\begin{definition} the \emph{Reynold's number} is the dimensionless ratio
+	$$\Re = \frac{\rho V L}{\mu}$$
+\end{definition}
+\end{frame}
+
+
+\begin{frame}{Reynolds number}
+
+\begin{itemize}
+\item dimensionless NS equations used from now on ($\Re = \rho V L/\mu > 0$):
+\begin{align*}
+\bu_t + \bu \cdot \grad \bu &= \frac{1}{\Re} \grad^2 \bu - \grad p \\
+\Div \bu &= 0
+\end{align*}
+\item if $\Re$ is small then viscosity is dominant
+\item if $\Re$ is large then inertia is dominant
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{implicit time steps}
 
 \begin{itemize}
-\item most discretization in time is really finite differences
-\item I will use $O(\Delta t)$ backward Euler method, which is highly stable but otherwise not wonderful
-	$$\bu_t \approx \frac{\bu^{n} - \bu^{n-1}}{\Delta t}$$
+\item discretization in time typically uses finite differences
+\item \emph{key idea}: there is no time derivative in the incompressiblity equation!
     \begin{itemize}
-    \item[$\circ$] \emph{key theory idea}: there is no time derivative in incompressiblity equation, thus NS equations are really a ``differential-algebraic'' system in time, thus infinitely stiff, thus implicit methods are a good idea
+    \item[$\circ$] thus NS equations are really a ``differential-algebraic'' system in time, and infinitely stiff, thus implicitness is a good idea
     \end{itemize}
-\item the equations remain continuous in space:
+\item I will use $O(\Delta t)$ backward (implicit) Euler method, highly stable:
+	$$\bu_t \approx \frac{\bu^{n} - \bu^{n-1}}{\Delta t}$$
+\item suppose $\bu^{n-1}$ is known from previous time step, or initial condition
+\item unknowns are $\bu^n$ and $p^n$:
 \begin{align*}
-\rho\left(\frac{\bu^{n} - \bu^{n-1}}{\Delta t} + \bu^n \cdot \grad \bu^n\right) &= \mu \grad^2 \bu^n - \grad p^n + \rho \bg \\
+\frac{\bu^{n} - \bu^{n-1}}{\Delta t} + \bu^n \cdot \grad \bu^n &= \frac{1}{\Re}\grad^2 \bu^n - \grad p^n \\
 \Div \bu^n &= 0
 \end{align*}
 
     \begin{itemize}
-    \item[$\circ$] $\bu^{n-1}$ is known from previous time step, or initial condition
+    \item[$\circ$] these equations are continuous in space
     \end{itemize}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}{}
+\begin{frame}{implicit time steps}
 
 \begin{itemize}
-\item 
+\item cleaner notation $\bu=\bu^n$, $p=p^n$, $\buold = \bu^{n-1}$
+\item also clear $\Delta t$ from denominator \dots get:
+
+\begin{block}{implicit-step Navier-Stokes equations}
+\begin{align*}
+\bu - \buold + \Delta t \left(\bu \cdot \grad \bu - \frac{1}{\Re}\grad^2 \bu + \grad p\right) &= 0 \\
+\Div \bu &= 0
+\end{align*}
+\end{block}
+
+\item we will solve these equations for $\bu,p$ \alert{at every time step}, over the domain $\Omega$, using the boundary conditions, and using $\buold$ from the previous time step or the initial conditions
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{weak form of NS equations}
+
+\begin{itemize}
+\item above equations are the ``strong form'', in which $\bu$ must have second derivatives and $p$ must have first derivatives
+\item this is not necessary, and in a finite element (FE) method it is not desirable
+\item technique: multiply first equation by test velocity $\bv$ and second equation by test pressure $q$, and then integrate
+\begin{align*}
+\int_\Omega (\bu - \buold)\cdot \bv + \Delta t \int_\Omega \left(\bu \cdot \grad \bu - \frac{1}{\Re}\grad^2 \bu + \grad p\right) \cdot \bv &= 0 \\
+\int_\Omega (\Div \bu) q &= 0
+\end{align*}
+\end{itemize}
+\end{frame}
 
 \begin{frame}{}
 
