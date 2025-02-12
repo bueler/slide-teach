@@ -1,6 +1,6 @@
 % Copyright 2025  Ed Bueler
 
-\documentclass[10pt,hyperref]{beamer}
+\documentclass[10pt,hyperref,colorlinks]{beamer}
 
 \mode<presentation>
 {
@@ -26,6 +26,8 @@
 \usepackage{empheq}
 \usepackage{animate}
 \usepackage{bm,xspace,verbatim,fancyvrb}
+\usepackage{minted}
+
 \usepackage{hyperref}
 
 % If you wish to uncover everything in a step-wise fashion, uncomment
@@ -45,6 +47,8 @@
 
 \newcommand{\bzero}{\bm{0}}
 
+\newcommand{\hbn}{\hat{\mathbf{n}}}
+
 \newcommand{\grad}{\nabla}
 \newcommand{\Grad}{\grad}
 \newcommand{\Div}{\nabla\cdot}
@@ -61,6 +65,8 @@
 
 \renewcommand{\Re}{\text{Re}}
 \newcommand{\buold}{\bu^{\text{old}}}
+\newcommand{\dx}{\,dx}
+\newcommand{\dS}{\,dS}
 
 \newcommand{\mfile}[1]{
 \VerbatimInput[frame=single,label=\fbox{\scriptsize \textsl{\,#1\,}},fontfamily=courier,fontsize=\scriptsize]{#1}
@@ -185,13 +191,17 @@ vorticity along the cylinder
     \item flow around a cylinder on a custom mesh
     \end{enumerate}
 
-\bigskip
+\medskip
+\begin{center}
+\mbox{\includegraphics[height=0.33\textheight]{figs/teaser-cavity.png} \hspace{5mm} \includegraphics[height=0.32\textheight]{figs/teaser-cylinder.png}}
+\end{center}
+
+\medskip
 \item TO DO today:
     \begin{itemize}
     \item[$\circ$] the Reynolds scaling argument, to reduce \# of parameters
     \item[$\circ$] implicit discretization of Navier-Stokes (in time)
     \item[$\circ$] weak form
-    \item[$\circ$] choice of finite element function spaces
     \item[$\circ$] practical Firedrake coding
     \item[$\circ$] visualization with Paraview
     \item[$\circ$] meshing with Gmsh
@@ -304,69 +314,146 @@ vorticity along the cylinder
 
 \begin{itemize}
 \item above equations are the ``strong form'', in which $\bu$ must have second derivatives and $p$ must have first derivatives
-\item this is not necessary, and in a finite element (FE) method it is not desirable
-\item technique: multiply first equation by test velocity $\bv$ and second equation by test pressure $q$, and then integrate
+\item this is not necessary, and in finite element (FE) method not desirable
+\item the \alert{weak form} is built by multiplying by test functions and integrating
+\item multiply 1st equation by $\bv$ and 2nd $q$, and integrate:
+{\small
 \begin{align*}
-\int_\Omega (\bu - \buold)\cdot \bv + \Delta t \int_\Omega \left(\bu \cdot \grad \bu - \frac{1}{\Re}\grad^2 \bu + \grad p\right) \cdot \bv &= 0 \\
-\int_\Omega (\Div \bu) q &= 0
+\int_\Omega (\bu - \buold)\cdot \bv \dx + \Delta t \int_\Omega \left(\bu \cdot \grad \bu - \frac{1}{\Re}\grad^2 \bu + \grad p\right) \cdot \bv \dx &= 0 \\
+\int_\Omega (\Div \bu) q \dx &= 0
 \end{align*}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{}
-
-\begin{itemize}
-\item 
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}{}
-
-\begin{itemize}
-\item 
+}
+\item integrate by parts to remove 2nd deriv from $\bu$ and 1st deriv from $p$:
+{\scriptsize
+\begin{align*}
+\int_\Omega \left(- \tfrac{1}{\Re}\grad^2 \bu + \grad p\right) \cdot \bv \dx &= \int_\Omega \Div \left[- \tfrac{1}{\Re}(\grad \bu)\bv + p \bv\right] \dx - \int_\Omega - \tfrac{1}{\Re} \grad \bu : \grad\bv + p (\Div\bv) \dx \\
+&= \int_\Omega \tfrac{1}{\Re} \grad \bu : \grad\bv - p (\Div\bv) \dx + \underbrace{\int_{\partial \Omega} \left(p I - \tfrac{1}{\Re}\grad \bu\right) \hbn \cdot \bv \dS}_{\text{boundary integral}}
+\end{align*}
+}
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}[fragile]{bar}
+\begin{frame}{boundary conditions}
 
 \begin{itemize}
-\item foo
-\begin{Verbatim}[fontsize=\small]
-function [z, xk, k] = sdbt(f, x0, tol)
+\item two boundary conditions considered here, on separate parts of boundary
+\item \alert{stress free} (Neumann):
+   $$\left(p I - \tfrac{1}{\Re}\grad \bu\right) \hbn=\bzero$$
 
-xk = x0(:);
-maxiters = 10000;
-for k = 1:maxiters
-    [fk, dfk] = f(xk);           % objective and gradient
-    if norm(dfk) < tol
-        z = fk;
-        break                    % success
-    end
-    pk = - dfk(:);               % steepest descent
-    alpha = bt(xk, pk, dfk, f);  % back-tracking
-    xk = xk + alpha * pk;
-end
-\end{Verbatim}
-\end{itemize}
-\end{frame}
-
-
-
-
-
-\begin{frame}{summary}
-
-\begin{itemize}
-\item stuff
-\item determining the step size $\alpha_k$, when actually taking the step, namely $x_{k+1}=x_k + \alpha_k p_k$, is nontrivial
     \begin{itemize}
-    \item[$\circ$] line search (section 11.5) or trust region (11.6) is needed
-    \item[$\circ$] for general functions, back-tracking is reasonable
-    \item[$\circ$] for quadratic functions we can use the optimal step size
+    \item[$\circ$] test functions $\bv$ unrestricted on this part of boundary
     \end{itemize}
+\item \alert{given velocity} (Dirichlet):
+   $$\bv \, \text{ given}$$
+
+    \begin{itemize}
+    \item[$\circ$] test functions satisfy $\bv=\bzero$ on this part of boundary
+    \end{itemize}
+
+\medskip
+\item assuming one or the other applies everywhere on boundary, then the boundary integral on last slide is zero
 \end{itemize}
+\end{frame}
+
+
+\begin{frame}{weak form}
+
+\begin{block}{implicit-step Navier-Stokes equations in weak form}
+\begin{align*}
+\int_\Omega (\bu - \buold)\cdot \bv \dx + \Delta t \int_\Omega \left(\frac{1}{\Re}\grad \bu : \grad \bv + (\bu \cdot \grad \bu)\cdot \bv - p \Div \bv\right) \dx &= 0 \\
+\int_\Omega (\Div \bu) q \dx &= 0
+\end{align*}
+for all test velocities $\bv$, with $\bv=0$ on Dirichlet boundary, and for all test pressures $q$
+\end{block}
+
+\begin{itemize}
+\item the problem is nonlinear in $\bu$
+\item but the weak form is linear in $\bv$ and $q$
+\item note: no derivatives on $p,q$, and only first derivatives on $\bu,\bv$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{weak form in Firedrake}
+
+\begin{align*}
+\int_\Omega (\bu - \buold)\cdot \bv \dx + \Delta t \int_\Omega \left(\frac{1}{\Re}\grad \bu : \grad \bv + (\bu \cdot \grad \bu)\cdot \bv - p \Div \bv\right) \dx &= 0 \\
+\int_\Omega (\Div \bu) q \dx &= 0
+\end{align*}
+
+\medskip
+becomes
+
+\medskip
+\begin{minted}{python}
+F = dot(u - uold, v) * dx
+    + dt * (1.0 / Re) * inner(grad(u), grad(v)) * dx
+    + dt * dot(grad(u) * u, v) * dx
+    - dt * p * div(v) * dx
+    - div(u) * q * dx
+\end{minted}
+\end{frame}
+
+
+\begin{frame}[fragile]{solver in Firedrake: lid-driven cavity}
+
+\begin{minted}[fontsize=\footnotesize]{python}
+mesh = UnitSquareMesh(32, 32)            # Firedrake utility mesh
+
+V = VectorFunctionSpace(mesh, "CG", 2)   # P2 x P1 finite elements
+W = FunctionSpace(mesh, "CG", 1)
+Z = V * W
+up = Function(Z)
+
+u, p = split(up)
+v, q = TestFunctions(Z)
+F = ...                                  # previous slide
+
+x, y = SpatialCoordinate(mesh)
+bcs = [DirichletBC(Z.sub(0), as_vector([4 * x * (1-x), 0.0]), (4,)),
+       DirichletBC(Z.sub(0), Constant((0.0, 0.0)), (1, 2)),]
+
+t = 0.0
+uold.interpolate(as_vector([0.0, 0.0]))  # initial velocity zero
+u, p = up.subfunctions
+spar = { ... }                           # for Newton solver
+for j in range(N):
+    solve(F == 0, up, bcs=bcs, solver_parameters=spar)
+    t += dt
+    uold.interpolate(u)
+\end{minted}
+\end{frame}
+
+
+\begin{frame}{demonstrations}
+
+\begin{itemize}
+\item Python codes are in \texttt{py/bueler/} directory of repository
+
+\begin{center}
+ \href{https://github.com/bueler/fluid-solid-seminar}{\texttt{github.com/bueler/fluid-solid-seminar}}
+\end{center}
+\item you will need to get \href{https://www.firedrakeproject.org/}{Firedrake} installed to use these
+\end{itemize}
+
+\bigskip
+\begin{enumerate}
+\item demo: lid-driven cavity on a square
+    \begin{itemize}
+    \item[$\circ$] look at \href{https://github.com/bueler/fluid-solid-seminar/blob/main/py/bueler/navierstokes.py}{\texttt{navierstokes.py}} and \href{https://github.com/bueler/fluid-solid-seminar/blob/main/py/bueler/cavity.py}{\texttt{cavity.py}}
+    \item[$\circ$] visualize with \href{https://www.paraview.org/}{Paraview}
+    \end{itemize}
+
+\bigskip
+\item demo: flow around a cylinder on a custom mesh
+    \begin{itemize}
+    \item[$\circ$] build mesh using \href{http://gmsh.info/}{Gmsh}, using geometry-description file \href{https://github.com/bueler/fluid-solid-seminar/blob/main/py/bueler/cylinder.geo}{\texttt{cylinder.geo}}
+    \item[$\circ$] look at \href{https://github.com/bueler/fluid-solid-seminar/blob/main/py/bueler/navierstokes.py}{\texttt{navierstokes.py}} and \href{https://github.com/bueler/fluid-solid-seminar/blob/main/py/bueler/cylinder.py}{\texttt{cylinder.py}}
+    \item[$\circ$] visualize with \href{https://www.paraview.org/}{Paraview}
+    \item[$\circ$] play with Reynold's number
+    \end{itemize}
+\end{enumerate}
 \end{frame}
 
 
