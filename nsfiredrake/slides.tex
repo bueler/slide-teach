@@ -118,7 +118,13 @@
 \item body force set to zero: \, $\bbf = \bzero$
 
 \bigskip
-\item units: $[\bu]=\text{m}\,\text{s}^{-1}$, $[p]=\text{N}\,\text{m}^{-2}\,\text{s}^{-1}$, $[\rho]=\text{kg}\,\text{m}^{-3}$, $[\mu]=\text{kg}\,\text{m}^{-1}\,\text{s}^{-1}$
+\item units:
+\begin{align*}
+    [\bu]&=\text{m}\,\text{s}^{-1} \\
+    [p]&=\text{N}\,\text{m}^{-2} \\
+    [\rho]&=\text{kg}\,\text{m}^{-3} \\
+    [\mu]&=\text{kg}\,\text{m}^{-1}\,\text{s}^{-1}
+\end{align*}
 \end{itemize}
 \end{frame}
 
@@ -245,7 +251,7 @@ vorticity along the cylinder
 \bu_t + \bu \cdot \grad \bu &= \frac{\mu}{\rho V L} \grad^2 \bu - \grad p, \qquad 
 \Div \bu = 0
 \end{align*}
-\item note coefficient is dimensionless:
+\item note that the coefficient is dimensionless:
 	$$\frac{[\mu]}{[\rho] [V] [L]} = \frac{(\text{kg}\,\text{m}^{-1}\,\text{s}^{-1})}{(\text{kg}\,\text{m}^{-3}) (\text{m}\,\text{s}^{-1}) (\text{m})} = 1$$
 \end{itemize}
 \begin{definition} the \emph{Reynold's number} is the dimensionless ratio
